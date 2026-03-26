@@ -1,0 +1,310 @@
+CONDOR FITNESS
+Workflow Reference
+
+How Chat, Code, and Joel work together to build the
+workout companion and dashboard.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THE THREE ROLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHAT (Claude in claude.ai)
+  Strategic advisor and project manager. Handles program
+  design, exercise selection, weight targets, progression
+  logic, and what to build next. Owns athlete.json,
+  program.json, condor-build-spec.md, and
+  condor_workflow.txt — these files are never edited by
+  Code. Produces prompts for Claude Code. Reads
+  condor-build.md and index.html after Joel syncs the
+  repo to the project.
+
+JOEL
+  The bridge. Carries decisions and prompts from Chat to
+  Code, and carries build results back. Approves plans
+  before execution. Merges PRs. Commits Chat-owned files
+  to the repo. Syncs project files so Chat can read the
+  latest repo state.
+
+CODE (Claude Code in terminal)
+  Builder and executor. Reads condor-build.md and
+  condor-build-spec.md for task context. Commits to a
+  branch and provides a PR merge link. Updates
+  condor-build.md to reflect completed work. Never pushes
+  directly to main. Never edits Chat-owned files.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INFORMATION FLOWS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHAT → Joel → CODE
+  Program decisions, build specs, prompt drafts for
+  Claude Code.
+
+CODE → condor-build.md
+  After each build task, Code updates condor-build.md
+  with completed status, any deviations from spec,
+  and any new tasks or issues discovered.
+
+Repo → Chat (via sync)
+  Joel syncs the GitHub repo to this Claude project so
+  Chat can read the live build doc, index.html, and
+  session data.
+
+CODE → Chat (via Joel) → condor-build-spec.md
+  When Code deviates from the spec or when a design
+  decision changes the app behavior, Code notes it in
+  condor-build.md. Joel brings it back to Chat. Chat
+  updates condor-build-spec.md. Joel commits the
+  updated spec. The spec always reflects the current
+  app design — not the original intent.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOCUMENT OWNERSHIP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+athlete.json
+  Owned by Chat. Lives in the repo. Contains the full
+  athletic history, PRs, timeline blocks, body weight
+  history, goals, and skill status. Joel commits updated
+  versions when Chat produces them. Code never edits this.
+
+program.json
+  Owned by Chat. Lives in the repo. Contains the full
+  active training program — all weeks, days, exercises,
+  weights, and alternate workouts. Joel commits updated
+  versions when the program changes. Code never edits this.
+
+condor-build-spec.md
+  Owned by Chat. Lives in the repo. Contains the full
+  app specification — screen flow, session JSON schema,
+  localStorage structure, GitHub API pattern, design
+  spec, workout pointer logic, and out-of-scope items.
+  This is the source of truth for what the app does and
+  how it works. Updated by Chat when design decisions
+  change. Code reads it but never edits it. If Code
+  deviates from this spec, it notes the deviation in
+  condor-build.md and Joel brings it back to Chat for
+  a spec update.
+
+condor_workflow.txt
+  Owned by Chat. Lives in the repo. This document.
+  Updated by Chat when workflow rules change.
+
+condor-build.md
+  Owned by Claude Code. Lives in the repo. Contains
+  build state, completed tasks, deviations from spec,
+  technical conventions, and known issues. Code updates
+  this as part of every commit. Joel syncs it to the
+  project so Chat can read it.
+
+index.html
+  The live workout companion app. Owned by Claude Code.
+  Single-file HTML/CSS/JS. Never edited manually.
+
+dashboard.html
+  The training dashboard. Owned by Claude Code. Built
+  in Build 2. Does not exist yet.
+
+sessions/ folder
+  Session JSON files written by the companion app via
+  the GitHub API. One file per completed workout. Never
+  edited manually. Code sets up the folder structure;
+  the app writes the records.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SPEC UPDATE PROTOCOL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+condor-build-spec.md is a living document. It must
+always reflect the current app design, not the original
+plan. Follow this process when the spec needs updating:
+
+1. CODE: When building, if you deviate from the spec
+   or make a design decision not covered by the spec,
+   note it clearly in condor-build.md under a
+   "Spec Deviations" section.
+
+2. JOEL: After merging a PR, check condor-build.md for
+   any spec deviations. Bring them back to Chat.
+
+3. CHAT: Reviews the deviation. Updates
+   condor-build-spec.md to reflect the actual current
+   app behavior. Produces the updated file.
+
+4. JOEL: Commits the updated condor-build-spec.md to
+   main. Re-syncs the project.
+
+This keeps Chat, Code, and Joel aligned on what the
+app actually does — not what it was originally
+specced to do.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLAUDE CODE PROMPT CONVENTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Every prompt handed to Claude Code must follow this
+structure:
+
+- Start with a planning step — describe what will
+  change and ask Code to confirm before executing.
+
+- End with: "After committing, provide the direct PR
+  merge link to merge your branch into main so I can
+  merge with one click."
+
+- Include: "If you find yourself retrying the same
+  approach more than twice, stop and tell me what's
+  blocking rather than continuing to loop."
+
+- Include: "Note any deviations from condor-build-spec.md
+  in the 'Spec Deviations' section of condor-build.md."
+
+- Include an instruction to update condor-build.md as
+  part of the commit — marking tasks complete and noting
+  anything new.
+
+TECHNICAL CONVENTIONS
+
+- Large file writes: always use bash heredoc
+  (cat > index.html << 'PYEOF'). Never use the Write
+  tool for files over ~400 lines — it silently drops
+  content.
+
+- After any commit: verify the git diff matches expected
+  changes before moving to the next task.
+
+- Start a fresh agent for each distinct build phase.
+
+- Claude Code cannot push directly to main — manual PR
+  merge by Joel is always required.
+
+- athlete.json, program.json, condor-build-spec.md, and
+  condor_workflow.txt are read-only for Code. Never
+  modify, overwrite, or regenerate these files. If a
+  build task requires data from them, read them. If they
+  appear to have errors, report to Joel rather than
+  fixing them.
+
+- session files in sessions/ are written by the app
+  via GitHub API, not by Code directly.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT FILE SYNC WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The GitHub repo is connected to this Claude project.
+Syncing makes the latest repo files readable by Chat.
+
+- After Claude Code merges a PR: Joel re-syncs the
+  project files in claude.ai settings.
+
+- The sync has a lag — allow a minute or two before
+  expecting Chat to see updated content.
+
+- All repo files are readable by Chat after sync:
+  index.html, condor-build.md, condor-build-spec.md,
+  sessions/ folder, athlete.json, program.json.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AGENT HYGIENE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Claude Code agents accumulate context debt. Keep them
+clean.
+
+- Start a fresh agent for each distinct build phase or
+  task group.
+
+- If layout or CSS prompts loop more than twice without
+  resolution, stop — re-spec the task in Chat before
+  continuing.
+
+- Never ask a single agent to handle both structural
+  HTML changes and fine CSS polish in the same session.
+
+- After a merge, the agent that built the PR is done.
+  Start fresh for the next task.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TWO-BUILD PLAN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BUILD 1 — Workout Companion (index.html)
+  Phone-first web app. Reads program.json to render
+  workouts sequentially. User checks off sets, logs
+  actual weights and times, rates calf and skills,
+  saves session JSON to sessions/ via GitHub API.
+  No API keys. No frameworks. Single file.
+  Status: Build prompt ready. Pending Code execution.
+
+BUILD 2 — Training Dashboard (dashboard.html)
+  Phone and desktop. Reads athlete.json and sessions/.
+  Displays full athletic timeline, PR board, body weight
+  trend, calf/shoulder/grip skill history, run
+  progression, phase checkpoints, and forward-looking
+  goals.
+  Status: Planned. Build after real session data exists.
+
+THE BRIDGE
+  Both builds share the same JSON schema. Build 1 writes
+  it, Build 2 reads it. When program changes, Chat
+  produces an updated program.json and Joel commits it —
+  the app updates automatically without a rebuild.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUICK REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SITUATION                        ACTION
+───────────────────────────────────────────────────────
+Program changes (new week,       Chat produces updated program.json.
+weights, exercises)              Joel commits to repo. App updates
+                                 automatically.
+
+Athlete history needs updating   Discuss in Chat. Chat produces
+(new PR, weight, milestone)      updated athlete.json. Joel commits.
+
+App design changes or Code       Code notes deviation in
+deviates from spec               condor-build.md. Joel brings to
+                                 Chat. Chat updates
+                                 condor-build-spec.md. Joel commits.
+
+Ready to build something         Get a prompt from Chat. Hand to
+                                 Claude Code. Confirm plan before
+                                 executing.
+
+Build task complete, PR merged   Re-sync project files. Check
+                                 condor-build.md for spec
+                                 deviations. Start fresh agent
+                                 for next task.
+
+Something breaks in a build      Stop the agent. Bring problem back
+loop                             to Chat. Re-spec before retrying.
+
+Session data looks wrong in app  Check sessions/ JSON files in repo.
+                                 Report to Chat — may need schema
+                                 fix in condor-build-spec.md.
+
+New training block starts        Chat produces new program.json for
+                                 the block. Joel commits. Pointer
+                                 in localStorage resets or
+                                 continues.
+
+Want to see progress in          Sync repo to project. Chat reads
+dashboard                        session files and athlete.json.
+                                 Reports on progress or updates
+                                 files.
+
+───────────────────────────────────────────────────────
+Chat thinks. Joel bridges. Code builds.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Condor Fitness — JoelColeman/condor-fitness
+Last updated: March 22, 2026
