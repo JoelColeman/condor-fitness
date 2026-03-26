@@ -1,0 +1,444 @@
+CONDOR FITNESS — WORKOUT COMPANION
+Build Prompt for Claude Code — Build 1
+Version 1.1 — March 22, 2026
+Repo: JoelColeman/condor-fitness
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+READ THIS FIRST — ROLES AND OWNERSHIP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This project uses a three-role workflow:
+
+CHAT (Claude in claude.ai) — owns athlete.json and
+program.json. Produces build prompts. Never commits
+to the repo directly.
+
+JOEL — the bridge. Commits athlete.json and program.json.
+Approves your plan before you execute. Merges PRs.
+
+YOU (Claude Code) — build and execute only. You own
+index.html and condor-build.md. You never edit
+athlete.json or program.json under any circumstances.
+Even if they appear to have errors, report it to Joel
+rather than fixing them yourself.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REQUIRED CONVENTIONS — FOLLOW EVERY TIME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. START WITH A PLANNING STEP.
+   Before writing any code, describe exactly what you
+   will build, what files you will create or modify,
+   and what the PR will contain. Wait for Joel to
+   confirm before executing.
+
+2. PR MERGE LINK.
+   After committing, provide the direct PR merge link
+   to merge your branch into main so Joel can merge
+   with one click.
+
+3. STOP IF LOOPING.
+   If you find yourself retrying the same approach
+   more than twice, stop and tell Joel what is blocking
+   rather than continuing to loop.
+
+4. LARGE FILE WRITES.
+   Always use bash heredoc for files over ~400 lines:
+     cat > index.html << 'PYEOF'
+     ...content...
+   PYEOF
+   Never use the Write tool for large files —
+   it silently drops content.
+
+5. VERIFY AFTER COMMITS.
+   After any commit, verify the git diff matches
+   expected changes before moving to the next task.
+
+6. NEVER PUSH TO MAIN.
+   Always create a branch. Provide the PR merge link.
+   Joel merges manually.
+
+7. UPDATE condor-build.md ON EVERY COMMIT.
+   Mark completed tasks. Note new tasks or issues.
+   Note any technical decisions made during the build.
+
+8. FRESH AGENT PER PHASE.
+   This agent handles Build 1 only. After the PR
+   is merged, a new agent handles the next task.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REPO STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+JoelColeman/condor-fitness/
+  index.html          ← YOU build this (Build 1)
+  athlete.json        ← READ ONLY. Do not touch.
+  program.json        ← READ ONLY. Do not touch.
+  sessions/           ← Written by app via GitHub API.
+    .gitkeep          ← Keeps folder in repo.
+  condor-build.md     ← YOU maintain this.
+
+GitHub Pages is enabled on main branch root.
+The app lives at: https://joelcoleman.github.io/condor-fitness/
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT YOU ARE BUILDING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A phone-first single-page workout companion app.
+Single file: index.html.
+Stack: vanilla HTML, CSS, JavaScript. No frameworks.
+No npm. No build tools. No API keys of any kind.
+
+The user opens it on their phone at the gym, sees
+their next workout, taps through sets, logs actual
+weights and times, then saves a session record to
+the repo when done.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APP STATE (localStorage)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+githubToken     GitHub personal access token (repo scope).
+                Set once on first run. Never shown again.
+
+githubRepo      Repo string: "JoelColeman/condor-fitness"
+                Set once on first run.
+
+lastCompleted   Object: { week: 3, day: 1 }
+                Updated after each saved session.
+                Drives "next workout" logic.
+                Default on first run: week 3, day 1
+                (Week 3 Day 1 was completed 3/22/2026.)
+
+programCache    Cached copy of program.json.
+                Re-fetched if older than 24 hours.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APP FLOW — SCREEN BY SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SCREEN 1 — FIRST RUN SETUP
+  Shown only if githubToken is not in localStorage.
+  Fields:
+    GitHub Personal Access Token
+    Repo name (pre-filled: JoelColeman/condor-fitness)
+    Last completed: Week [3-10] Day [1-4]
+    (Default: Week 3, Day 1)
+  Brief instruction shown:
+    "Create a token at github.com/settings/tokens
+    with 'repo' scope selected."
+  Save → writes all to localStorage → go to Screen 2.
+
+─────────────────────────────────────────
+
+SCREEN 2 — PRE-WORKOUT PROMPT
+  Shown on every load after setup.
+  Reads lastCompleted, finds next workout in program.json.
+
+  Displays:
+    "Next up:"
+    Week [X] Day [Y] — [Label]
+    [Phase] · [Date range]
+
+  Three buttons:
+    ✓  Start this workout       → Screen 3
+    ↻  Swap to alternate        → Alternate selector
+    +  Bonus session            → Day type selector
+
+  ALTERNATE SELECTOR:
+    Lists alternates for this day from program.json.
+    Each has a label. Tap → load in Screen 3.
+    If none available: show message, return to Screen 2.
+
+  BONUS SESSION:
+    Four buttons: Strength / Run / Engine / Circuit
+    Loads a random alternate of that type from current
+    phase. Does NOT advance lastCompleted on save.
+    Session saved with "bonus": true flag.
+
+─────────────────────────────────────────
+
+SCREEN 3 — ACTIVE WORKOUT
+  Header: "Week [X] Day [Y] — [Label]" + elapsed timer.
+  ↻ Refresh button in header:
+    Confirm dialog before swapping (progress will be lost).
+
+  EXERCISE CARDS
+    One card per exercise. Cards collapsed by default.
+    Current card auto-expanded. Tap header to expand any.
+    Completed cards show a green checkmark in header.
+
+    STRENGTH CARD (expanded):
+      Subtitle: target weight and reps.
+      One row per set:
+        [ ✓ ] [ actual weight ] [ actual reps ]
+      Fields pre-filled with targets from program.json.
+      Checking the last set auto-collapses and advances.
+
+    TIMED CARD (carries, hangs):
+      Subtitle: target duration.
+      One row per set:
+        [ ✓ ] [ actual duration (sec or mm:ss) ]
+      Pre-filled with target duration.
+
+    RUN/WALK INTERVAL CARD:
+      Shows: "1:00 run / 3:00 walk × 8 rounds"
+      Options:
+        Individual interval checkboxes, OR
+        "Mark all complete" button.
+      Optional notes field per interval.
+
+    CIRCUIT CARD:
+      Shows round count.
+      Grid: exercises as rows, rounds as columns.
+      Each cell is a checkbox.
+      Alternatively: per-round "Complete round [N]" button
+      with the full exercise list shown for reference.
+
+    FINISHER CARD:
+      Labeled "Grip Finisher".
+      Note shown: "Complete after all circuit rounds."
+      Per-exercise checkboxes same as strength card.
+
+  REST TIMER
+    Auto-starts when a set is checked.
+    Full-screen overlay. Large countdown (80px+ font).
+    Background: semi-opaque dark.
+    Tap anywhere to dismiss. "Skip" link also available.
+
+    Defaults (from program.json rest_timer_defaults_sec):
+      strength:             120 sec
+      circuit_round:         90 sec
+      circuit_round_phase3:  60 sec
+      grip_finisher:          0 sec (no timer)
+
+  FINISH WORKOUT button visible after first set is logged.
+  Tapping it goes to Screen 4 regardless of completion state.
+
+─────────────────────────────────────────
+
+SCREEN 4 — END OF SESSION SUMMARY
+  Shown when all exercises checked OR "Finish" tapped.
+
+  Fields:
+    Overall feel:       1  2  3  4  5  (tap to select)
+    Calf rating:        0 to 3 in 0.5 steps (tap or slider)
+    Grip endurance:     1  2  3  4  5
+    Shoulder stability: 1  2  3  4  5
+    Monkey bars:        1  2  3  4  5
+    Notes:              [free text]
+
+  "Save Session" button.
+
+  ON SAVE:
+    1. Assemble session JSON (schema below).
+    2. Write sessions/YYYY-MM-DD.json to GitHub via API.
+    3. If not bonus: advance lastCompleted, write to
+       localStorage.
+    4. Show success screen with green ✓ and next workout
+       preview.
+    5. If GitHub write fails: show error + "Copy JSON"
+       button so no data is lost.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SESSION JSON SCHEMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{
+  "date": "2026-03-22",
+  "week": 3,
+  "day": 1,
+  "day_type": "strength",
+  "day_label": "Full Body Strength",
+  "phase": "foundation",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 52,
+  "exercises": [
+    {
+      "name": "Back Squat",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 335,
+          "actual_weight_lbs": 335,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 1.0,
+  "overall_feel": 4,
+  "skills": {
+    "grip_endurance": 3,
+    "shoulder_stability": 2,
+    "monkey_bars": 3
+  },
+  "note": "Felt strong. Calf stable throughout."
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SPEC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phone-first. Dark theme. Clean and minimal.
+This is used between sets — not admired.
+
+COLORS
+  Background:       #0f0f0f
+  Card background:  #1a1a1a
+  Primary accent:   #e63946  (red — Spartan/Condor)
+  Secondary:        #2E5FA3  (blue)
+  Text primary:     #f0f0f0
+  Text secondary:   #888888
+  Success:          #2a9d5c
+  Border:           #2a2a2a
+
+TYPOGRAPHY
+  Font: system-ui, -apple-system, sans-serif
+  Exercise names: 16px bold
+  Set rows: 15px
+  Meta/labels: 13px in secondary color
+
+TOUCH TARGETS
+  Minimum 44px height on all interactive elements.
+  No hover states needed — touch only.
+
+ACTIVE CARD
+  Left border in accent color (#e63946) when expanded.
+
+REST TIMER OVERLAY
+  Full screen. Countdown number 80px+ centered.
+  Semi-opaque dark background (#0f0f0fCC).
+  Tap anywhere dismisses.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GITHUB API — SESSION WRITE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+To write a session file:
+PUT https://api.github.com/repos/{owner}/{repo}/contents/sessions/{filename}
+
+Headers:
+  Authorization: token {githubToken}
+  Content-Type: application/json
+
+Body:
+  {
+    "message": "Add session YYYY-MM-DD",
+    "content": "{base64 encoded session JSON}",
+    "sha": "{existing file sha — only if updating}"
+  }
+
+To check if file exists (get sha for updates):
+GET https://api.github.com/repos/{owner}/{repo}/contents/sessions/{filename}
+
+Handle errors gracefully. If write fails, do not lose
+the data — surface a "Copy JSON" fallback.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROGRAM.JSON READ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fetch from raw GitHub URL:
+https://raw.githubusercontent.com/JoelColeman/condor-fitness/main/program.json
+
+Cache in localStorage as programCache.
+Re-fetch if cache is older than 24 hours or on
+manual refresh.
+
+Used to:
+  1. Determine next workout from lastCompleted pointer.
+  2. Render exercise cards with targets.
+  3. Source alternate workouts.
+  4. Get rest timer defaults per exercise type.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WORKOUT POINTER LOGIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+lastCompleted = { week: 3, day: 1 }
+
+nextWorkout():
+  Find the current week in program.json.
+  Find the next day number within that week.
+  If no more days in the week → advance to next week,
+  day 1.
+  If no more weeks → show "Program complete — race week!"
+  Return the workout object.
+
+On save (non-bonus):
+  Set lastCompleted to { week, day } just completed.
+  Write to localStorage.
+
+Sequential only — no date logic. If Joel skips a day,
+the app just shows the same next workout whenever he
+opens it. If he wants to skip ahead, the pre-workout
+prompt has a day-type selector to choose something
+different without advancing the pointer incorrectly.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+condor-build.md FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create this file in the repo on your first commit.
+Update it on every subsequent commit.
+
+Format:
+  # Condor Fitness — Build Log
+  Last updated: YYYY-MM-DD
+
+  ## Completed
+  - [x] Task description
+
+  ## Pending
+  - [ ] Task description
+
+  ## Known Issues
+  - Description of any open bugs or limitations
+
+  ## Technical Notes
+  - Conventions and decisions made during build
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUT OF SCOPE FOR BUILD 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+These are explicitly deferred to later builds:
+  - Dashboard / athletic history visualization (Build 2)
+  - Oura Ring or Apple Health sync (future)
+  - Any AI or LLM API calls (none ever)
+  - User authentication beyond GitHub token
+  - Multiple athlete support
+  - Push notifications
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HANDOFF CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Joel confirms these are in the repo before you begin:
+  [ ] program.json committed to main
+  [ ] athlete.json committed to main
+  [ ] sessions/.gitkeep committed to main
+  [ ] GitHub Pages enabled on main branch root
+  [ ] GitHub personal access token ready (repo scope)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF BUILD PROMPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

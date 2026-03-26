@@ -1,0 +1,858 @@
+{
+  "meta": {
+    "program": "Operation Spartan",
+    "version": "3",
+    "athlete": "Joel Coleman",
+    "race": "Spartan Super 10K — Colorado Springs — May 31, 2026",
+    "start_week": 3,
+    "anchor_date": "2026-03-22",
+    "phases": [
+      { "id": "foundation", "label": "Foundation", "weeks": [3, 4], "dates": "Mar 22 – Apr 4" },
+      { "id": "volume_build", "label": "Volume Build", "weeks": [5, 6, 7], "dates": "Apr 5 – Apr 25" },
+      { "id": "race_specific", "label": "Race Specific", "weeks": [8, 9], "dates": "Apr 26 – May 9" },
+      { "id": "taper", "label": "Taper", "weeks": [10], "dates": "May 10 – May 31" }
+    ]
+  },
+
+  "calf_rules": [
+    "Run days: ZERO calf raises. ZERO explosive work. The run IS the calf stimulus.",
+    "Pain above 2/10 during run — slow to walk immediately. Do not push through.",
+    "Soreness lasting more than 24 hrs after run — repeat current ratio next session.",
+    "Stair stepper is calf-safe throughout. Incline treadmill is NOT — avoid entirely.",
+    "Burpees: step version only (no jump) until Week 7."
+  ],
+
+  "rest_timer_defaults_sec": {
+    "strength": 120,
+    "circuit_round": 90,
+    "circuit_round_phase3": 60,
+    "grip_finisher": 0,
+    "run_walk": 0
+  },
+
+  "weeks": [
+    {
+      "week": 3,
+      "phase": "foundation",
+      "label": "Foundation — Week 3",
+      "dates": "Mar 22–28",
+      "run_protocol": "1:00 run / 3:00 walk × 8 rounds",
+      "calf_gate": "0-1/10 throughout → advance to 1:2 next week. Any 2/10 → repeat 1:3.",
+      "days": [
+        {
+          "day": 1,
+          "type": "strength",
+          "label": "Full Body Strength",
+          "status": "completed",
+          "completed_date": "2026-03-22",
+          "exercises": [
+            {
+              "name": "Back Squat",
+              "sets": 3, "reps": 5, "target_weight_lbs": 335,
+              "rest_sec": 180,
+              "notes": "Fast reps, full depth. RPE 7."
+            },
+            {
+              "name": "RDL",
+              "sets": 3, "reps": 6, "target_weight_lbs": 265,
+              "rest_sec": 180,
+              "notes": "Straps ok on last set. Controlled tempo."
+            },
+            {
+              "name": "Bulgarian Split Squat",
+              "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135,
+              "weight_note": "barbell",
+              "rest_sec": 120,
+              "notes": "Controlled, no bounce."
+            },
+            {
+              "name": "Pull-Up Superset",
+              "superset": true,
+              "exercises_in_superset": [
+                { "name": "Pull-Ups", "sets": 5, "reps": 5, "target_weight_lbs": 0, "notes": "Comfortable range. No forced extension." },
+                { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 60 },
+                { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 60 }
+              ]
+            },
+            {
+              "name": "Grip Finisher",
+              "finisher": true,
+              "note": "After all main work is done. No rest between push-ups and carries.",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 88, "weight_note": "KBs each hand" }
+              ]
+            }
+          ],
+          "alternates": [
+            {
+              "id": "strength_alt_a",
+              "label": "Full Body Strength — Alt A (Pause Emphasis)",
+              "exercises": [
+                { "name": "Paused Back Squat", "sets": 4, "reps": 4, "target_weight_lbs": 315, "notes": "2 sec pause at bottom. RPE 7-8." },
+                { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 265 },
+                { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
+                { "name": "Weighted Pull-Ups", "sets": 4, "reps": 4, "target_weight_lbs": 25, "notes": "Use vest or sandbag. Full range available." },
+                { "name": "Single-Arm DB Row", "sets": 3, "reps": 10, "reps_note": "per arm", "target_weight_lbs": 75 },
+                {
+                  "name": "Grip Finisher", "finisher": true,
+                  "exercises_in_finisher": [
+                    { "name": "Push-Ups", "reps": 20 },
+                    { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 88, "weight_note": "KBs" },
+                    { "name": "Dead Hang", "sets": 2, "duration_sec": 25 }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "strength_alt_b",
+              "label": "Full Body Strength — Alt B (Front Squat Day)",
+              "exercises": [
+                { "name": "Front Squat", "sets": 4, "reps": 5, "target_weight_lbs": 205, "notes": "Elbows high. RPE 7." },
+                { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 265 },
+                { "name": "Walking Lunge", "sets": 3, "reps": 12, "reps_note": "per leg", "target_weight_lbs": 50, "weight_note": "DBs" },
+                { "name": "Scapular Pull-Ups", "sets": 3, "reps": 10, "notes": "Slow and deliberate." },
+                { "name": "Pull-Ups", "sets": 4, "reps": 5 },
+                { "name": "Chest-Supported Row", "sets": 3, "reps": 12, "target_weight_lbs": 60 },
+                {
+                  "name": "Grip Finisher", "finisher": true,
+                  "exercises_in_finisher": [
+                    { "name": "Push-Ups", "reps": 20 },
+                    { "name": "Suitcase Carry", "sets": 3, "duration_sec": 40, "reps_note": "per arm", "target_weight_lbs": 90, "weight_note": "DB" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "type": "run",
+          "label": "Run + Grip",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 2, "reps": 8, "notes": "Do first. Slow and deliberate." },
+            { "name": "Run/Walk Intervals", "type": "run", "intervals": 8, "run_sec": 60, "walk_sec": 180, "notes": "Easy conversational pace. Short steps, quiet feet." },
+            { "name": "Dead Hang", "sets": 3, "duration_sec": 22, "notes": "Arms straight, let shoulders fully unload." },
+            { "name": "Lat Pulldown", "sets": 3, "reps": 10, "target_weight_lbs": 125, "notes": "Full range — arms extend fully at top." }
+          ],
+          "calf_note": "Zero calf raises today. Zero explosive work. Run is the calf stimulus.",
+          "alternates": [
+            {
+              "id": "run_alt_a",
+              "label": "Run + Grip — Alt A (Monkey Bar Focus)",
+              "exercises": [
+                { "name": "Scapular Pull-Ups", "sets": 2, "reps": 8 },
+                { "name": "Run/Walk Intervals", "type": "run", "intervals": 8, "run_sec": 60, "walk_sec": 180 },
+                { "name": "Monkey Bars", "sets": 3, "notes": "3 passes. Rest fully between passes." },
+                { "name": "Dead Hang", "sets": 3, "duration_sec": 22 },
+                { "name": "TRX Ring Rows", "sets": 3, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "type": "engine",
+          "label": "Engine / Aerobic Base",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 38, "notes": "Flat-footed stomp. Zone 2 — conversational pace throughout." },
+            {
+              "name": "Circuit",
+              "type": "circuit",
+              "rounds": 3,
+              "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Sandbag Bear-Hug Carry", "duration_sec": 60, "target_weight_lbs": 60 },
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Step-Ups", "reps": 25, "notes": "18-24 inch box." },
+                { "name": "TRX Ring Rows", "reps": 12 }
+              ]
+            },
+            {
+              "name": "Calf Rehab",
+              "type": "rehab",
+              "exercises_in_rehab": [
+                { "name": "Seated Calf Raises", "sets": 4, "reps": 15, "target_weight_lbs": 50, "notes": "2 sec up, 3-4 sec down." },
+                { "name": "Isometric Calf Hold", "sets": 3, "duration_sec": 38 },
+                { "name": "Foam Roll Calf + Soleus", "duration_min": 2 }
+              ]
+            }
+          ],
+          "alternates": [
+            {
+              "id": "engine_alt_a",
+              "label": "Engine — Alt A (Row Focus)",
+              "exercises": [
+                { "name": "Row Erg", "type": "cardio", "duration_min": 40, "notes": "Zone 2. Steady pace." },
+                {
+                  "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+                  "exercises_in_circuit": [
+                    { "name": "Zercher Carry", "distance_m": 40, "target_weight_lbs": 95 },
+                    { "name": "Push-Ups", "reps": 20 },
+                    { "name": "Step-Ups", "reps": 25 },
+                    { "name": "Hanging Knee Raises", "reps": 12 }
+                  ]
+                },
+                { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+                  { "name": "Seated Calf Raises", "sets": 4, "reps": 15, "target_weight_lbs": 50 },
+                  { "name": "Isometric Calf Hold", "sets": 3, "duration_sec": 38 },
+                  { "name": "Foam Roll", "duration_min": 2 }
+                ]}
+              ]
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "type": "circuit",
+          "label": "Spartan Circuit",
+          "exercises": [
+            {
+              "name": "Main Circuit",
+              "type": "circuit",
+              "rounds": 4,
+              "rest_between_rounds_sec": 90,
+              "note": "Complete all rounds first. Grip finisher is a separate block at the end.",
+              "exercises_in_circuit": [
+                { "name": "Row", "type": "row", "distance_m": 300, "notes": "Hard effort ~2:00/500m pace." },
+                { "name": "Sandbag Carry", "duration_sec": 60, "target_weight_lbs": 60 },
+                { "name": "Step-Ups", "reps": 20 },
+                { "name": "TRX Ring Rows", "reps": 12 },
+                { "name": "DB Incline Press", "reps": 12, "target_weight_lbs": 60 }
+              ]
+            },
+            {
+              "name": "Grip Finisher",
+              "type": "finisher",
+              "note": "After all 4 rounds. No rest between push-ups and carries.",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88, "weight_note": "KBs each hand" }
+              ]
+            }
+          ],
+          "alternates": [
+            {
+              "id": "circuit_alt_a",
+              "label": "Spartan Circuit — Alt A (Carry Heavy)",
+              "exercises": [
+                {
+                  "name": "Main Circuit", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 90,
+                  "exercises_in_circuit": [
+                    { "name": "Row", "distance_m": 300 },
+                    { "name": "Barbell Front Carry", "distance_m": 40, "target_weight_lbs": 95 },
+                    { "name": "Step-Ups", "reps": 20 },
+                    { "name": "TRX Ring Rows", "reps": 12 },
+                    { "name": "Push-Ups", "reps": 15 }
+                  ]
+                },
+                {
+                  "name": "Grip Finisher", "type": "finisher",
+                  "exercises_in_finisher": [
+                    { "name": "Push-Ups", "reps": 20 },
+                    { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 },
+                    { "name": "Dead Hang", "sets": 2, "duration_sec": 20 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 4,
+      "phase": "foundation",
+      "label": "Foundation — Week 4",
+      "dates": "Mar 29 – Apr 4",
+      "run_protocol": "1:00 run / 2:00 walk × 8 rounds (if calf cleared) or 1:00 / 3:00 × 9 rounds",
+      "calf_gate": "0-1/10 throughout → advance to Phase 2. Any 2/10 → stay at 1:2.",
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Full Body Strength",
+          "exercises": [
+            { "name": "Back Squat", "sets": 4, "reps": 4, "target_weight_lbs": 330, "notes": "RPE 7-8." },
+            { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 265 },
+            { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
+            { "name": "Scapular Pull-Ups", "sets": 2, "reps": 8, "notes": "Do FIRST before pull-ups." },
+            {
+              "name": "Pull-Up Superset", "superset": true,
+              "exercises_in_superset": [
+                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
+                { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 65 },
+                { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 65 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "finisher": true,
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92, "weight_note": "KBs" }
+              ]
+            }
+          ],
+          "alternates": [
+            {
+              "id": "strength_alt_a", "label": "Strength — Alt A (Deadlift Day)",
+              "exercises": [
+                { "name": "Conventional Deadlift", "sets": 4, "reps": 3, "target_weight_lbs": 315, "notes": "RPE 7. Straps ok." },
+                { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
+                { "name": "Bench Press", "sets": 4, "reps": 5, "target_weight_lbs": 235 },
+                { "name": "Weighted Pull-Ups", "sets": 4, "reps": 4, "target_weight_lbs": 25 },
+                { "name": "Grip Finisher", "finisher": true, "exercises_in_finisher": [
+                  { "name": "Push-Ups", "reps": 20 },
+                  { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 }
+                ]}
+              ]
+            }
+          ]
+        },
+        {
+          "day": 2, "type": "run", "label": "Run + Grip",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 2, "reps": 10, "notes": "Do first." },
+            { "name": "Run/Walk Intervals", "type": "run", "intervals": 8, "run_sec": 60, "walk_sec": 120, "notes": "First 1:2 attempt if calf cleared. Start easy — shorter walk = more calf loading." },
+            { "name": "Dead Hang", "sets": 3, "duration_sec": 27 },
+            { "name": "Lat Pulldown", "sets": 3, "reps": 10, "target_weight_lbs": 135 },
+            { "name": "Monkey Bars", "sets": 3, "notes": "2-3 passes. Rest fully between passes." }
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine / Aerobic Base",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 40 },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Sandbag Bear-Hug Carry", "duration_sec": 60, "target_weight_lbs": 65 },
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Step-Ups", "reps": 30 },
+                { "name": "TRX Ring Rows", "reps": 12 }
+              ]
+            },
+            { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Seated Calf Raises", "sets": 4, "reps": 15, "target_weight_lbs": 50 },
+              { "name": "Isometric Calf Hold", "sets": 3, "duration_sec": 45 },
+              { "name": "Foam Roll", "duration_min": 2 },
+              { "name": "Standing Calf Raises", "sets": 2, "reps": 15, "notes": "Optional — only if calf felt clean all week." }
+            ]}
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Spartan Circuit",
+          "exercises": [
+            {
+              "name": "Main Circuit", "type": "circuit", "rounds": 5, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 300 },
+                { "name": "Sandbag Carry", "duration_sec": 60, "target_weight_lbs": 65 },
+                { "name": "Step-Ups", "reps": 25 },
+                { "name": "TRX Ring Rows", "reps": 12 },
+                { "name": "DB Incline Press", "reps": 12, "target_weight_lbs": 62 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "type": "finisher",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 20 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 5,
+      "phase": "volume_build",
+      "label": "Volume Build — Week 5",
+      "dates": "Apr 5–11",
+      "run_protocol": "1:00 run / 1:00 walk × 10 rounds",
+      "calf_gate": "0/10 throughout → advance to 2:1. Any flare → drop to 1:2.",
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Full Body Strength",
+          "exercises": [
+            { "name": "Back Squat", "sets": 4, "reps": 4, "target_weight_lbs": 333, "notes": "RPE 8. Don't push above 335." },
+            { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 267 },
+            { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
+            { "name": "Scapular Pull-Ups", "sets": 3, "reps": 8, "notes": "Adding a set." },
+            {
+              "name": "Pull-Up Superset", "superset": true,
+              "exercises_in_superset": [
+                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
+                { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 67 },
+                { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 65 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "finisher": true,
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 25 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 25 }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 2, "type": "run", "label": "Run + Grip — 1:1",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 2, "reps": 10 },
+            { "name": "Run/Walk Intervals", "type": "run", "intervals": 10, "run_sec": 60, "walk_sec": 60, "notes": "First 1:1 ratio. Don't speed up just because walk is shorter. Conversational pace." },
+            { "name": "Dead Hang", "sets": 3, "duration_sec": 32 },
+            { "name": "Monkey Bars", "sets": 3, "notes": "3 passes. 90 sec rest between." },
+            { "name": "Lat Pulldown", "sets": 3, "reps": 10, "target_weight_lbs": 140 }
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine / Aerobic Base",
+          "exercises": [
+            { "name": "Row Erg or Stair Stepper", "type": "cardio", "duration_min": 42, "notes": "DEFAULT: Row if calf had any awareness on Day 2. Stair stepper only if Day 2 calf was 0/10." },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Zercher Carry", "distance_m": 50, "target_weight_lbs": 105 },
+                { "name": "Modified Step Burpees", "reps": 8, "notes": "Step version — NO jump. Step back, push-up, step forward, stand. No jump at top." },
+                { "name": "Step-Ups", "reps": 30 },
+                { "name": "TRX Ring Rows", "reps": 15 }
+              ]
+            },
+            { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Standing Calf Raises", "sets": 3, "reps": 20, "notes": "2 sec up, 3 sec down." },
+              { "name": "Isometric Calf Hold", "sets": 3, "duration_sec": 30 },
+              { "name": "Foam Roll", "duration_min": 2 }
+            ]}
+          ],
+          "alternates": [
+            {
+              "id": "engine_alt_a", "label": "Engine — Alt A (Landmine Circuit)",
+              "exercises": [
+                { "name": "Stair Stepper", "type": "cardio", "duration_min": 40 },
+                {
+                  "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+                  "exercises_in_circuit": [
+                    { "name": "Landmine Complex", "reps_note": "1 full round", "notes": "Row x8/arm → Squat x10 → Half-kneeling press x8/arm → Rotation x8/side. One 45 lb plate.", "target_weight_lbs": 45 },
+                    { "name": "Modified Step Burpees", "reps": 8, "notes": "No jump." },
+                    { "name": "Step-Ups", "reps": 25 },
+                    { "name": "Hanging Knee Raises", "reps": 12 }
+                  ]
+                },
+                { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+                  { "name": "Standing Calf Raises", "sets": 3, "reps": 20 },
+                  { "name": "Foam Roll", "duration_min": 2 }
+                ]}
+              ]
+            }
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Spartan Circuit — Landmine Complex",
+          "exercises": [
+            {
+              "name": "Main Circuit", "type": "circuit", "rounds": 5, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 300 },
+                { "name": "Landmine Complex", "reps_note": "1 full round", "target_weight_lbs": 45, "notes": "Row x8/arm → Squat x10 → Half-kneeling press x8/arm → Rotation x8/side. One 45 lb plate to start." },
+                { "name": "Step-Ups", "reps": 25 },
+                { "name": "TRX Ring Rows", "reps": 12 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "type": "finisher",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 25 },
+                { "name": "Monkey Bars", "sets": 1, "notes": "1 pass." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 6,
+      "phase": "volume_build",
+      "label": "Volume Build — Week 6 (Deload)",
+      "dates": "Apr 12–18",
+      "run_protocol": "2:00 run / 1:00 walk × 7 rounds",
+      "calf_gate": "Any flare → drop to 1:1. Clean → consider continuous next week.",
+      "deload": true,
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Full Body Strength — Deload",
+          "exercises": [
+            { "name": "Back Squat", "sets": 3, "reps": 5, "target_weight_lbs": 320, "notes": "RPE 7. Intentional step back." },
+            { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 260 },
+            { "name": "Bulgarian Split Squat", "sets": 2, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 125, "weight_note": "barbell" },
+            { "name": "Scapular Pull-Ups", "sets": 3, "reps": 8 },
+            { "name": "Pull-Ups", "sets": 4, "reps": 5, "notes": "Drop a set. Focus on range." },
+            { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 65 },
+            {
+              "name": "Grip Finisher", "finisher": true,
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 2, "type": "run", "label": "Run — 2:1",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 3, "reps": 10 },
+            { "name": "Run/Walk Intervals", "type": "run", "intervals": 7, "run_sec": 120, "walk_sec": 60, "notes": "First time running 2 min continuously. If breathing hard at end of interval, slow down." },
+            { "name": "Dead Hang", "sets": 3, "duration_sec": 37 },
+            { "name": "Monkey Bars", "sets": 4, "notes": "3-4 passes. Time one pass end to end." },
+            { "name": "Lat Pulldown", "sets": 3, "reps": 10, "target_weight_lbs": 145 }
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 45 },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Barbell Front Carry", "distance_m": 50, "target_weight_lbs": 105 },
+                { "name": "Modified Step Burpees", "reps": 10, "notes": "Step version — no jump." },
+                { "name": "Step-Ups", "reps": 30 },
+                { "name": "Hanging Knee Raises", "reps": 12 },
+                { "name": "Push-Ups", "reps": 20 }
+              ]
+            },
+            { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Standing Calf Raises", "sets": 3, "reps": 20 },
+              { "name": "Isometric Calf Hold", "sets": 2, "duration_sec": 30 },
+              { "name": "Foam Roll", "duration_min": 2 }
+            ]}
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Spartan Circuit — Barbell Complex",
+          "exercises": [
+            {
+              "name": "Main Circuit", "type": "circuit", "rounds": 5, "rest_between_rounds_sec": 75,
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 300 },
+                { "name": "Barbell Complex", "reps_note": "1 full round — bar stays up", "target_weight_lbs": 95, "notes": "Hang clean x5 → Front squat x5 → Bent-over row x5 → Good morning x5. Do not put the bar down." },
+                { "name": "Step-Ups", "reps": 25 },
+                { "name": "TRX Ring Rows", "reps": 15 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "type": "finisher",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 25 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 30 },
+                { "name": "Monkey Bars", "sets": 2, "notes": "2 passes." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 7,
+      "phase": "volume_build",
+      "label": "Volume Build — Week 7 (Peak Volume)",
+      "dates": "Apr 19–25",
+      "run_protocol": "3:00 / 1:00 × 5 rounds OR 10-12 min continuous",
+      "calf_gate": "Use continuous only if 2:1 was 0/10. Otherwise 3:1 intervals.",
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Full Body Strength — Reload",
+          "exercises": [
+            { "name": "Back Squat", "sets": 4, "reps": 4, "target_weight_lbs": 333, "notes": "RPE 8. Reload after Week 6 deload." },
+            { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 267 },
+            { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
+            { "name": "Scapular Pull-Ups", "sets": 3, "reps": 10, "notes": "Most reps yet." },
+            {
+              "name": "Pull-Up Superset", "superset": true,
+              "exercises_in_superset": [
+                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
+                { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 70 },
+                { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 67 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "finisher": true,
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 25 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 95 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 30 }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 2, "type": "run", "label": "Run — First Continuous",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 3, "reps": 10 },
+            { "name": "Run — Option A (3:1)", "type": "run", "intervals": 5, "run_sec": 180, "walk_sec": 60, "notes": "Use if 2:1 had any calf awareness last week." },
+            { "name": "Run — Option B (Continuous)", "type": "run", "duration_min": 11, "notes": "Use ONLY if 2:1 was completely clean and breathing was comfortable. Slow — slower than you think." },
+            { "name": "Dead Hang", "sets": 3, "duration_sec": 40, "notes": "Target milestone." },
+            { "name": "Monkey Bars", "sets": 4, "notes": "4 passes. After last pass → farmer carry 1x40 sec @ 70 lbs immediately." },
+            { "name": "Lat Pulldown", "sets": 3, "reps": 10, "target_weight_lbs": 150 }
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine — Longest Yet",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 50, "notes": "Longest aerobic session in the program." },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Zercher Carry", "distance_m": 50, "target_weight_lbs": 110 },
+                { "name": "Burpees", "reps": 10, "notes": "Full jump if calf 0/10 for 2+ weeks. Step version if any doubt." },
+                { "name": "Step-Ups", "reps": 30 },
+                { "name": "Hanging Knee Raises", "reps": 15 },
+                { "name": "Push-Ups", "reps": 20 }
+              ]
+            },
+            { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Standing Calf Raises", "sets": 3, "reps": 20 },
+              { "name": "Foam Roll", "duration_min": 2 }
+            ]}
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Spartan Circuit — 6 Rounds",
+          "exercises": [
+            {
+              "name": "Main Circuit", "type": "circuit", "rounds": 6, "rest_between_rounds_sec": 75,
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 300 },
+                { "name": "Barbell Complex", "reps_note": "1 full round", "target_weight_lbs": 100, "notes": "Hang clean x5 → Front squat x5 → Bent-over row x5 → Good morning x5. Bar stays up." },
+                { "name": "Burpees", "reps": 10, "notes": "Same rule as Day 3." },
+                { "name": "Step-Ups", "reps": 25 },
+                { "name": "TRX Ring Rows", "reps": 15 }
+              ]
+            },
+            {
+              "name": "Grip Finisher", "type": "finisher",
+              "exercises_in_finisher": [
+                { "name": "Push-Ups", "reps": 25 },
+                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 95 },
+                { "name": "Dead Hang", "sets": 2, "duration_sec": 35 },
+                { "name": "Monkey Bars", "sets": 2, "notes": "2 passes." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 8,
+      "phase": "race_specific",
+      "label": "Race Specific — Week 8",
+      "dates": "Apr 26 – May 2",
+      "run_protocol": "15-20 min continuous easy run",
+      "calf_gate": "Any concern → reduce duration. Hold easy pace.",
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Strength — Condensed",
+          "exercises": [
+            { "name": "Back Squat", "sets": 3, "reps": 4, "target_weight_lbs": 320, "notes": "RPE 7. Not a PR week." },
+            { "name": "RDL", "sets": 3, "reps": 5, "target_weight_lbs": 260 },
+            { "name": "Pull-Ups", "sets": 4, "reps": 6, "notes": "Target 6 clean reps with max range." },
+            { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+            { "name": "Dead Hang", "sets": 2, "duration_sec": 42, "notes": "Embedded in session now." }
+          ],
+          "session_note": "Total 40-45 min. No extras. Save energy for Day 4."
+        },
+        {
+          "day": 2, "type": "run", "label": "Run + Obstacles Under Fatigue",
+          "exercises": [
+            { "name": "Scapular Pull-Ups", "sets": 2, "reps": 10, "notes": "Before the run as shoulder warm-up." },
+            { "name": "Continuous Run", "type": "run", "duration_min": 17, "notes": "Easy run. Focus on breathing, not pace." },
+            { "name": "Obstacle Block", "notes": "Start within 60 sec of finishing the run. This is race simulation.", "exercises_in_block": [
+              { "name": "Monkey Bars", "sets": 3, "notes": "3 passes." },
+              { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 },
+              { "name": "Pull-Ups", "sets": 3, "reps": 5 },
+              { "name": "Dead Hang", "sets": 2, "duration_sec": 30 }
+            ]}
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 40 },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 60,
+              "exercises_in_circuit": [
+                { "name": "Barbell Front Carry", "distance_m": 50, "target_weight_lbs": 110 },
+                { "name": "Burpees", "reps": 12 },
+                { "name": "Step-Ups", "reps": 30 },
+                { "name": "TRX Ring Rows", "reps": 15 },
+                { "name": "Push-Ups", "reps": 20 }
+              ]
+            },
+            { "name": "Calf", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Standing Calf Raises", "sets": 2, "reps": 20 },
+              { "name": "Foam Roll", "duration_min": 2 }
+            ]}
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Race Simulation — 4 Rounds",
+          "exercises": [
+            {
+              "name": "Race Sim Circuit", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 120,
+              "session_note": "Mimics one loop of a Spartan course. Move between stations with minimal rest.",
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 400, "notes": "Hard effort." },
+                { "name": "Sandbag Carry", "duration_sec": 90, "target_weight_lbs": 60, "notes": "Race pattern practice." },
+                { "name": "Burpees", "reps": 10 },
+                { "name": "Monkey Bars", "sets": 1, "notes": "1 pass." },
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 88 },
+                { "name": "Pull-Ups", "reps": 5 },
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Step-Ups", "reps": 30 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 9,
+      "phase": "race_specific",
+      "label": "Race Specific — Week 9 (Peak)",
+      "dates": "May 3–9",
+      "run_protocol": "25-30 min continuous",
+      "calf_gate": "Easy pace throughout. This is the peak run day.",
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Strength — Maintenance Only",
+          "exercises": [
+            { "name": "Back Squat", "sets": 3, "reps": 4, "target_weight_lbs": 320, "notes": "Same as Week 8." },
+            { "name": "RDL", "sets": 3, "reps": 5, "target_weight_lbs": 260 },
+            { "name": "Pull-Ups", "sets": 4, "reps": 6, "notes": "Clean reps, full focus on range." },
+            { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
+            { "name": "Dead Hang", "sets": 2, "duration_sec": 45, "notes": "Program milestone." }
+          ]
+        },
+        {
+          "day": 2, "type": "run", "label": "Longest Run",
+          "exercises": [
+            { "name": "Continuous Run", "type": "run", "duration_min": 27, "notes": "Longest run of the program. Easy. Hold a conversation. Colorado altitude will hit harder than training." },
+            { "name": "Post-Run Obstacle Block", "exercises_in_block": [
+              { "name": "Monkey Bars", "sets": 3, "notes": "3 passes." },
+              { "name": "Pull-Ups", "sets": 3, "reps": 5 },
+              { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 },
+              { "name": "Dead Hang", "sets": 1, "duration_sec": 45 }
+            ]}
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine — Back Off",
+          "exercises": [
+            { "name": "Stair Stepper", "type": "cardio", "duration_min": 35, "notes": "Intentionally less than Week 8." },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+              "session_note": "Three rounds only — do not add more.",
+              "exercises_in_circuit": [
+                { "name": "Sandbag Carry", "duration_sec": 90, "target_weight_lbs": 60 },
+                { "name": "Burpees", "reps": 12 },
+                { "name": "Step-Ups", "reps": 25 },
+                { "name": "TRX Ring Rows", "reps": 15 }
+              ]
+            },
+            { "name": "Calf", "type": "rehab", "exercises_in_rehab": [
+              { "name": "Light Standing Calf Raises", "sets": 2, "reps": 15 },
+              { "name": "Foam Roll", "duration_min": 2 }
+            ]}
+          ]
+        },
+        {
+          "day": 4, "type": "circuit", "label": "Final Race Simulation — 5 Rounds",
+          "exercises": [
+            {
+              "name": "Race Sim Circuit", "type": "circuit", "rounds": 5, "rest_between_rounds_sec": 90,
+              "session_note": "Hardest session in the program. If you finish this, race day is not going to surprise you.",
+              "exercises_in_circuit": [
+                { "name": "Row", "distance_m": 400 },
+                { "name": "Sandbag Carry", "duration_sec": 90, "target_weight_lbs": 60 },
+                { "name": "Burpees", "reps": 12 },
+                { "name": "Monkey Bars", "sets": 1 },
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 90 },
+                { "name": "Pull-Ups", "reps": 6 },
+                { "name": "Push-Ups", "reps": 20 },
+                { "name": "Step-Ups", "reps": 30 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "week": 10,
+      "phase": "taper",
+      "label": "Taper — Week 10",
+      "dates": "May 10–16",
+      "run_protocol": "15-20 min easy only",
+      "taper_rules": [
+        "No new exercises. No testing maxes. No one last hard session.",
+        "Legs will feel weird and flat — this is normal. You are not losing fitness.",
+        "Sleep 8+ hours every night.",
+        "Carbs: increase to 350-400g/day Thursday through Saturday before race.",
+        "Hydration: Colorado altitude dehydrates faster. Drink more than you think.",
+        "Race morning: real carb + protein meal 2-3 hours before start. Nothing new."
+      ],
+      "days": [
+        {
+          "day": 1, "type": "strength", "label": "Strength — Taper",
+          "exercises": [
+            { "name": "Back Squat", "sets": 3, "reps": 3, "target_weight_lbs": 310 },
+            { "name": "RDL", "sets": 2, "reps": 5, "target_weight_lbs": 245 },
+            { "name": "Pull-Ups", "sets": 3, "reps": 5 },
+            { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 },
+            { "name": "Dead Hang", "sets": 2, "duration_sec": 30 }
+          ],
+          "session_note": "In and out in 35 min."
+        },
+        {
+          "day": 2, "type": "run", "label": "Run — Easy",
+          "exercises": [
+            { "name": "Continuous Run", "type": "run", "duration_min": 17, "notes": "Easy. Short steps, relaxed." },
+            { "name": "Monkey Bars", "sets": 2 },
+            { "name": "Dead Hang", "sets": 2, "duration_sec": 25 }
+          ]
+        },
+        {
+          "day": 3, "type": "engine", "label": "Engine — Light",
+          "exercises": [
+            { "name": "Row or Stair Stepper", "type": "cardio", "duration_min": 27, "notes": "Zone 2." },
+            {
+              "name": "Circuit", "type": "circuit", "rounds": 2, "rest_between_rounds_sec": 90,
+              "exercises_in_circuit": [
+                { "name": "Sandbag Carry", "duration_sec": 60, "target_weight_lbs": 60 },
+                { "name": "Push-Ups", "reps": 15 },
+                { "name": "Step-Ups", "reps": 20 }
+              ]
+            }
+          ]
+        },
+        {
+          "day": 4, "type": "movement", "label": "Movement Only",
+          "exercises": [
+            { "name": "Easy Walk or Movement", "duration_min": 17 },
+            { "name": "Mobility and Stretching", "duration_min": 10 }
+          ],
+          "session_note": "No conditioning. Visualize the race."
+        }
+      ]
+    }
+  ]
+}

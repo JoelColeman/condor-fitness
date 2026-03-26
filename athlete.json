@@ -1,0 +1,334 @@
+{
+  "meta": {
+    "athlete": "Joel Coleman",
+    "height_in": 77,
+    "last_updated": "2026-03-22",
+    "version": "1.0"
+  },
+
+  "body_weight": [
+    { "date": "2025-04-01", "weight_lbs": 233, "note": "Start of Legends of Mass" },
+    { "date": "2025-04-28", "weight_lbs": 243, "note": "End of Legends of Mass Block A — ~6-7 lbs lean mass gained" },
+    { "date": "2025-09-14", "weight_lbs": 260, "note": "Samson Challenge race day" },
+    { "date": "2025-12-15", "weight_lbs": 262, "note": "End of Mass Ascension" },
+    { "date": "2026-03-22", "weight_lbs": 265, "note": "Start of Operation Spartan — current" }
+  ],
+
+  "body_weight_goals": [
+    { "target_lbs": 250, "by": "2026-05-31", "note": "Race day target — Spartan Super 10K" },
+    { "target_lbs": 255, "by": "2026-12-31", "note": "End of year — lean and conditioned" }
+  ],
+
+  "prs": [
+    {
+      "lift": "Back Squat",
+      "type": "single",
+      "weight_lbs": 365,
+      "date_approx": "2025-11",
+      "block": "Mass Ascension",
+      "note": "Confirmed single. Working sets were 315–325 at the time."
+    },
+    {
+      "lift": "Back Squat",
+      "type": "working_set",
+      "weight_lbs": 335,
+      "date_approx": "2026-03-22",
+      "block": "Operation Spartan",
+      "note": "3x5 confirmed 3/22/2026. Strength maintained or progressed since fall 2025."
+    },
+    {
+      "lift": "Bench Press",
+      "type": "triple",
+      "weight_lbs": 255,
+      "date_approx": "2025-11",
+      "block": "Mass Ascension",
+      "note": "3 reps at 255. Working sets peaked around 245–250."
+    },
+    {
+      "lift": "Bench Press",
+      "type": "working_set",
+      "weight_lbs": 245,
+      "date_approx": "2026-03-22",
+      "block": "Operation Spartan",
+      "note": "Current working set."
+    },
+    {
+      "lift": "RDL",
+      "type": "working_set",
+      "weight_lbs": 275,
+      "date_approx": "2025-11",
+      "block": "Mass Ascension",
+      "note": "Peak working set. No max single on record. Current working set 265 lbs."
+    },
+    {
+      "lift": "Overhead Press",
+      "type": "working_set",
+      "weight_lbs": 150,
+      "date_approx": "2025-12",
+      "block": "Mass Ascension",
+      "note": "Peak working set weight reached Week 12."
+    },
+    {
+      "lift": "Front Squat",
+      "type": "working_set",
+      "weight_lbs": 225,
+      "date_approx": "2025-08",
+      "block": "Legends of Mass Block B",
+      "note": "Peak working set."
+    },
+    {
+      "lift": "Bulgarian Split Squat",
+      "type": "working_set",
+      "weight_lbs": 135,
+      "weight_note": "barbell",
+      "date_approx": "2026-03-22",
+      "block": "Operation Spartan",
+      "note": "3x8/leg confirmed 3/22/2026."
+    },
+    {
+      "lift": "Pull-Ups",
+      "type": "weighted",
+      "weight_lbs": 33,
+      "weight_note": "33 lb sandbag added",
+      "date_approx": "2025-08",
+      "block": "Legends of Mass Block B",
+      "note": "Completed weighted sets. Currently limited by shoulder stability — no full extension."
+    },
+    {
+      "lift": "Farmer Carry",
+      "type": "timed",
+      "weight_lbs": 97,
+      "weight_note": "97 lb KBs each hand",
+      "date_approx": "2025-11",
+      "block": "Mass Ascension",
+      "note": "Context-dependent. Standard working weight is 88 lb KBs."
+    }
+  ],
+
+  "pr_goals": [
+    {
+      "lift": "Back Squat",
+      "type": "single",
+      "target_lbs": 405,
+      "by_block": "Fall 2026 — Strength Conversion",
+      "note": "Serious chase begins after Spartan and summer hypertrophy block."
+    },
+    {
+      "lift": "Bench Press",
+      "type": "single",
+      "target_lbs": 315,
+      "by_block": "Fall 2026 — Strength Conversion",
+      "note": "Current PR is 255x3. Summer hypertrophy phase sets the base."
+    }
+  ],
+
+  "skill_status": {
+    "calf_health": {
+      "current": "stable",
+      "notes": "Right calf strain. Triggered by load stacking (run + heavy calf raises + explosive work same day). Not triggered by running alone. Currently at 1:3 walk/run ratio as of Week 3.",
+      "history": [
+        { "date": "2025-07", "status": "aggravated", "note": "Burpees and explosive work caused flare. Stopped running." },
+        { "date": "2025-09-14", "status": "managed", "note": "Samson Challenge completed." },
+        { "date": "2025-12", "status": "rehab", "note": "The Pit — full calf rehab protocol, no running." },
+        { "date": "2026-03", "status": "stable", "note": "Run reintroduction started. 1:4 walk/run wks 1-2, 1:3 wk 3." }
+      ]
+    },
+    "shoulder_stability": {
+      "current": "limited",
+      "notes": "Pull-ups limited by shoulder stability — cannot reach full extension. Dead hangs and scapular pull-ups introduced Week 3 of Operation Spartan to address.",
+      "history": [
+        { "date": "2025-04", "status": "limited", "note": "Pull-up max was 5 reps at start of Legends of Mass." },
+        { "date": "2026-03-22", "status": "limited", "note": "5x5 pull-ups without full extension. Scapular pull-up protocol starting." }
+      ]
+    },
+    "grip_endurance": {
+      "current": "building",
+      "notes": "Farmer carries and monkey bars are primary grip builders. Grip-under-fatigue protocol introduced Week 3 of Operation Spartan.",
+      "history": [
+        { "date": "2025-09-14", "status": "tested", "note": "Completed Samson Challenge rope pulls and carries." },
+        { "date": "2026-03-22", "status": "building", "note": "88 lb KB farmer carries for 60 sec confirmed. Monkey bars improving." }
+      ]
+    },
+    "running_endurance": {
+      "current": "early_progression",
+      "notes": "Reintroducing running after calf rehab. Gradual walk/run protocol.",
+      "history": [
+        { "date": "2026-03-01", "status": "started", "note": "First runs in months. 1:4 ratio." },
+        { "date": "2026-03-22", "status": "progressing", "note": "3 runs completed. Moving to 1:3 confirmed." }
+      ]
+    }
+  },
+
+  "timeline": [
+    {
+      "id": "legends_of_mass",
+      "type": "block",
+      "label": "Legends of Mass",
+      "subtitle": "Powerbuilding — Strength & Size",
+      "start": "2025-04-01",
+      "end": "2025-08-17",
+      "color": "blue",
+      "summary": "8-week Block A + 8-week Block B. Full-body powerbuilding inspired by Alan Ritchson. Goal: +100 lbs on bench and squat from starting numbers.",
+      "highlights": [
+        "Started at 233 lbs, 15% body fat",
+        "Gained ~6-7 lbs lean mass in Block A alone",
+        "Bench progressed from 195 to 245 lbs working sets",
+        "Squat progressed from 255 to 315+ lbs working sets",
+        "RDL reached 275 lbs working sets",
+        "Weighted pull-ups with 33 lb sandbag",
+        "Introduced barbell and landmine complexes",
+        "Pull-up max: 5 reps at start"
+      ],
+      "prs_set": ["Front Squat 225 lbs", "Pull-ups +33 lb weighted"],
+      "start_weight_lbs": 233,
+      "end_weight_lbs": 250
+    },
+    {
+      "id": "trial_of_strength",
+      "type": "block",
+      "label": "Trial of Strength",
+      "subtitle": "Samson Challenge Prep",
+      "start": "2025-08-18",
+      "end": "2025-09-13",
+      "color": "orange",
+      "summary": "4-week event-specific prep block for Samson Challenge. Strongman-style event practice: tire flips, rope pulls, sandbag runs, yoke carries, sled pulls, ground-to-overhead.",
+      "highlights": [
+        "Tire flip simulations with heavy sled drags",
+        "Sandbag runs 3x200m @ 50 lbs",
+        "Rope pull practice and sled pulls up to 170 lb load",
+        "Yoke carry and overhead lunges",
+        "1000m row intervals at race pace",
+        "Taper week Sep 9-13"
+      ],
+      "prs_set": [],
+      "start_weight_lbs": 255,
+      "end_weight_lbs": 260
+    },
+    {
+      "id": "samson_challenge",
+      "type": "milestone",
+      "label": "Samson Challenge",
+      "subtitle": "Albuquerque, NM",
+      "date": "2025-09-14",
+      "color": "gold",
+      "summary": "Multi-event strongman-style challenge. Events included 1K row, tire flips, rope pull, ground-to-overhead, sandbag run, sled pull, yoke carry, heavy bag over hurdle, overhead lunges, med ball toss, water wade.",
+      "result": "Completed",
+      "weight_lbs": 260
+    },
+    {
+      "id": "mass_ascension",
+      "type": "block",
+      "label": "Mass Ascension",
+      "subtitle": "Powerbuilding Cut",
+      "start": "2025-09-15",
+      "end": "2025-12-15",
+      "color": "purple",
+      "summary": "12-week powerbuilding cut. Goal: reduce body fat while holding or building strength. 4 days/week. Calories reduced to 2,900-3,000. Strength continued climbing through Week 12.",
+      "highlights": [
+        "Squat peaked at 365 lbs single (working sets 325-335)",
+        "Bench peaked at 255 lbs x3 (working sets 245-250)",
+        "RDL working sets reached 275 lbs",
+        "OHP working sets reached 150 lbs",
+        "Lat injury Week 5 — managed around it",
+        "Neck issue appeared mid-block",
+        "Calf began showing sensitivity to load stacking"
+      ],
+      "prs_set": ["Back Squat 365 lbs single", "Bench Press 255 lbs x3", "OHP 150 lbs working"],
+      "start_weight_lbs": 260,
+      "end_weight_lbs": 262
+    },
+    {
+      "id": "the_pit",
+      "type": "block",
+      "label": "The Pit",
+      "subtitle": "Calf Rehab + Engine",
+      "start": "2025-12-01",
+      "end": "2026-02-15",
+      "color": "gray",
+      "summary": "Recovery and conditioning block following calf strain and load stacking sensitivity identified in Mass Ascension. No running. 4 days/week focused on calf rehab, aerobic base, and strength maintenance. Ended with a ski trip.",
+      "highlights": [
+        "Full calf rehab protocol — seated raises, isometrics, foam roll",
+        "Aerobic base via rowing and stair stepper",
+        "Strength maintained: squat, RDL, pulls",
+        "Zero explosive lower body work",
+        "Confirmed: load stacking (run + calf raises + explosive work) is the trigger — not running alone",
+        "Ended mid-February for ski trip"
+      ],
+      "prs_set": [],
+      "start_weight_lbs": 262,
+      "end_weight_lbs": 265
+    },
+    {
+      "id": "operation_spartan",
+      "type": "block",
+      "label": "Operation Spartan",
+      "subtitle": "10-Week Race Prep",
+      "start": "2026-03-22",
+      "end": "2026-05-31",
+      "color": "red",
+      "summary": "10-week Spartan Super 10K preparation program. Gradual calf-safe run reintroduction, obstacle-specific conditioning, grip endurance, shoulder stability work. Strength maintenance at 335 lb squat working sets.",
+      "highlights": [
+        "Week 3 Day 1 confirmed: Squat 335, RDL 265, BSS 135 lb barbell",
+        "Run progression: 1:4 → 1:3 → ... → 30 min continuous",
+        "Burpee reintroduction: step version weeks 3-6, full week 7+",
+        "Dead hang and scapular pull-up program for shoulder stability",
+        "Landmine and barbell complex circuits for conditioning variety",
+        "Race goal: finish the Spartan Super 10K strong"
+      ],
+      "prs_set": [],
+      "start_weight_lbs": 265,
+      "end_weight_lbs": null,
+      "target_end_weight_lbs": 250,
+      "status": "active"
+    },
+    {
+      "id": "spartan_super_10k",
+      "type": "milestone",
+      "label": "Spartan Super 10K",
+      "subtitle": "Colorado Springs, CO",
+      "date": "2026-05-31",
+      "color": "gold",
+      "summary": "Spartan Super obstacle race. ~10K distance, 20+ obstacles. Elevation: ~6,000 ft. Obstacles include rope climbs, monkey bars, sandbag carries, barbed wire crawls, spear throw, and more.",
+      "result": "upcoming",
+      "weight_lbs": null,
+      "target_weight_lbs": 250
+    },
+    {
+      "id": "summer_2026",
+      "type": "block",
+      "label": "Ritchson Phase",
+      "subtitle": "Sarcoplasmic Hypertrophy",
+      "start": "2026-06-01",
+      "end": "2026-09-30",
+      "color": "green",
+      "summary": "Use the strength base built over the past year to produce visible muscle development. Higher reps (8-15), more volume, shorter rest, full-body days. Inspired by Alan Ritchson's training approach. Keep aerobic base from Spartan — running as a weekly habit.",
+      "highlights": [
+        "Leverage 365 lb squat base for high-rep work",
+        "Target: visible definition from existing muscle",
+        "Full-body sessions, multiple compound movements",
+        "Maintain running 1-2x per week for conditioning",
+        "Sarcoplasmic focus — muscle fullness and size"
+      ],
+      "prs_set": [],
+      "status": "planned"
+    },
+    {
+      "id": "fall_2026",
+      "type": "block",
+      "label": "Strength Conversion",
+      "subtitle": "Myofibrillar Strength",
+      "start": "2026-10-01",
+      "end": "2026-12-31",
+      "color": "darkblue",
+      "summary": "Convert summer hypertrophy gains into dense, functional strength. Return to lower reps (3-6), heavier loads, longer rest. Primary goals: squat 405 single, bench 315 single.",
+      "highlights": [
+        "Chase squat 405 lb single",
+        "Chase bench 315 lb single",
+        "Myofibrillar focus — strength density",
+        "Lower rep ranges, higher intensity"
+      ],
+      "prs_set": [],
+      "status": "planned"
+    }
+  ]
+}
