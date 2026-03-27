@@ -509,12 +509,68 @@
       font-size: 24px;
       font-weight: 700;
       margin-bottom: 4px;
+      line-height: 1.3;
     }
 
     .preworkout-meta {
       font-size: var(--font-meta);
       color: var(--text-secondary);
       margin-bottom: 28px;
+    }
+
+    .preworkout-loading-msg {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Alternate list items */
+    .alt-item {
+      text-align: left;
+      padding: 14px 16px;
+      line-height: 1.4;
+    }
+
+    /* Bonus type grid */
+    .bonus-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .bonus-type-grid .btn {
+      margin-top: 0;
+    }
+
+    /* Panel sub-heading */
+    .panel-heading {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .panel-sub {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -581,10 +637,76 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       Screen 2: Pre-Workout Prompt (shell — logic not yet built)
+       Screen 2: Pre-Workout Prompt
        ═══════════════════════════════════════════════════════ -->
   <div id="screen-preworkout" class="screen hidden">
-    <!-- Phase 2 will populate this screen -->
+
+    <!-- Sub-panel: Loading -->
+    <div id="pw-panel-loading">
+      <div class="app-title">Condor Fitness</div>
+      <p class="preworkout-loading-msg"><span class="spinner"></span>Loading program…</p>
+    </div>
+
+    <!-- Sub-panel: Error -->
+    <div id="pw-panel-error" class="hidden">
+      <div class="app-title">Condor Fitness</div>
+      <div class="alert alert-error" id="pw-error-msg"></div>
+      <button class="btn btn-secondary" id="btn-pw-retry">Retry</button>
+    </div>
+
+    <!-- Sub-panel: Program complete -->
+    <div id="pw-panel-complete" class="hidden">
+      <div class="app-title">Condor Fitness</div>
+      <div class="card">
+        <div class="card-title">Program Complete</div>
+        <p style="margin-top:8px; color: var(--text-secondary); font-size: var(--font-meta);">
+          Race week — rest up and get ready.
+        </p>
+      </div>
+    </div>
+
+    <!-- Sub-panel: Main pre-workout prompt -->
+    <div id="pw-panel-main" class="hidden">
+      <div class="app-title">Condor Fitness</div>
+      <div class="preworkout-next-label">Next up</div>
+      <div class="preworkout-title" id="pw-title"></div>
+      <div class="preworkout-meta" id="pw-meta"></div>
+      <button class="btn btn-primary btn-icon" id="btn-start-workout">&#10003; Start this workout</button>
+      <button class="btn btn-secondary btn-icon" id="btn-swap-alternate">&#8635; Swap to alternate</button>
+      <button class="btn btn-secondary btn-icon" id="btn-bonus-session">+ Bonus session</button>
+    </div>
+
+    <!-- Sub-panel: Alternate selector -->
+    <div id="pw-panel-alternates" class="hidden">
+      <div class="app-title">Condor Fitness</div>
+      <div class="panel-heading">Swap to Alternate</div>
+      <div class="panel-sub" id="pw-alt-sub"></div>
+      <div id="pw-alt-list"></div>
+      <button class="btn btn-secondary" id="btn-alt-back" style="margin-top: 16px;">&#8592; Back</button>
+    </div>
+
+    <!-- Sub-panel: Bonus session type selector -->
+    <div id="pw-panel-bonus" class="hidden">
+      <div class="app-title">Condor Fitness</div>
+      <div class="panel-heading">Bonus Session</div>
+      <div class="panel-sub">Pick a type — loads a random alternate from the current phase.</div>
+      <div id="pw-bonus-error" class="alert alert-error hidden"></div>
+      <div class="bonus-type-grid">
+        <button class="btn btn-secondary" data-bonus-type="strength">Strength</button>
+        <button class="btn btn-secondary" data-bonus-type="run">Run</button>
+        <button class="btn btn-secondary" data-bonus-type="engine">Engine</button>
+        <button class="btn btn-secondary" data-bonus-type="circuit">Circuit</button>
+      </div>
+      <button class="btn btn-secondary" id="btn-bonus-back">&#8592; Back</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Screen 3: Active Workout (shell — logic not yet built)
+       ═══════════════════════════════════════════════════════ -->
+  <div id="screen-workout" class="screen hidden">
+    <!-- Phase 3 will populate this screen -->
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
@@ -660,7 +782,271 @@
         localStorage.setItem('lastCompleted', JSON.stringify({ week: week, day: day }));
 
         showScreen('preworkout');
+        window.initPreworkout();
       });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    // Screen 2: Pre-Workout Prompt
+    // ═══════════════════════════════════════════════════════
+    (function() {
+
+      var program    = null;   // loaded program.json
+      var nextWkout  = null;   // { weekData, dayData } for the computed next session
+
+      // ── Helpers ────────────────────────────────────────
+
+      // Show one sub-panel, hide all others
+      var PANELS = [
+        'pw-panel-loading',
+        'pw-panel-error',
+        'pw-panel-complete',
+        'pw-panel-main',
+        'pw-panel-alternates',
+        'pw-panel-bonus'
+      ];
+
+      function showPanel(id) {
+        PANELS.forEach(function(p) {
+          document.getElementById(p).classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+      }
+
+      // ── Program fetch / cache ──────────────────────────
+
+      async function getProgram() {
+        try {
+          var cached = localStorage.getItem('programCache');
+          if (cached) {
+            var data = JSON.parse(cached);
+            if (Date.now() - data.ts < 24 * 60 * 60 * 1000) {
+              return data.program;
+            }
+          }
+        } catch (e) { /* stale or corrupt cache — fall through to fetch */ }
+
+        var repo = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
+        var parts = repo.split('/');
+        var url = 'https://raw.githubusercontent.com/' + parts[0] + '/' + parts[1] + '/main/program.json';
+        var res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' fetching program.json');
+        var prog = await res.json();
+        localStorage.setItem('programCache', JSON.stringify({ ts: Date.now(), program: prog }));
+        return prog;
+      }
+
+      // ── Workout pointer logic ─────────────────────────
+
+      function nextWorkout(prog, lastCompleted) {
+        var weeks = prog.weeks;
+        var lc = lastCompleted || { week: prog.meta.start_week, day: 0 };
+
+        // Find the week that matches lastCompleted.week
+        var cwIdx = -1;
+        for (var i = 0; i < weeks.length; i++) {
+          if (weeks[i].week === lc.week) { cwIdx = i; break; }
+        }
+
+        // Week not found — start at very first week, day 1
+        if (cwIdx === -1) {
+          return { weekData: weeks[0], dayData: weeks[0].days[0] };
+        }
+
+        var wk = weeks[cwIdx];
+
+        // Find the next day number greater than lc.day within this week
+        for (var d = 0; d < wk.days.length; d++) {
+          if (wk.days[d].day > lc.day) {
+            return { weekData: wk, dayData: wk.days[d] };
+          }
+        }
+
+        // No more days this week — advance to next week, day 1
+        var nextWkIdx = cwIdx + 1;
+        if (nextWkIdx < weeks.length) {
+          var nw = weeks[nextWkIdx];
+          return { weekData: nw, dayData: nw.days[0] };
+        }
+
+        // No more weeks — program complete
+        return null;
+      }
+
+      // ── Phase lookup ──────────────────────────────────
+
+      function getPhaseInfo(prog, phaseId) {
+        var phases = prog.meta.phases;
+        for (var i = 0; i < phases.length; i++) {
+          if (phases[i].id === phaseId) return phases[i];
+        }
+        return null;
+      }
+
+      // ── Bonus alt lookup ──────────────────────────────
+      // Returns a random alternate of `type` from any day in the current phase.
+
+      function getRandomBonusAlt(prog, phaseId, type) {
+        var pool = [];
+        prog.weeks.forEach(function(wk) {
+          if (wk.phase !== phaseId) return;
+          wk.days.forEach(function(day) {
+            if (day.type !== type) return;
+            if (!day.alternates || !day.alternates.length) return;
+            day.alternates.forEach(function(alt) {
+              pool.push({ weekData: wk, dayData: day, alt: alt });
+            });
+          });
+        });
+        if (!pool.length) return null;
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      // ── Render main prompt ────────────────────────────
+
+      function renderMain() {
+        var titleEl = document.getElementById('pw-title');
+        var metaEl  = document.getElementById('pw-meta');
+
+        titleEl.textContent =
+          'Week ' + nextWkout.weekData.week +
+          ' Day ' + nextWkout.dayData.day +
+          ' \u2014 ' + nextWkout.dayData.label;
+
+        var phaseInfo = getPhaseInfo(program, nextWkout.weekData.phase);
+        var phaseName = phaseInfo ? phaseInfo.label : nextWkout.weekData.phase;
+        var dates     = phaseInfo ? phaseInfo.dates : (nextWkout.weekData.dates || '');
+        metaEl.textContent = phaseName + ' \u00b7 ' + dates;
+
+        showPanel('pw-panel-main');
+      }
+
+      // ── Init (called by global router) ────────────────
+
+      async function initPreworkout() {
+        showPanel('pw-panel-loading');
+
+        try {
+          program = await getProgram();
+        } catch (e) {
+          document.getElementById('pw-error-msg').textContent =
+            'Could not load program: ' + e.message;
+          showPanel('pw-panel-error');
+          return;
+        }
+
+        var lc = null;
+        try { lc = JSON.parse(localStorage.getItem('lastCompleted')); } catch (e) {}
+
+        nextWkout = nextWorkout(program, lc);
+
+        if (!nextWkout) {
+          showPanel('pw-panel-complete');
+          return;
+        }
+
+        renderMain();
+      }
+
+      // ── Button: Start workout ─────────────────────────
+
+      document.getElementById('btn-start-workout').addEventListener('click', function() {
+        window.pendingWorkout = {
+          weekData:  nextWkout.weekData,
+          dayData:   nextWkout.dayData,
+          alt:       null,
+          altUsed:   null,
+          isBonus:   false
+        };
+        showScreen('workout');
+      });
+
+      // ── Button: Swap to alternate ──────────────────────
+
+      document.getElementById('btn-swap-alternate').addEventListener('click', function() {
+        var alts = (nextWkout.dayData.alternates || []);
+        var sub  = document.getElementById('pw-alt-sub');
+        var list = document.getElementById('pw-alt-list');
+
+        sub.textContent =
+          'Week ' + nextWkout.weekData.week +
+          ' Day ' + nextWkout.dayData.day +
+          ' \u2014 ' + nextWkout.dayData.label;
+        list.innerHTML = '';
+
+        if (!alts.length) {
+          var msg = document.createElement('p');
+          msg.className = 'alert alert-error';
+          msg.textContent = 'No alternates available for this day.';
+          list.appendChild(msg);
+        } else {
+          alts.forEach(function(alt) {
+            var btn = document.createElement('button');
+            btn.className = 'btn btn-secondary alt-item';
+            btn.textContent = alt.label;
+            btn.addEventListener('click', function() {
+              window.pendingWorkout = {
+                weekData: nextWkout.weekData,
+                dayData:  nextWkout.dayData,
+                alt:      alt,
+                altUsed:  alt.id,
+                isBonus:  false
+              };
+              showScreen('workout');
+            });
+            list.appendChild(btn);
+          });
+        }
+
+        showPanel('pw-panel-alternates');
+      });
+
+      document.getElementById('btn-alt-back').addEventListener('click', renderMain);
+
+      // ── Button: Bonus session ─────────────────────────
+
+      document.getElementById('btn-bonus-session').addEventListener('click', function() {
+        document.getElementById('pw-bonus-error').classList.add('hidden');
+        showPanel('pw-panel-bonus');
+      });
+
+      document.getElementById('btn-bonus-back').addEventListener('click', renderMain);
+
+      document.querySelectorAll('[data-bonus-type]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var type      = this.getAttribute('data-bonus-type');
+          var phaseId   = nextWkout.weekData.phase;
+          var result    = getRandomBonusAlt(program, phaseId, type);
+          var errEl     = document.getElementById('pw-bonus-error');
+
+          if (!result) {
+            errEl.textContent = 'No ' + type + ' alternates found in the current phase.';
+            errEl.classList.remove('hidden');
+            return;
+          }
+
+          errEl.classList.add('hidden');
+          window.pendingWorkout = {
+            weekData: result.weekData,
+            dayData:  result.dayData,
+            alt:      result.alt,
+            altUsed:  result.alt.id,
+            isBonus:  true
+          };
+          showScreen('workout');
+        });
+      });
+
+      // ── Retry button ───────────────────────────────────
+
+      document.getElementById('btn-pw-retry').addEventListener('click', function() {
+        localStorage.removeItem('programCache');
+        initPreworkout();
+      });
+
+      // ── Expose init to global scope ────────────────────
+      window.initPreworkout = initPreworkout;
+
     })();
 
     // ═══════════════════════════════════════════════════════
@@ -672,6 +1058,7 @@
         showScreen('setup');
       } else {
         showScreen('preworkout');
+        window.initPreworkout();
       }
     }
 
