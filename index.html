@@ -330,7 +330,7 @@
       color: #fff;
     }
 
-    /* Calf rating: 0–3 in 0.5 steps (7 values) */
+    /* Calf rating: 0–10 whole numbers (11 values) */
     .rating-calf {
       display: flex;
       gap: 6px;
@@ -341,7 +341,7 @@
 
     .rating-calf label {
       flex: 1;
-      min-width: 38px;
+      min-width: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -826,22 +826,26 @@
         </div>
       </div>
 
-      <!-- Calf rating: 0–3 in 0.5 steps -->
+      <!-- Calf rating: 0–10 whole numbers (lower is better; >2 is a flag) -->
       <div class="form-group">
-        <label class="form-label">Calf Rating</label>
+        <label class="form-label">Calf Rating <span style="color:var(--text-secondary);font-weight:400;">(0 = none, &gt;2 = flag)</span></label>
         <div class="rating-calf">
           <input type="radio" id="sum-calf-0" name="sum-calf" value="0"><label for="sum-calf-0">0</label>
-          <input type="radio" id="sum-calf-05" name="sum-calf" value="0.5"><label for="sum-calf-05">0.5</label>
           <input type="radio" id="sum-calf-1" name="sum-calf" value="1"><label for="sum-calf-1">1</label>
-          <input type="radio" id="sum-calf-15" name="sum-calf" value="1.5"><label for="sum-calf-15">1.5</label>
           <input type="radio" id="sum-calf-2" name="sum-calf" value="2"><label for="sum-calf-2">2</label>
-          <input type="radio" id="sum-calf-25" name="sum-calf" value="2.5"><label for="sum-calf-25">2.5</label>
           <input type="radio" id="sum-calf-3" name="sum-calf" value="3"><label for="sum-calf-3">3</label>
+          <input type="radio" id="sum-calf-4" name="sum-calf" value="4"><label for="sum-calf-4">4</label>
+          <input type="radio" id="sum-calf-5" name="sum-calf" value="5"><label for="sum-calf-5">5</label>
+          <input type="radio" id="sum-calf-6" name="sum-calf" value="6"><label for="sum-calf-6">6</label>
+          <input type="radio" id="sum-calf-7" name="sum-calf" value="7"><label for="sum-calf-7">7</label>
+          <input type="radio" id="sum-calf-8" name="sum-calf" value="8"><label for="sum-calf-8">8</label>
+          <input type="radio" id="sum-calf-9" name="sum-calf" value="9"><label for="sum-calf-9">9</label>
+          <input type="radio" id="sum-calf-10" name="sum-calf" value="10"><label for="sum-calf-10">10</label>
         </div>
       </div>
 
-      <!-- Grip endurance: 1–5 -->
-      <div class="form-group">
+      <!-- Grip endurance: 1–5 (shown dynamically) -->
+      <div class="form-group hidden" id="sum-fg-grip">
         <label class="form-label">Grip Endurance</label>
         <div class="rating-5">
           <input type="radio" id="sum-grip-1" name="sum-grip" value="1"><label for="sum-grip-1">1</label>
@@ -852,8 +856,8 @@
         </div>
       </div>
 
-      <!-- Shoulder stability: 1–5 -->
-      <div class="form-group">
+      <!-- Shoulder stability: 1–5 (shown dynamically) -->
+      <div class="form-group hidden" id="sum-fg-shoulder">
         <label class="form-label">Shoulder Stability</label>
         <div class="rating-5">
           <input type="radio" id="sum-shoulder-1" name="sum-shoulder" value="1"><label for="sum-shoulder-1">1</label>
@@ -864,8 +868,8 @@
         </div>
       </div>
 
-      <!-- Monkey bars: 1–5 -->
-      <div class="form-group">
+      <!-- Monkey bars: 1–5 (shown dynamically) -->
+      <div class="form-group hidden" id="sum-fg-monkey">
         <label class="form-label">Monkey Bars</label>
         <div class="rating-5">
           <input type="radio" id="sum-monkey-1" name="sum-monkey" value="1"><label for="sum-monkey-1">1</label>
@@ -1972,6 +1976,7 @@
     (function() {
 
       var pendingSessionData = null; // retained on write failure for Copy JSON
+      var skillVisibility = { grip: false, shoulder: false, monkey: false };
 
       // ── Sub-panel toggle ───────────────────────────────
       function showSumPanel(id) {
@@ -1979,6 +1984,34 @@
           document.getElementById(p).classList.add('hidden');
         });
         document.getElementById(id).classList.remove('hidden');
+      }
+
+      // ── Skill visibility ──────────────────────────────
+      function updateSkillVisibility(exercises) {
+        var showGrip = false, showShoulder = false, showMonkey = false;
+
+        exercises.forEach(function(ex) {
+          var name = (ex.name || '').toLowerCase();
+          if (ex.finisher || ex.type === 'finisher' ||
+              name.indexOf('farmer') !== -1 || name.indexOf('carry') !== -1) {
+            showGrip = true;
+          }
+          if (ex.type === 'timed' ||
+              name.indexOf('pull-up') !== -1 || name.indexOf('row') !== -1) {
+            showShoulder = true;
+          }
+          if (name.indexOf('monkey') !== -1) {
+            showMonkey = true;
+          }
+        });
+
+        skillVisibility.grip     = showGrip;
+        skillVisibility.shoulder = showShoulder;
+        skillVisibility.monkey   = showMonkey;
+
+        document.getElementById('sum-fg-grip').classList.toggle('hidden', !showGrip);
+        document.getElementById('sum-fg-shoulder').classList.toggle('hidden', !showShoulder);
+        document.getElementById('sum-fg-monkey').classList.toggle('hidden', !showMonkey);
       }
 
       // ── nextWorkout pointer (self-contained copy) ──────
@@ -2022,6 +2055,7 @@
         var pw = window.pendingWorkout;
         var labelEl = document.getElementById('sum-workout-label');
         var metaEl  = document.getElementById('sum-workout-meta');
+        var exercises = [];
         if (pw) {
           labelEl.textContent = 'Week ' + pw.weekData.week + ' Day ' + pw.dayData.day +
             ' \u2014 ' + (pw.alt ? pw.alt.label : pw.dayData.label);
@@ -2030,11 +2064,13 @@
           var s = elapsed % 60;
           metaEl.textContent = 'Duration: ' + m + ':' + (s < 10 ? '0' : '') + s +
             (pw.isBonus ? ' \u00b7 Bonus session' : '');
+          exercises = (pw.alt && pw.alt.exercises) ? pw.alt.exercises : (pw.dayData.exercises || []);
         } else {
           labelEl.textContent = '';
           metaEl.textContent = '';
         }
 
+        updateSkillVisibility(exercises);
         showSumPanel('sum-panel-form');
       }
 
@@ -2154,12 +2190,8 @@
           exercises:      collectSessionExercises(),
           calf_rating:    ratings.calfRating,
           overall_feel:   ratings.overallFeel,
-          skills: {
-            grip_endurance:     ratings.gripEndurance,
-            shoulder_stability: ratings.shoulderStability,
-            monkey_bars:        ratings.monkeyBars
-          },
-          note: ratings.note || ''
+          skills:         ratings.skills,
+          note:           ratings.note || ''
         };
       }
 
@@ -2264,13 +2296,21 @@
           return;
         }
 
+        var gripVal     = gripEl     ? parseInt(gripEl.value, 10)     : null;
+        var shoulderVal = shoulderEl ? parseInt(shoulderEl.value, 10) : null;
+        var monkeyVal   = monkeyEl   ? parseInt(monkeyEl.value, 10)   : null;
+
+        // Build skills object: only include keys that were shown AND filled
+        var skills = {};
+        if (skillVisibility.grip     && gripVal     !== null) skills.grip_endurance     = gripVal;
+        if (skillVisibility.shoulder && shoulderVal !== null) skills.shoulder_stability = shoulderVal;
+        if (skillVisibility.monkey   && monkeyVal   !== null) skills.monkey_bars        = monkeyVal;
+
         var ratings = {
-          overallFeel:       parseInt(feelEl.value, 10),
-          calfRating:        calfEl     ? parseFloat(calfEl.value)       : null,
-          gripEndurance:     gripEl     ? parseInt(gripEl.value, 10)     : null,
-          shoulderStability: shoulderEl ? parseInt(shoulderEl.value, 10) : null,
-          monkeyBars:        monkeyEl   ? parseInt(monkeyEl.value, 10)   : null,
-          note:              notes
+          overallFeel: parseInt(feelEl.value, 10),
+          calfRating:  calfEl ? parseInt(calfEl.value, 10) : null,
+          skills:      skills,
+          note:        notes
         };
 
         var sessionData = assembleSession(ratings);

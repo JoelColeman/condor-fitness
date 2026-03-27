@@ -14,6 +14,8 @@ See condor_workflow.txt for the spec update protocol.
 | Phase 3 | Screen 3 (Active Workout) | ✅ Complete |
 | Phase 4 | Screen 4 (End of Session Summary) | ✅ Complete |
 | Phase 5 | GitHub API session write | ✅ Complete |
+| Fix: Calf rating scale 0–10 | Screen 4 calf widget + JSON | ✅ Complete |
+| Fix: Dynamic skill ratings | Screen 4 grip/shoulder/monkey visibility | ✅ Complete |
 
 ---
 
@@ -109,6 +111,22 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 - `showScreen` updated to call `window.initSummary()` when routing to `'summary'`
 - `window.initSummary()` — resets all radios, clears textarea, shows form panel, renders workout label and elapsed time from `window.workoutElapsedSec` / `window.pendingWorkout`
 
+### Calf Rating + Dynamic Skills Fix
+**Branch:** `claude/calf-skills-fix-mK7wP`
+**Date:** 2026-03-27
+
+#### What was built:
+- **Calf rating widget:** Changed from 0–3 in 0.5 steps (7 buttons) to 0–10 in whole numbers (11 buttons). CSS `min-width` reduced from 38px to 28px so all 11 buttons fit in one row on a 480px screen. Label updated with "(0 = none, >2 = flag)" hint.
+- **Dynamic skill ratings:** Grip Endurance, Shoulder Stability, and Monkey Bars fields now start hidden and are shown/hidden by `updateSkillVisibility(exercises)` called from `initSummary()`.
+  - Grip: shown if any exercise has `type: "finisher"`, `ex.finisher`, or name contains "farmer"/"carry"
+  - Shoulder: shown if any exercise has `type: "timed"` or name contains "pull-up"/"row"
+  - Monkey Bars: shown if any exercise name contains "monkey"
+- **`skillVisibility` module variable:** Tracks which skill fields are visible at save time; used by `assembleSession()` to conditionally include skill keys in the JSON.
+- **Session JSON:** `skills` object now only contains keys for ratings that were both shown AND filled in. Hidden fields are omitted entirely (not written as null). Empty `skills: {}` is written when no skill fields are shown/filled.
+- **`calfRating`** now uses `parseInt` (was `parseFloat`; integers either way, but parseInt is correct for the new whole-number scale).
+
+---
+
 ### Phase 5 — GitHub API Session Write
 **Branch:** `claude/condor-fitness-phases-4-5-L89la`
 **Date:** 2026-03-27
@@ -127,6 +145,17 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 ---
 
 ## Spec Deviations
+
+### Calf Rating + Dynamic Skills Fix
+
+1. **Calf rating scale changed from 0–3 (0.5 steps) to 0–10 (whole numbers).**
+   This is a schema change — `calf_rating` in session JSON is now an integer 0–10, not a float 0–3. `condor-build-spec.md` needs to be updated by Chat to reflect the new scale and the ">2 = flag" program rule.
+
+2. **`skills: {}` written when no skills are shown/filled.**
+   The spec says "omit keys for hidden/unfilled skills." The `skills` key itself is still present (as an empty object) when nothing qualifies. Keeps the schema consistent and easier to parse in dashboard. Individual skill keys are correctly omitted. If Chat wants the `skills` key omitted entirely when empty, that would be a one-line change.
+
+3. **`type: "timed"` used as a trigger for Shoulder Stability.**
+   If program.json exercises do not carry `type: "timed"`, only the name-based fallbacks ("pull-up", "row") will fire. Dead hangs may need to be checked by name if the type field is absent in the actual data.
 
 ### Phase 5
 
