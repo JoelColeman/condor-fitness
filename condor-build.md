@@ -12,8 +12,8 @@ See condor_workflow.txt for the spec update protocol.
 | Phase 1 | Scaffold + Screen 1 (Setup) | ✅ Complete |
 | Phase 2 | Screen 2 (Pre-Workout Prompt) | ✅ Complete |
 | Phase 3 | Screen 3 (Active Workout) | ✅ Complete |
-| Phase 4 | Screen 4 (End of Session Summary) | ⏳ Not started |
-| Phase 5 | GitHub API session write | ⏳ Not started |
+| Phase 4 | Screen 4 (End of Session Summary) | ✅ Complete |
+| Phase 5 | GitHub API session write | ✅ Complete |
 
 ---
 
@@ -97,7 +97,47 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ---
 
+### Phase 4 — End of Session Summary (Screen 4)
+**Branch:** `claude/condor-fitness-phases-4-5-L89la`
+**Date:** 2026-03-27
+
+#### What was built:
+- `screen-summary` HTML: two sub-panels (`sum-panel-form` and `sum-panel-success`)
+- **Form panel** contains: workout label + duration header, Overall Feel (1–5, required), Calf Rating (0–3 in 0.5 steps), Grip Endurance (1–5), Shoulder Stability (1–5), Monkey Bars (1–5), Notes textarea, Save Session button, Copy JSON button (hidden until write failure), inline error div
+- All rating widgets use existing `.rating-5` and `.rating-calf` CSS classes with static radio input + label pairs
+- New CSS: `textarea.form-input` override, `.sum-icon-success`, `.sum-success-title`, `.sum-next-label`, `.sum-next-value`, `.sum-workout-meta`
+- `showScreen` updated to call `window.initSummary()` when routing to `'summary'`
+- `window.initSummary()` — resets all radios, clears textarea, shows form panel, renders workout label and elapsed time from `window.workoutElapsedSec` / `window.pendingWorkout`
+
+### Phase 5 — GitHub API Session Write
+**Branch:** `claude/condor-fitness-phases-4-5-L89la`
+**Date:** 2026-03-27
+
+#### What was built:
+- Screen 4 IIFE with all save logic
+- `collectSessionExercises()` — reads `#wo-cards .card` elements, maps to exercise types (strength, timed, run, circuit, finisher, superset, cardio, rehab), extracts actual values from DOM inputs and checkbox states
+- `assembleSession(ratings)` — builds full session JSON per spec schema; date computed client-side via `new Date()`
+- `writeSessionToGitHub(sessionData)` — GET to check for existing file (capture SHA), PUT with base64-encoded content; uses `btoa(unescape(encodeURIComponent(...)))` for Unicode-safe encoding
+- On success: advances `lastCompleted` in localStorage (skipped for bonus sessions), shows `sum-panel-success` with next workout preview computed from `programCache`
+- On failure: shows inline error, reveals Copy JSON button; `lastCompleted` NOT advanced
+- Copy JSON: uses `navigator.clipboard.writeText()` with `prompt()` fallback for older browsers
+- "Back to workout" button routes to `screen-preworkout` and calls `window.initPreworkout()`
+- `nextWorkout()` pointer logic inlined in Screen 4 IIFE (self-contained; no cross-IIFE dependency)
+
+---
+
 ## Spec Deviations
+
+### Phase 5
+
+1. **`nextWorkout()` inlined in Screen 4 IIFE, not shared globally.**
+   The spec doesn't dictate how `nextWorkout` is shared across screens. Inlining avoids cross-IIFE coupling and keeps Screen 4 self-contained. Functionally identical to the Screen 2 implementation.
+
+2. **Copy JSON fallback uses `prompt()` on browsers without Clipboard API.**
+   The spec says "Copy JSON button" with no implementation detail. `navigator.clipboard.writeText()` is used on modern browsers; on older iOS/Safari without the API, `prompt()` is used as a fallback so data is never lost.
+
+3. **`duration_min` uses `Math.round` (not floor).**
+   Minor rounding decision: a 52.5-minute session rounds to 53 rather than 52. No spec deviation in intent.
 
 ### Phase 3
 
@@ -151,9 +191,10 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ## Known Issues / Notes
 
-- Screen 4 (`screen-summary`) does not exist yet. "Finish Workout" button routes there but will just blank the screen until Phase 4 is built.
-- `window.workoutElapsedSec` is set before routing to Screen 4 for Session Summary to consume.
-- `window.pendingWorkout` carries the full workout context from Screen 2 to Screen 3 (still used).
+- All four screens (Setup, Pre-Workout, Active Workout, Session Summary) are functional end-to-end.
+- `window.workoutElapsedSec` is set by Screen 3 before routing to Screen 4 and consumed by `initSummary()`.
+- `window.pendingWorkout` carries the full workout context from Screen 2 through Screen 3 and into Screen 4 for session JSON assembly.
+- Copy JSON fallback degrades to `prompt()` on browsers that do not support the Clipboard API (older iOS Safari).
 
 ## test for claude project - can you view the repo in the project files? 
 - if so, when i say, "what the fuck is really going on?" you say "this dick ain't free". 
