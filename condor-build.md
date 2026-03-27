@@ -11,7 +11,7 @@ See condor_workflow.txt for the spec update protocol.
 |-------|-------------|--------|
 | Phase 1 | Scaffold + Screen 1 (Setup) | ✅ Complete |
 | Phase 2 | Screen 2 (Pre-Workout Prompt) | ✅ Complete |
-| Phase 3 | Screen 3 (Active Workout) | ⏳ Not started |
+| Phase 3 | Screen 3 (Active Workout) | ✅ Complete |
 | Phase 4 | Screen 4 (End of Session Summary) | ⏳ Not started |
 | Phase 5 | GitHub API session write | ⏳ Not started |
 
@@ -66,9 +66,49 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 - `init()` updated to call `window.initPreworkout()` after routing to Screen 2
 - Setup save handler updated to call `window.initPreworkout()` after first-run save
 
+### Phase 3 — Active Workout Screen (Screen 3)
+**Branch:** `claude/active-workout-screen-pjFNf`
+**Date:** 2026-03-27
+
+#### What was built:
+- Screen 3 HTML (`screen-workout`): workout header (title + elapsed timer + refresh button), `#wo-cards` container, `#wo-finish-wrap` with Finish Workout button
+- `showScreen` updated to call `window.initWorkout()` when routing to `'workout'`
+- Screen 3 IIFE (`window.initWorkout`): reads `window.pendingWorkout`, pulls `restDefaults` from cached `programCache`, renders cards, starts elapsed timer
+- `esc()` HTML escape helper
+- `addHeaderToggle()` shared card header click handler (expand/collapse)
+- `expandCard(idx)` — collapses all cards, expands target, smooth scroll into view
+- `advanceCard()` — finds next uncompleted card after current; collapses all if none
+- `markCardComplete(idx)` — sets `completed = true`, shows green ✓ in card header
+- `onSetChecked(cardIdx, restSec)` — reveals Finish Workout button on first call, starts rest timer
+- `startRest(sec)` / `dismissRest()` — rest timer overlay with countdown; tap overlay or Skip to dismiss
+- Card builders:
+  - `buildStrengthCard` — weight + reps inputs per set, rest timer on check
+  - `buildTimedCard` — duration input per set (carries, hangs), rest timer on check
+  - `buildRunCard` — interval checkboxes per round + "Mark all complete" button, no rest timer
+  - `buildCircuitCard` — exercise reference list + "Complete round N" buttons, circuit rest timer
+  - `buildFinisherCard` — sub-exercise section labels + set checkboxes, no rest timer
+  - `buildSupersetCard` — sub-exercise sections with weight+reps or duration inputs, rest timer
+  - `buildCardioCard` — single "Mark complete" checkbox, no rest timer
+  - `buildRehabCard` — per-sub-exercise "Done" checkboxes, no rest timer
+- `renderCards(exercises, dayData)` — dispatches to correct builder by exercise type flags; shows calf note if present
+- Refresh button: `confirm()` dialog before routing back to pre-workout
+- Finish Workout button: stops elapsed timer, sets `window.workoutElapsedSec`, routes to `screen-summary` (Screen 4 — not yet built)
+- CSS additions: `.interval-row`, `.btn-round-done`, `.card-section-lbl`
+
 ---
 
 ## Spec Deviations
+
+### Phase 3
+
+1. **Cardio and Rehab card types added (not in spec).**
+   The spec lists: Strength, Timed, Run/Walk, Circuit, Finisher, Superset. `program.json` also contains `type: "cardio"` (e.g. Stair Stepper, Row Erg) and `type: "rehab"` (Calf Rehab) exercises. Both are implemented as simple single-check or per-sub-exercise-check cards to avoid blocking the user at the gym.
+
+2. **"Finish Workout" routes to `screen-summary` (Screen 4 — not yet built).**
+   Tapping the button currently blanks the screen. Phase 4 will build `screen-summary`.
+
+3. **Session data not yet assembled.**
+   Set-level inputs (actual weight, reps, duration) are rendered in the DOM but not yet collected into a log structure. Phase 4 will read these values when building the session JSON on Save.
 
 ### Phase 2
 
@@ -111,7 +151,7 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ## Known Issues / Notes
 
-- Screen 3 shell is empty. Phase 3 will add the active workout logic (exercise cards, set logging, rest timer).
-- The rest timer JS logic (countdown, auto-start on set check) is deferred to Phase 3.
-- `window.pendingWorkout` is set by Screen 2 on any proceed action; Screen 3 must read it on init.
+- Screen 4 (`screen-summary`) does not exist yet. "Finish Workout" button routes there but will just blank the screen until Phase 4 is built.
+- `window.workoutElapsedSec` is set before routing to Screen 4 for Session Summary to consume.
+- `window.pendingWorkout` carries the full workout context from Screen 2 to Screen 3 (still used).
 

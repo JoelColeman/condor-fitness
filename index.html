@@ -572,6 +572,43 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* === INTERVAL ROW (Run/Walk) === */
+    .interval-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: var(--touch-min);
+      padding: 4px 0;
+      border-top: 1px solid var(--border);
+    }
+    .interval-row:first-of-type { border-top: none; }
+    .interval-row label {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    /* === CIRCUIT ROUND BUTTON (completed state) === */
+    .btn-round-done {
+      background: var(--success);
+      color: #fff;
+      opacity: 0.7;
+    }
+
+    /* === CARD BODY SECTION LABEL === */
+    .card-section-lbl {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      padding: 8px 0 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+    .card-section-lbl:first-child {
+      border-top: none;
+      margin-top: 0;
+      padding-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -703,10 +740,20 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       Screen 3: Active Workout (shell — logic not yet built)
+       Screen 3: Active Workout
        ═══════════════════════════════════════════════════════ -->
   <div id="screen-workout" class="screen hidden">
-    <!-- Phase 3 will populate this screen -->
+    <div class="workout-header">
+      <div style="flex:1;min-width:0;">
+        <div class="workout-title" id="wo-title"></div>
+        <div class="workout-timer" id="wo-timer">0:00</div>
+      </div>
+      <button class="workout-refresh-btn" id="btn-wo-refresh" title="Swap workout">&#8635;</button>
+    </div>
+    <div id="wo-cards"></div>
+    <div class="finish-wrap hidden" id="wo-finish-wrap">
+      <button class="btn btn-primary" id="btn-finish-workout">Finish Workout</button>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
@@ -728,6 +775,7 @@
       });
       var el = document.getElementById('screen-' + id);
       if (el) el.classList.remove('hidden');
+      if (id === 'workout' && typeof window.initWorkout === 'function') window.initWorkout();
     }
 
     // ═══════════════════════════════════════════════════════
@@ -1046,6 +1094,725 @@
 
       // ── Expose init to global scope ────────────────────
       window.initPreworkout = initPreworkout;
+
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    // Screen 3: Active Workout
+    // ═══════════════════════════════════════════════════════
+    (function() {
+
+      var elapsedSec      = 0;
+      var elapsedTimer    = null;
+      var restInterval    = null;
+      var restRemaining   = 0;
+      var firstSetLogged  = false;
+      var currentCardIdx  = 0;
+      var cardStates      = [];
+      var restDefaults    = {};
+
+      // ── HTML escape helper ─────────────────────────────
+      function esc(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // ── Elapsed timer ──────────────────────────────────
+      function tickElapsed() {
+        elapsedSec++;
+        var m = Math.floor(elapsedSec / 60);
+        var s = elapsedSec % 60;
+        var el = document.getElementById('wo-timer');
+        if (el) el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      // ── Rest timer ─────────────────────────────────────
+      function startRest(sec) {
+        if (!sec || sec <= 0) return;
+        restRemaining = sec;
+        updateRestDisplay();
+        document.getElementById('rest-timer').classList.add('active');
+        if (restInterval) clearInterval(restInterval);
+        restInterval = setInterval(function() {
+          restRemaining--;
+          if (restRemaining <= 0) {
+            dismissRest();
+          } else {
+            updateRestDisplay();
+          }
+        }, 1000);
+      }
+
+      function updateRestDisplay() {
+        var m = Math.floor(restRemaining / 60);
+        var s = restRemaining % 60;
+        document.getElementById('rest-timer-count').textContent =
+          m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      function dismissRest() {
+        if (restInterval) clearInterval(restInterval);
+        restInterval = null;
+        document.getElementById('rest-timer').classList.remove('active');
+      }
+
+      document.getElementById('rest-timer').addEventListener('click', dismissRest);
+      document.getElementById('rest-timer-skip').addEventListener('click', function(e) {
+        e.stopPropagation();
+        dismissRest();
+      });
+
+      // ── Card expand / collapse ─────────────────────────
+      function expandCard(idx) {
+        cardStates.forEach(function(cs, i) {
+          var body = cs.el.querySelector('.card-body');
+          if (i === idx) {
+            cs.el.classList.add('active');
+            if (body) body.classList.remove('hidden');
+          } else {
+            cs.el.classList.remove('active');
+            if (body) body.classList.add('hidden');
+          }
+        });
+        currentCardIdx = idx;
+        // scroll card into view
+        setTimeout(function() {
+          cardStates[idx].el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 80);
+      }
+
+      function advanceCard() {
+        for (var i = currentCardIdx + 1; i < cardStates.length; i++) {
+          if (!cardStates[i].completed) {
+            expandCard(i);
+            return;
+          }
+        }
+        // all done — collapse all
+        cardStates.forEach(function(cs) {
+          cs.el.classList.remove('active');
+          var body = cs.el.querySelector('.card-body');
+          if (body) body.classList.add('hidden');
+        });
+      }
+
+      function markCardComplete(idx) {
+        cardStates[idx].completed = true;
+        var chk = cardStates[idx].el.querySelector('.card-check');
+        if (chk) chk.classList.remove('hidden');
+      }
+
+      // ── On set checked ─────────────────────────────────
+      function onSetChecked(cardIdx, restSec) {
+        if (!firstSetLogged) {
+          firstSetLogged = true;
+          document.getElementById('wo-finish-wrap').classList.remove('hidden');
+        }
+        startRest(restSec);
+      }
+
+      // ── Format duration helper ─────────────────────────
+      function fmtDur(sec) {
+        if (!sec) return '0s';
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return m > 0 ? m + ':' + (s < 10 ? '0' : '') + s : s + 's';
+      }
+
+      // ── Tap-header toggle helper ───────────────────────
+      function addHeaderToggle(card, body, cardIdx) {
+        card.querySelector('.card-header').addEventListener('click', function() {
+          if (body.classList.contains('hidden')) {
+            expandCard(cardIdx);
+          } else {
+            card.classList.remove('active');
+            body.classList.add('hidden');
+          }
+        });
+      }
+
+      // ── Card builder: Strength ─────────────────────────
+      function buildStrengthCard(ex, cardIdx, restSec) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var sets   = ex.sets   || 3;
+        var reps   = ex.reps   || 0;
+        var weight = ex.target_weight_lbs || 0;
+        var repsNote   = ex.reps_note   ? ' ' + ex.reps_note   : '';
+        var weightNote = ex.weight_note ? ' ' + ex.weight_note : '';
+
+        var sub = '';
+        if (weight > 0) sub += weight + ' lbs' + weightNote + ' \u00b7 ';
+        sub += sets + '\u00d7' + reps + repsNote;
+        if (ex.notes) sub += ' \u00b7 ' + ex.notes;
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              (sub ? '<div class="card-subtitle">' + esc(sub) + '</div>' : '') +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' +
+            '<div class="set-row" style="padding-bottom:4px;">' +
+              '<div></div>' +
+              '<div class="set-col-label">Weight (lbs)</div>' +
+              '<div class="set-col-label">Reps</div>' +
+            '</div>' +
+          '</div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        for (var i = 0; i < sets; i++) {
+          var row = document.createElement('div');
+          row.className = 'set-row';
+
+          var chk = document.createElement('input');
+          chk.type = 'checkbox'; chk.className = 'set-check';
+
+          var wIn = document.createElement('input');
+          wIn.type = 'number'; wIn.className = 'set-input';
+          wIn.value = weight || ''; wIn.placeholder = 'lbs'; wIn.inputMode = 'decimal';
+
+          var rIn = document.createElement('input');
+          rIn.type = 'number'; rIn.className = 'set-input';
+          rIn.value = reps || ''; rIn.placeholder = 'reps'; rIn.inputMode = 'numeric';
+
+          allChecks.push(chk);
+          row.appendChild(chk); row.appendChild(wIn); row.appendChild(rIn);
+          body.appendChild(row);
+
+          (function(chkEl, aidx) {
+            chkEl.addEventListener('change', function() {
+              if (!chkEl.checked) return;
+              onSetChecked(aidx, restSec);
+              if (allChecks.every(function(c) { return c.checked; })) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(chk, cardIdx);
+        }
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Timed (carries, hangs) ───────────
+      function buildTimedCard(ex, cardIdx, restSec) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var sets   = ex.sets || 1;
+        var dur    = ex.duration_sec || 0;
+        var weight = ex.target_weight_lbs || 0;
+        var weightNote = ex.weight_note ? ' ' + ex.weight_note : '';
+
+        var sub = fmtDur(dur);
+        if (weight > 0) sub += ' \u00b7 ' + weight + ' lbs' + weightNote;
+        if (ex.notes) sub += ' \u00b7 ' + ex.notes;
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + esc(sub) + '</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' +
+            '<div class="set-row" style="grid-template-columns:44px 1fr;padding-bottom:4px;">' +
+              '<div></div><div class="set-col-label">Duration (sec)</div>' +
+            '</div>' +
+          '</div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        for (var i = 0; i < sets; i++) {
+          var row = document.createElement('div');
+          row.className = 'set-row'; row.style.gridTemplateColumns = '44px 1fr';
+
+          var chk = document.createElement('input');
+          chk.type = 'checkbox'; chk.className = 'set-check';
+
+          var dIn = document.createElement('input');
+          dIn.type = 'number'; dIn.className = 'set-input';
+          dIn.value = dur || ''; dIn.placeholder = 'sec'; dIn.inputMode = 'numeric';
+
+          allChecks.push(chk);
+          row.appendChild(chk); row.appendChild(dIn);
+          body.appendChild(row);
+
+          (function(chkEl, aidx) {
+            chkEl.addEventListener('change', function() {
+              if (!chkEl.checked) return;
+              onSetChecked(aidx, restSec);
+              if (allChecks.every(function(c) { return c.checked; })) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(chk, cardIdx);
+        }
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Run/Walk Interval ────────────────
+      function buildRunCard(ex, cardIdx) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var intervals = ex.intervals || 8;
+        var runSec    = ex.run_sec  || 60;
+        var walkSec   = ex.walk_sec || 180;
+        var sub = fmtDur(runSec) + ' run / ' + fmtDur(walkSec) + ' walk \u00d7 ' + intervals + ' rounds';
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + sub + '</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden"></div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        for (var i = 0; i < intervals; i++) {
+          var uid = 'int-' + cardIdx + '-' + i;
+          var row = document.createElement('div');
+          row.className = 'interval-row';
+          row.innerHTML =
+            '<input type="checkbox" class="set-check" id="' + uid + '">' +
+            '<label for="' + uid + '">Round ' + (i + 1) + '</label>';
+          var chk = row.querySelector('input');
+          allChecks.push(chk);
+          body.appendChild(row);
+
+          (function(chkEl, aidx) {
+            chkEl.addEventListener('change', function() {
+              if (!chkEl.checked) return;
+              onSetChecked(aidx, 0);
+              if (allChecks.every(function(c) { return c.checked; })) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(chk, cardIdx);
+        }
+
+        var markAllBtn = document.createElement('button');
+        markAllBtn.className = 'btn btn-secondary';
+        markAllBtn.style.marginTop = '12px';
+        markAllBtn.textContent = 'Mark all complete';
+        markAllBtn.addEventListener('click', function() {
+          allChecks.forEach(function(c) { c.checked = true; });
+          onSetChecked(cardIdx, 0);
+          markCardComplete(cardIdx); advanceCard();
+        });
+        body.appendChild(markAllBtn);
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Circuit ──────────────────────────
+      function buildCircuitCard(ex, cardIdx, restSec) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var rounds   = ex.rounds || 3;
+        var exList   = ex.exercises_in_circuit || [];
+        var sub      = rounds + ' rounds \u00b7 ' + exList.length + ' exercises';
+
+        // build reference HTML
+        var refHtml = '<div style="margin-bottom:12px;">';
+        exList.forEach(function(e, ei) {
+          var detail = '';
+          if (e.reps)         detail = e.reps + ' reps';
+          else if (e.duration_sec) detail = fmtDur(e.duration_sec);
+          else if (e.distance_m)   detail = e.distance_m + 'm';
+          if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs';
+          refHtml +=
+            '<div style="display:flex;justify-content:space-between;align-items:center;' +
+              'padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
+              'font-size:var(--font-meta);">' +
+              '<span>' + esc(e.name) + '</span>' +
+              (detail ? '<span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
+            '</div>';
+        });
+        refHtml += '</div>';
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + esc(sub) + '</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' + refHtml + '</div>';
+
+        var body = card.querySelector('.card-body');
+        var roundsDone = 0;
+
+        for (var r = 0; r < rounds; r++) {
+          var btn = document.createElement('button');
+          btn.className = 'btn btn-secondary';
+          btn.style.marginTop = '8px';
+          btn.textContent = 'Complete round ' + (r + 1);
+          body.appendChild(btn);
+
+          (function(btnEl, rIdx, aidx) {
+            btnEl.addEventListener('click', function() {
+              btnEl.disabled = true;
+              btnEl.className = 'btn btn-round-done';
+              btnEl.textContent = 'Round ' + (rIdx + 1) + ' \u2713';
+              roundsDone++;
+              onSetChecked(aidx, restSec);
+              if (roundsDone >= rounds) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(btn, r, cardIdx);
+        }
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Finisher ─────────────────────────
+      function buildFinisherCard(ex, cardIdx) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var exList = ex.exercises_in_finisher || [];
+        var note   = ex.note || 'Complete after all main work.';
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + esc(note) + '</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden"></div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        exList.forEach(function(e, ei) {
+          var lbl = document.createElement('div');
+          lbl.className = 'card-section-lbl';
+          var detail = '';
+          if (e.reps) detail = e.reps + ' reps';
+          if (e.duration_sec) detail = (e.sets ? e.sets + '\u00d7' : '') + fmtDur(e.duration_sec);
+          if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs' + (e.weight_note ? ' ' + e.weight_note : '');
+          lbl.textContent = e.name + (detail ? ' \u2014 ' + detail : '');
+          body.appendChild(lbl);
+
+          var sets = e.sets || 1;
+          for (var s = 0; s < sets; s++) {
+            var row = document.createElement('div');
+            row.className = 'set-row'; row.style.gridTemplateColumns = '44px 1fr';
+            var chk = document.createElement('input');
+            chk.type = 'checkbox'; chk.className = 'set-check';
+            var noteLbl = document.createElement('span');
+            noteLbl.style.cssText = 'font-size:var(--font-meta);color:var(--text-secondary);';
+            noteLbl.textContent = sets > 1 ? 'Set ' + (s + 1) : 'Done';
+            allChecks.push(chk);
+            row.appendChild(chk); row.appendChild(noteLbl);
+            body.appendChild(row);
+
+            (function(chkEl, aidx) {
+              chkEl.addEventListener('change', function() {
+                if (!chkEl.checked) return;
+                onSetChecked(aidx, 0);
+                if (allChecks.every(function(c) { return c.checked; })) {
+                  markCardComplete(aidx); advanceCard();
+                }
+              });
+            })(chk, cardIdx);
+          }
+        });
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Superset ─────────────────────────
+      function buildSupersetCard(ex, cardIdx, restSec) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var subExs = ex.exercises_in_superset || [];
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">Superset \u00b7 ' + subExs.length + ' exercises</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden"></div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        subExs.forEach(function(se, sei) {
+          var lbl = document.createElement('div');
+          lbl.className = 'card-section-lbl';
+          var seDetail = '';
+          if (se.target_weight_lbs) seDetail += se.target_weight_lbs + ' lbs \u00b7 ';
+          if (se.sets && se.reps) seDetail += se.sets + '\u00d7' + se.reps;
+          else if (se.sets && se.duration_sec) seDetail += se.sets + '\u00d7' + fmtDur(se.duration_sec);
+          lbl.textContent = se.name + (seDetail ? ' \u2014 ' + seDetail : '');
+          body.appendChild(lbl);
+
+          var sets       = se.sets || 1;
+          var hasDur     = !!se.duration_sec;
+          var colHdr     = document.createElement('div');
+          colHdr.className = 'set-row';
+          colHdr.style.paddingBottom = '4px';
+          if (hasDur) {
+            colHdr.style.gridTemplateColumns = '44px 1fr';
+            colHdr.innerHTML = '<div></div><div class="set-col-label">Duration (sec)</div>';
+          } else {
+            colHdr.innerHTML = '<div></div><div class="set-col-label">Weight (lbs)</div><div class="set-col-label">Reps</div>';
+          }
+          body.appendChild(colHdr);
+
+          for (var s = 0; s < sets; s++) {
+            var row = document.createElement('div');
+            row.className = 'set-row';
+            var chk = document.createElement('input');
+            chk.type = 'checkbox'; chk.className = 'set-check';
+            allChecks.push(chk);
+
+            if (hasDur) {
+              row.style.gridTemplateColumns = '44px 1fr';
+              var dIn = document.createElement('input');
+              dIn.type = 'number'; dIn.className = 'set-input';
+              dIn.value = se.duration_sec || ''; dIn.placeholder = 'sec'; dIn.inputMode = 'numeric';
+              row.appendChild(chk); row.appendChild(dIn);
+            } else {
+              var wIn = document.createElement('input');
+              wIn.type = 'number'; wIn.className = 'set-input';
+              wIn.value = se.target_weight_lbs || ''; wIn.placeholder = 'lbs'; wIn.inputMode = 'decimal';
+              var rIn = document.createElement('input');
+              rIn.type = 'number'; rIn.className = 'set-input';
+              rIn.value = se.reps || ''; rIn.placeholder = 'reps'; rIn.inputMode = 'numeric';
+              row.appendChild(chk); row.appendChild(wIn); row.appendChild(rIn);
+            }
+            body.appendChild(row);
+
+            (function(chkEl, aidx) {
+              chkEl.addEventListener('change', function() {
+                if (!chkEl.checked) return;
+                onSetChecked(aidx, restSec);
+                if (allChecks.every(function(c) { return c.checked; })) {
+                  markCardComplete(aidx); advanceCard();
+                }
+              });
+            })(chk, cardIdx);
+          }
+        });
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Cardio (single-check) ────────────
+      function buildCardioCard(ex, cardIdx) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var dur  = ex.duration_min ? ex.duration_min + ' min' : '';
+        var sub  = [dur, ex.notes].filter(Boolean).join(' \u00b7 ');
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              (sub ? '<div class="card-subtitle">' + esc(sub) + '</div>' : '') +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' +
+            '<div class="interval-row">' +
+              '<input type="checkbox" class="set-check" id="cardio-chk-' + cardIdx + '">' +
+              '<label for="cardio-chk-' + cardIdx + '">Mark complete</label>' +
+            '</div>' +
+          '</div>';
+
+        var body = card.querySelector('.card-body');
+        var chk  = body.querySelector('input');
+        chk.addEventListener('change', function() {
+          if (!chk.checked) return;
+          onSetChecked(cardIdx, 0);
+          markCardComplete(cardIdx); advanceCard();
+        });
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Card builder: Rehab ────────────────────────────
+      function buildRehabCard(ex, cardIdx) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var subExs = ex.exercises_in_rehab || [];
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + subExs.length + ' exercises</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden"></div>';
+
+        var body = card.querySelector('.card-body');
+        var allChecks = [];
+
+        subExs.forEach(function(se, sei) {
+          var lbl = document.createElement('div');
+          lbl.className = 'card-section-lbl';
+          var detail = '';
+          if (se.sets && se.reps) detail = se.sets + '\u00d7' + se.reps;
+          else if (se.duration_sec) detail = (se.sets ? se.sets + '\u00d7' : '') + fmtDur(se.duration_sec);
+          else if (se.duration_min) detail = se.duration_min + ' min';
+          if (se.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + se.target_weight_lbs + ' lbs';
+          lbl.textContent = se.name + (detail ? ' \u2014 ' + detail : '');
+          body.appendChild(lbl);
+
+          var row = document.createElement('div');
+          row.className = 'set-row'; row.style.gridTemplateColumns = '44px 1fr';
+          var chk = document.createElement('input');
+          chk.type = 'checkbox'; chk.className = 'set-check';
+          var done = document.createElement('span');
+          done.style.cssText = 'font-size:var(--font-meta);color:var(--text-secondary);';
+          done.textContent = 'Done';
+          allChecks.push(chk);
+          row.appendChild(chk); row.appendChild(done);
+          body.appendChild(row);
+
+          (function(chkEl, aidx) {
+            chkEl.addEventListener('change', function() {
+              if (!chkEl.checked) return;
+              onSetChecked(aidx, 0);
+              if (allChecks.every(function(c) { return c.checked; })) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(chk, cardIdx);
+        });
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
+      // ── Render exercise cards ──────────────────────────
+      function renderCards(exercises, dayData) {
+        var container = document.getElementById('wo-cards');
+        container.innerHTML = '';
+        cardStates = [];
+
+        if (dayData && dayData.calf_note) {
+          var noteEl = document.createElement('div');
+          noteEl.className = 'alert alert-error';
+          noteEl.style.marginBottom = '12px';
+          noteEl.textContent = dayData.calf_note;
+          container.appendChild(noteEl);
+        }
+
+        exercises.forEach(function(ex) {
+          var cardIdx = cardStates.length;
+          var strRest = restDefaults.strength       || 120;
+          var cktRest = restDefaults.circuit_round  || 90;
+          var card;
+
+          if (ex.superset) {
+            card = buildSupersetCard(ex, cardIdx, strRest);
+          } else if (ex.finisher || ex.type === 'finisher') {
+            card = buildFinisherCard(ex, cardIdx);
+          } else if (ex.type === 'circuit') {
+            card = buildCircuitCard(ex, cardIdx, cktRest);
+          } else if (ex.type === 'run') {
+            card = buildRunCard(ex, cardIdx);
+          } else if (ex.type === 'cardio') {
+            card = buildCardioCard(ex, cardIdx);
+          } else if (ex.type === 'rehab') {
+            card = buildRehabCard(ex, cardIdx);
+          } else if (ex.duration_sec) {
+            card = buildTimedCard(ex, cardIdx, strRest);
+          } else {
+            card = buildStrengthCard(ex, cardIdx, ex.rest_sec || strRest);
+          }
+
+          cardStates.push({ el: card, completed: false });
+          container.appendChild(card);
+        });
+
+        if (cardStates.length > 0) expandCard(0);
+      }
+
+      // ── Refresh button ─────────────────────────────────
+      document.getElementById('btn-wo-refresh').addEventListener('click', function() {
+        if (confirm('Swap workout? Progress will be lost.')) {
+          if (elapsedTimer) clearInterval(elapsedTimer);
+          dismissRest();
+          showScreen('preworkout');
+          if (window.initPreworkout) window.initPreworkout();
+        }
+      });
+
+      // ── Finish workout ─────────────────────────────────
+      document.getElementById('btn-finish-workout').addEventListener('click', function() {
+        if (elapsedTimer) clearInterval(elapsedTimer);
+        dismissRest();
+        window.workoutElapsedSec = elapsedSec;
+        showScreen('summary');
+      });
+
+      // ── Main init ──────────────────────────────────────
+      function initWorkout() {
+        var pw = window.pendingWorkout;
+        if (!pw) { showScreen('preworkout'); return; }
+
+        var prog = null;
+        try {
+          var cached = localStorage.getItem('programCache');
+          if (cached) prog = JSON.parse(cached).program;
+        } catch (e) {}
+
+        restDefaults = (prog && prog.rest_timer_defaults_sec) || {
+          strength: 120, circuit_round: 90, circuit_round_phase3: 60, grip_finisher: 0, run_walk: 0
+        };
+
+        var exercises = (pw.alt && pw.alt.exercises) ? pw.alt.exercises : (pw.dayData.exercises || []);
+        var label = 'Week ' + pw.weekData.week + ' Day ' + pw.dayData.day +
+                    ' \u2014 ' + (pw.alt ? pw.alt.label : pw.dayData.label);
+
+        document.getElementById('wo-title').textContent = label;
+        document.getElementById('wo-timer').textContent = '0:00';
+        document.getElementById('wo-finish-wrap').classList.add('hidden');
+
+        elapsedSec     = 0;
+        firstSetLogged = false;
+        currentCardIdx = 0;
+
+        if (elapsedTimer) clearInterval(elapsedTimer);
+        elapsedTimer = setInterval(tickElapsed, 1000);
+
+        renderCards(exercises, pw.dayData);
+      }
+
+      window.initWorkout = initWorkout;
 
     })();
 
