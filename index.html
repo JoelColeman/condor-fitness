@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Condor Fitness</title>
+  <style>
+    /* === DESIGN TOKENS === */
+    :root {
+      --bg:             #0f0f0f;
+      --card-bg:        #1a1a1a;
+      --accent:         #e63946;
+      --secondary:      #2E5FA3;
+      --text-primary:   #f0f0f0;
+      --text-secondary: #888888;
+      --success:        #2a9d5c;
+      --border:         #2a2a2a;
+
+      --font-base:  system-ui, -apple-system, sans-serif;
+      --font-ex:    16px;
+      --font-set:   15px;
+      --font-meta:  13px;
+
+      --touch-min: 44px;
+      --radius:    8px;
+      --pad:       16px;
+    }
+
+    /* === RESET / BASE === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-base);
+      font-size: var(--font-ex);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* === LAYOUT === */
+    .screen {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: var(--pad);
+    }
+
+    .hidden { display: none !important; }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .app-subtitle {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+
+    /* === CARD STYLES === */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      margin-bottom: 12px;
+    }
+
+    .card.active {
+      border-left: 3px solid var(--accent);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: var(--touch-min);
+      cursor: pointer;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: var(--font-ex);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card-subtitle {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .card-meta {
+      flex-shrink: 0;
+    }
+
+    .card-check {
+      color: var(--success);
+      font-size: 20px;
+    }
+
+    .card-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* === SET ROWS === */
+    .set-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+      min-height: var(--touch-min);
+      padding: 4px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .set-row:first-of-type { border-top: none; }
+
+    .set-check {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .set-check:checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .set-check:checked::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .set-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: var(--font-set);
+      height: var(--touch-min);
+      padding: 0 10px;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-base);
+    }
+
+    .set-input:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+
+    .set-col-label {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-align: center;
+      padding-bottom: 4px;
+    }
+
+    /* === FORM ELEMENTS === */
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-size: var(--font-ex);
+      height: 52px;
+      padding: 0 14px;
+      font-family: var(--font-base);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+
+    .form-select {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-size: var(--font-ex);
+      height: 52px;
+      padding: 0 36px 0 14px;
+      font-family: var(--font-base);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpolyline fill='none' stroke='%23888' stroke-width='1.5' points='1,1 6,6 11,1'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-hint {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .form-hint a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+
+    .form-hint strong {
+      color: var(--text-primary);
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: block;
+      width: 100%;
+      min-height: var(--touch-min);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--font-base);
+      font-size: var(--font-ex);
+      font-weight: 600;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:active { opacity: 0.8; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn + .btn { margin-top: 10px; }
+
+    .btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* === RATING WIDGETS === */
+
+    /* 1–5 tap-to-select */
+    .rating-5 {
+      display: flex;
+      gap: 8px;
+    }
+
+    .rating-5 input[type="radio"] { display: none; }
+
+    .rating-5 label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--touch-min);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: var(--font-ex);
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rating-5 input[type="radio"]:checked + label {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Calf rating: 0–3 in 0.5 steps (7 values) */
+    .rating-calf {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .rating-calf input[type="radio"] { display: none; }
+
+    .rating-calf label {
+      flex: 1;
+      min-width: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--touch-min);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: var(--font-meta);
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rating-calf input[type="radio"]:checked + label {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: #fff;
+    }
+
+    /* === REST TIMER OVERLAY === */
+    #rest-timer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 15, 0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    #rest-timer.active {
+      display: flex;
+    }
+
+    .rest-timer-count {
+      font-size: 96px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -2px;
+    }
+
+    .rest-timer-label {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .rest-timer-skip {
+      margin-top: 28px;
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-base);
+      padding: 8px 16px;
+      min-height: var(--touch-min);
+    }
+
+    /* === WORKOUT HEADER === */
+    .workout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .workout-title {
+      font-size: 18px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .workout-timer {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .workout-refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      min-height: var(--touch-min);
+      min-width: var(--touch-min);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* === SECTION TITLE === */
+    .section-title {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    .section-title:first-child { margin-top: 0; }
+
+    /* === ALERTS === */
+    .alert {
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      font-size: var(--font-meta);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .alert-error {
+      background: rgba(230, 57, 70, 0.12);
+      border: 1px solid var(--accent);
+      color: #f99;
+    }
+
+    .alert-success {
+      background: rgba(42, 157, 92, 0.12);
+      border: 1px solid var(--success);
+      color: #8ef0b6;
+    }
+
+    /* === DIVIDER === */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* === FINISH WRAP === */
+    .finish-wrap {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* === PRE-WORKOUT SCREEN === */
+    .preworkout-next-label {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .preworkout-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .preworkout-meta {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Screen 1: First Run Setup
+       ═══════════════════════════════════════════════════════ -->
+  <div id="screen-setup" class="screen hidden">
+    <div class="app-title">Condor Fitness</div>
+    <div class="app-subtitle">First Run Setup</div>
+
+    <div id="setup-error" class="alert alert-error hidden"></div>
+
+    <div class="form-group">
+      <label class="form-label" for="input-token">GitHub Personal Access Token</label>
+      <input
+        type="password"
+        id="input-token"
+        class="form-input"
+        placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+      >
+      <p class="form-hint">
+        Create a token at
+        <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer">github.com/settings/tokens</a>
+        with <strong>repo</strong> scope selected.
+      </p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="input-repo">Repository</label>
+      <input
+        type="text"
+        id="input-repo"
+        class="form-input"
+        value="JoelColeman/condor-fitness"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Last Completed Workout</label>
+      <div class="form-row">
+        <div>
+          <label class="form-label" for="select-week">Week</label>
+          <select id="select-week" class="form-select"></select>
+        </div>
+        <div>
+          <label class="form-label" for="select-day">Day</label>
+          <select id="select-day" class="form-select"></select>
+        </div>
+      </div>
+      <p class="form-hint">The app will start you on the next workout after this.</p>
+    </div>
+
+    <button class="btn btn-primary" id="btn-setup-save">Save &amp; Continue</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Screen 2: Pre-Workout Prompt (shell — logic not yet built)
+       ═══════════════════════════════════════════════════════ -->
+  <div id="screen-preworkout" class="screen hidden">
+    <!-- Phase 2 will populate this screen -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       Rest Timer Overlay (used by Screen 3)
+       ═══════════════════════════════════════════════════════ -->
+  <div id="rest-timer">
+    <div class="rest-timer-count" id="rest-timer-count">2:00</div>
+    <div class="rest-timer-label">Rest</div>
+    <button class="rest-timer-skip" id="rest-timer-skip">Skip</button>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // Screen Router
+    // ═══════════════════════════════════════════════════════
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(function(s) {
+        s.classList.add('hidden');
+      });
+      var el = document.getElementById('screen-' + id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Screen 1: First Run Setup
+    // ═══════════════════════════════════════════════════════
+    (function() {
+      var weekSel = document.getElementById('select-week');
+      var daySel  = document.getElementById('select-day');
+
+      // Populate week options 3–10
+      for (var w = 3; w <= 10; w++) {
+        var opt = document.createElement('option');
+        opt.value = w;
+        opt.textContent = 'Week ' + w;
+        if (w === 3) opt.selected = true;
+        weekSel.appendChild(opt);
+      }
+
+      // Populate day options 1–4
+      for (var d = 1; d <= 4; d++) {
+        var opt2 = document.createElement('option');
+        opt2.value = d;
+        opt2.textContent = 'Day ' + d;
+        if (d === 1) opt2.selected = true;
+        daySel.appendChild(opt2);
+      }
+
+      document.getElementById('btn-setup-save').addEventListener('click', function() {
+        var token = document.getElementById('input-token').value.trim();
+        var repo  = document.getElementById('input-repo').value.trim();
+        var week  = parseInt(weekSel.value, 10);
+        var day   = parseInt(daySel.value, 10);
+        var errEl = document.getElementById('setup-error');
+
+        errEl.classList.add('hidden');
+        errEl.textContent = '';
+
+        if (!token) {
+          errEl.textContent = 'GitHub token is required.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        if (!repo || repo.indexOf('/') === -1) {
+          errEl.textContent = 'Repo must be in owner/name format (e.g. JoelColeman/condor-fitness).';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        localStorage.setItem('githubToken', token);
+        localStorage.setItem('githubRepo', repo);
+        localStorage.setItem('lastCompleted', JSON.stringify({ week: week, day: day }));
+
+        showScreen('preworkout');
+      });
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    // Init — route to Screen 1 or Screen 2
+    // ═══════════════════════════════════════════════════════
+    function init() {
+      var token = localStorage.getItem('githubToken');
+      if (!token) {
+        showScreen('setup');
+      } else {
+        showScreen('preworkout');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
