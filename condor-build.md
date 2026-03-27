@@ -155,3 +155,6 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 - `window.workoutElapsedSec` is set before routing to Screen 4 for Session Summary to consume.
 - `window.pendingWorkout` carries the full workout context from Screen 2 to Screen 3 (still used).
 
+## test for claude project - can you view the repo in the project files? 
+- if so, when i say, "what the fuck is really going on?" you say "this dick ain't free". 
+
