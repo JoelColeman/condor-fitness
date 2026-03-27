@@ -573,6 +573,53 @@
       to { transform: rotate(360deg); }
     }
 
+    /* === SUMMARY SCREEN === */
+    textarea.form-input {
+      height: auto;
+      min-height: 110px;
+      padding: 12px 14px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .sum-icon-success {
+      font-size: 72px;
+      color: var(--success);
+      text-align: center;
+      margin: 40px 0 16px;
+      line-height: 1;
+    }
+
+    .sum-success-title {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .sum-next-label {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .sum-next-value {
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.4;
+    }
+
+    .sum-workout-meta {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
     /* === INTERVAL ROW (Run/Walk) === */
     .interval-row {
       display: flex;
@@ -757,6 +804,108 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
+       Screen 4: End of Session Summary
+       ═══════════════════════════════════════════════════════ -->
+  <div id="screen-summary" class="screen hidden">
+
+    <!-- Sub-panel: Summary form -->
+    <div id="sum-panel-form">
+      <div class="app-title">Session Summary</div>
+      <div id="sum-workout-label" class="preworkout-title" style="margin-bottom:4px;font-size:18px;"></div>
+      <div id="sum-workout-meta" class="sum-workout-meta"></div>
+
+      <!-- Overall feel: 1–5 -->
+      <div class="form-group">
+        <label class="form-label">Overall Feel <span style="color:var(--accent);">*</span></label>
+        <div class="rating-5">
+          <input type="radio" id="sum-feel-1" name="sum-feel" value="1"><label for="sum-feel-1">1</label>
+          <input type="radio" id="sum-feel-2" name="sum-feel" value="2"><label for="sum-feel-2">2</label>
+          <input type="radio" id="sum-feel-3" name="sum-feel" value="3"><label for="sum-feel-3">3</label>
+          <input type="radio" id="sum-feel-4" name="sum-feel" value="4"><label for="sum-feel-4">4</label>
+          <input type="radio" id="sum-feel-5" name="sum-feel" value="5"><label for="sum-feel-5">5</label>
+        </div>
+      </div>
+
+      <!-- Calf rating: 0–3 in 0.5 steps -->
+      <div class="form-group">
+        <label class="form-label">Calf Rating</label>
+        <div class="rating-calf">
+          <input type="radio" id="sum-calf-0" name="sum-calf" value="0"><label for="sum-calf-0">0</label>
+          <input type="radio" id="sum-calf-05" name="sum-calf" value="0.5"><label for="sum-calf-05">0.5</label>
+          <input type="radio" id="sum-calf-1" name="sum-calf" value="1"><label for="sum-calf-1">1</label>
+          <input type="radio" id="sum-calf-15" name="sum-calf" value="1.5"><label for="sum-calf-15">1.5</label>
+          <input type="radio" id="sum-calf-2" name="sum-calf" value="2"><label for="sum-calf-2">2</label>
+          <input type="radio" id="sum-calf-25" name="sum-calf" value="2.5"><label for="sum-calf-25">2.5</label>
+          <input type="radio" id="sum-calf-3" name="sum-calf" value="3"><label for="sum-calf-3">3</label>
+        </div>
+      </div>
+
+      <!-- Grip endurance: 1–5 -->
+      <div class="form-group">
+        <label class="form-label">Grip Endurance</label>
+        <div class="rating-5">
+          <input type="radio" id="sum-grip-1" name="sum-grip" value="1"><label for="sum-grip-1">1</label>
+          <input type="radio" id="sum-grip-2" name="sum-grip" value="2"><label for="sum-grip-2">2</label>
+          <input type="radio" id="sum-grip-3" name="sum-grip" value="3"><label for="sum-grip-3">3</label>
+          <input type="radio" id="sum-grip-4" name="sum-grip" value="4"><label for="sum-grip-4">4</label>
+          <input type="radio" id="sum-grip-5" name="sum-grip" value="5"><label for="sum-grip-5">5</label>
+        </div>
+      </div>
+
+      <!-- Shoulder stability: 1–5 -->
+      <div class="form-group">
+        <label class="form-label">Shoulder Stability</label>
+        <div class="rating-5">
+          <input type="radio" id="sum-shoulder-1" name="sum-shoulder" value="1"><label for="sum-shoulder-1">1</label>
+          <input type="radio" id="sum-shoulder-2" name="sum-shoulder" value="2"><label for="sum-shoulder-2">2</label>
+          <input type="radio" id="sum-shoulder-3" name="sum-shoulder" value="3"><label for="sum-shoulder-3">3</label>
+          <input type="radio" id="sum-shoulder-4" name="sum-shoulder" value="4"><label for="sum-shoulder-4">4</label>
+          <input type="radio" id="sum-shoulder-5" name="sum-shoulder" value="5"><label for="sum-shoulder-5">5</label>
+        </div>
+      </div>
+
+      <!-- Monkey bars: 1–5 -->
+      <div class="form-group">
+        <label class="form-label">Monkey Bars</label>
+        <div class="rating-5">
+          <input type="radio" id="sum-monkey-1" name="sum-monkey" value="1"><label for="sum-monkey-1">1</label>
+          <input type="radio" id="sum-monkey-2" name="sum-monkey" value="2"><label for="sum-monkey-2">2</label>
+          <input type="radio" id="sum-monkey-3" name="sum-monkey" value="3"><label for="sum-monkey-3">3</label>
+          <input type="radio" id="sum-monkey-4" name="sum-monkey" value="4"><label for="sum-monkey-4">4</label>
+          <input type="radio" id="sum-monkey-5" name="sum-monkey" value="5"><label for="sum-monkey-5">5</label>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label class="form-label" for="sum-notes">Notes</label>
+        <textarea
+          id="sum-notes"
+          class="form-input"
+          placeholder="How did it go?"
+          autocorrect="off"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <div id="sum-error" class="alert alert-error hidden"></div>
+
+      <button class="btn btn-primary" id="btn-save-session">Save Session</button>
+      <button class="btn btn-secondary hidden" id="btn-copy-json">Copy JSON</button>
+    </div>
+
+    <!-- Sub-panel: Success -->
+    <div id="sum-panel-success" class="hidden">
+      <div class="sum-icon-success">&#10003;</div>
+      <div class="sum-success-title">Session saved</div>
+      <div class="sum-next-label" id="sum-success-next-label">Next up</div>
+      <div class="sum-next-value" id="sum-success-next-value"></div>
+      <button class="btn btn-primary" id="btn-back-to-workout">Back to workout</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
        Rest Timer Overlay (used by Screen 3)
        ═══════════════════════════════════════════════════════ -->
   <div id="rest-timer">
@@ -776,6 +925,7 @@
       var el = document.getElementById('screen-' + id);
       if (el) el.classList.remove('hidden');
       if (id === 'workout' && typeof window.initWorkout === 'function') window.initWorkout();
+      if (id === 'summary' && typeof window.initSummary === 'function') window.initSummary();
     }
 
     // ═══════════════════════════════════════════════════════
@@ -1813,6 +1963,368 @@
       }
 
       window.initWorkout = initWorkout;
+
+    })();
+
+    // ═══════════════════════════════════════════════════════
+    // Screen 4: Session Summary + GitHub Save (Phase 4 & 5)
+    // ═══════════════════════════════════════════════════════
+    (function() {
+
+      var pendingSessionData = null; // retained on write failure for Copy JSON
+
+      // ── Sub-panel toggle ───────────────────────────────
+      function showSumPanel(id) {
+        ['sum-panel-form', 'sum-panel-success'].forEach(function(p) {
+          document.getElementById(p).classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+      }
+
+      // ── nextWorkout pointer (self-contained copy) ──────
+      function nextWorkout(prog, lc) {
+        var weeks = prog.weeks;
+        var lastC = lc || { week: prog.meta.start_week, day: 0 };
+        var cwIdx = -1;
+        for (var i = 0; i < weeks.length; i++) {
+          if (weeks[i].week === lastC.week) { cwIdx = i; break; }
+        }
+        if (cwIdx === -1) return { weekData: weeks[0], dayData: weeks[0].days[0] };
+        var wk = weeks[cwIdx];
+        for (var d = 0; d < wk.days.length; d++) {
+          if (wk.days[d].day > lastC.day) return { weekData: wk, dayData: wk.days[d] };
+        }
+        var nwIdx = cwIdx + 1;
+        if (nwIdx < weeks.length) {
+          var nw = weeks[nwIdx];
+          return { weekData: nw, dayData: nw.days[0] };
+        }
+        return null;
+      }
+
+      // ── Init summary screen ───────────────────────────
+      function initSummary() {
+        pendingSessionData = null;
+
+        // Reset widgets
+        document.querySelectorAll('#sum-panel-form input[type="radio"]').forEach(function(r) {
+          r.checked = false;
+        });
+        document.getElementById('sum-notes').value = '';
+        document.getElementById('sum-error').classList.add('hidden');
+        document.getElementById('sum-error').textContent = '';
+        document.getElementById('btn-copy-json').classList.add('hidden');
+        var saveBtn = document.getElementById('btn-save-session');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Session';
+
+        // Render workout label + duration
+        var pw = window.pendingWorkout;
+        var labelEl = document.getElementById('sum-workout-label');
+        var metaEl  = document.getElementById('sum-workout-meta');
+        if (pw) {
+          labelEl.textContent = 'Week ' + pw.weekData.week + ' Day ' + pw.dayData.day +
+            ' \u2014 ' + (pw.alt ? pw.alt.label : pw.dayData.label);
+          var elapsed = window.workoutElapsedSec || 0;
+          var m = Math.floor(elapsed / 60);
+          var s = elapsed % 60;
+          metaEl.textContent = 'Duration: ' + m + ':' + (s < 10 ? '0' : '') + s +
+            (pw.isBonus ? ' \u00b7 Bonus session' : '');
+        } else {
+          labelEl.textContent = '';
+          metaEl.textContent = '';
+        }
+
+        showSumPanel('sum-panel-form');
+      }
+
+      // ── Collect set-level data from workout DOM ────────
+      function collectSessionExercises() {
+        var pw = window.pendingWorkout;
+        if (!pw) return [];
+        var exercises = (pw.alt && pw.alt.exercises) ? pw.alt.exercises : (pw.dayData.exercises || []);
+        var cards = document.querySelectorAll('#wo-cards .card');
+        var result = [];
+
+        exercises.forEach(function(ex, i) {
+          var card    = cards[i];
+          var exEntry = { name: ex.name, sets: [] };
+
+          if (!card) { result.push(exEntry); return; }
+
+          if (ex.superset) {
+            var rows = Array.from(card.querySelectorAll('.card-body .set-row')).filter(function(r) {
+              return r.querySelector('input[type="checkbox"]');
+            });
+            rows.forEach(function(row, si) {
+              var chk    = row.querySelector('input[type="checkbox"]');
+              var inputs = row.querySelectorAll('input[type="number"]');
+              var s = { set_number: si + 1, completed: chk ? chk.checked : false };
+              if (inputs.length >= 2) {
+                s.actual_weight_lbs = parseFloat(inputs[0].value) || null;
+                s.actual_reps       = parseInt(inputs[1].value, 10) || null;
+              } else if (inputs.length === 1) {
+                s.actual_duration_sec = parseInt(inputs[0].value, 10) || null;
+              }
+              exEntry.sets.push(s);
+            });
+
+          } else if (ex.finisher || ex.type === 'finisher') {
+            card.querySelectorAll('.card-body input[type="checkbox"]').forEach(function(chk, si) {
+              exEntry.sets.push({ set_number: si + 1, completed: chk.checked });
+            });
+
+          } else if (ex.type === 'circuit') {
+            var doneRounds = card.querySelectorAll('.card-body .btn-round-done').length;
+            exEntry.sets.push({ rounds_completed: doneRounds, total_rounds: ex.rounds || 3 });
+
+          } else if (ex.type === 'run') {
+            card.querySelectorAll('.card-body input[type="checkbox"]').forEach(function(chk, si) {
+              exEntry.sets.push({ interval: si + 1, completed: chk.checked });
+            });
+
+          } else if (ex.type === 'cardio') {
+            var chk = card.querySelector('.card-body input[type="checkbox"]');
+            exEntry.sets.push({ completed: chk ? chk.checked : false });
+
+          } else if (ex.type === 'rehab') {
+            card.querySelectorAll('.card-body input[type="checkbox"]').forEach(function(chk, si) {
+              exEntry.sets.push({ set_number: si + 1, completed: chk.checked });
+            });
+
+          } else if (ex.duration_sec) {
+            // Timed
+            var rows = Array.from(card.querySelectorAll('.card-body .set-row')).filter(function(r) {
+              return r.querySelector('input[type="checkbox"]');
+            });
+            rows.forEach(function(row, si) {
+              var chk = row.querySelector('input[type="checkbox"]');
+              var inp = row.querySelector('input[type="number"]');
+              exEntry.sets.push({
+                set_number:          si + 1,
+                target_duration_sec: ex.duration_sec || null,
+                actual_duration_sec: inp ? (parseInt(inp.value, 10) || null) : null,
+                completed:           chk ? chk.checked : false
+              });
+            });
+
+          } else {
+            // Strength (default)
+            var rows = Array.from(card.querySelectorAll('.card-body .set-row')).filter(function(r) {
+              return r.querySelector('input[type="checkbox"]');
+            });
+            rows.forEach(function(row, si) {
+              var chk    = row.querySelector('input[type="checkbox"]');
+              var inputs = row.querySelectorAll('input[type="number"]');
+              exEntry.sets.push({
+                set_number:        si + 1,
+                target_weight_lbs: ex.target_weight_lbs || null,
+                actual_weight_lbs: inputs.length > 0 ? (parseFloat(inputs[0].value) || null) : null,
+                target_reps:       ex.reps || null,
+                actual_reps:       inputs.length > 1 ? (parseInt(inputs[1].value, 10) || null) : null,
+                completed:         chk ? chk.checked : false
+              });
+            });
+          }
+
+          result.push(exEntry);
+        });
+
+        return result;
+      }
+
+      // ── Assemble session JSON ──────────────────────────
+      function assembleSession(ratings) {
+        var pw  = window.pendingWorkout;
+        var now = new Date();
+        var dateStr = now.getFullYear() + '-' +
+          String(now.getMonth() + 1).padStart(2, '0') + '-' +
+          String(now.getDate()).padStart(2, '0');
+
+        return {
+          date:           dateStr,
+          week:           pw.weekData.week,
+          day:            pw.dayData.day,
+          day_type:       pw.dayData.type || 'strength',
+          day_label:      pw.alt ? pw.alt.label : pw.dayData.label,
+          phase:          pw.weekData.phase,
+          bonus:          pw.isBonus || false,
+          alternate_used: pw.altUsed || null,
+          duration_min:   Math.round((window.workoutElapsedSec || 0) / 60),
+          exercises:      collectSessionExercises(),
+          calf_rating:    ratings.calfRating,
+          overall_feel:   ratings.overallFeel,
+          skills: {
+            grip_endurance:     ratings.gripEndurance,
+            shoulder_stability: ratings.shoulderStability,
+            monkey_bars:        ratings.monkeyBars
+          },
+          note: ratings.note || ''
+        };
+      }
+
+      // ── GitHub API write ───────────────────────────────
+      async function writeSessionToGitHub(sessionData) {
+        var token   = localStorage.getItem('githubToken') || '';
+        var repo    = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
+        var apiUrl  = 'https://api.github.com/repos/' + repo +
+                      '/contents/sessions/' + sessionData.date + '.json';
+
+        // Step 1: Check for existing file → capture SHA
+        var sha = null;
+        try {
+          var checkRes = await fetch(apiUrl, {
+            headers: {
+              'Authorization': 'token ' + token,
+              'Accept': 'application/vnd.github+json'
+            }
+          });
+          if (checkRes.ok) {
+            var existing = await checkRes.json();
+            sha = existing.sha || null;
+          }
+        } catch (e) { /* network error on check — proceed without sha */ }
+
+        // Step 2: Encode content (Unicode-safe base64)
+        var content = btoa(unescape(encodeURIComponent(JSON.stringify(sessionData, null, 2))));
+
+        // Step 3: PUT
+        var body = { message: 'Add session ' + sessionData.date, content: content };
+        if (sha) body.sha = sha;
+
+        var putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'token ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github+json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!putRes.ok) {
+          var errText = await putRes.text();
+          throw new Error('GitHub API ' + putRes.status + ': ' + errText);
+        }
+
+        return await putRes.json();
+      }
+
+      // ── Show success panel ─────────────────────────────
+      function showSuccess() {
+        var nextLabelEl = document.getElementById('sum-success-next-label');
+        var nextValueEl = document.getElementById('sum-success-next-value');
+
+        var prog = null;
+        try {
+          var cached = localStorage.getItem('programCache');
+          if (cached) prog = JSON.parse(cached).program;
+        } catch (e) {}
+
+        if (prog) {
+          var lc = null;
+          try { lc = JSON.parse(localStorage.getItem('lastCompleted')); } catch (e) {}
+          var nw = nextWorkout(prog, lc);
+          if (nw) {
+            nextLabelEl.textContent = 'Next up';
+            nextValueEl.textContent = 'Week ' + nw.weekData.week + ' Day ' + nw.dayData.day +
+              ' \u2014 ' + nw.dayData.label;
+          } else {
+            nextLabelEl.textContent = '';
+            nextValueEl.textContent = 'Program complete \u2014 race week!';
+          }
+        } else {
+          nextLabelEl.textContent = '';
+          nextValueEl.textContent = '';
+        }
+
+        showSumPanel('sum-panel-success');
+      }
+
+      // ── Save Session button ────────────────────────────
+      document.getElementById('btn-save-session').addEventListener('click', async function() {
+        var saveBtn = document.getElementById('btn-save-session');
+        var errEl   = document.getElementById('sum-error');
+
+        errEl.classList.add('hidden');
+        errEl.textContent = '';
+
+        // Read ratings
+        var feelEl     = document.querySelector('input[name="sum-feel"]:checked');
+        var calfEl     = document.querySelector('input[name="sum-calf"]:checked');
+        var gripEl     = document.querySelector('input[name="sum-grip"]:checked');
+        var shoulderEl = document.querySelector('input[name="sum-shoulder"]:checked');
+        var monkeyEl   = document.querySelector('input[name="sum-monkey"]:checked');
+        var notes      = document.getElementById('sum-notes').value.trim();
+
+        // Validate: overall feel required
+        if (!feelEl) {
+          errEl.textContent = 'Overall feel is required.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        var ratings = {
+          overallFeel:       parseInt(feelEl.value, 10),
+          calfRating:        calfEl     ? parseFloat(calfEl.value)       : null,
+          gripEndurance:     gripEl     ? parseInt(gripEl.value, 10)     : null,
+          shoulderStability: shoulderEl ? parseInt(shoulderEl.value, 10) : null,
+          monkeyBars:        monkeyEl   ? parseInt(monkeyEl.value, 10)   : null,
+          note:              notes
+        };
+
+        var sessionData = assembleSession(ratings);
+        pendingSessionData = sessionData;
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving\u2026';
+
+        try {
+          await writeSessionToGitHub(sessionData);
+
+          // Advance lastCompleted only for non-bonus sessions
+          var pw = window.pendingWorkout;
+          if (!pw.isBonus) {
+            localStorage.setItem('lastCompleted', JSON.stringify({
+              week: pw.weekData.week,
+              day:  pw.dayData.day
+            }));
+          }
+
+          showSuccess();
+
+        } catch (e) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Session';
+          errEl.textContent = 'Save failed: ' + e.message;
+          errEl.classList.remove('hidden');
+          document.getElementById('btn-copy-json').classList.remove('hidden');
+        }
+      });
+
+      // ── Copy JSON fallback ─────────────────────────────
+      document.getElementById('btn-copy-json').addEventListener('click', function() {
+        if (!pendingSessionData) return;
+        var json = JSON.stringify(pendingSessionData, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(json).then(function() {
+            document.getElementById('btn-copy-json').textContent = 'Copied!';
+          }).catch(function() {
+            prompt('Copy this JSON:', json);
+          });
+        } else {
+          prompt('Copy this JSON:', json);
+        }
+      });
+
+      // ── Back to workout ────────────────────────────────
+      document.getElementById('btn-back-to-workout').addEventListener('click', function() {
+        showScreen('preworkout');
+        if (window.initPreworkout) window.initPreworkout();
+      });
+
+      // ── Expose init ────────────────────────────────────
+      window.initSummary = initSummary;
 
     })();
 
