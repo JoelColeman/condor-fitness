@@ -1,5 +1,5 @@
 # Condor Fitness — Build Spec
-Version 1.1 — March 22, 2026
+Version 1.2 — March 27, 2026
 Repo: JoelColeman/condor-fitness
 
 This document is the source of truth for what the app
@@ -32,7 +32,6 @@ Status: Planned. Not yet built.
 ---
 
 ## Repo Structure
-
 ```
 JoelColeman/condor-fitness/
   index.html              ← Build 1 (workout companion)
@@ -55,10 +54,10 @@ App URL: https://joelcoleman.github.io/condor-fitness/
 
 | Key | Description |
 |-----|-------------|
-| `githubToken` | GitHub personal access token (repo scope). Set once on first run. Never shown again. |
+| `githubToken` | GitHub personal access token. Requires Contents: read/write on the condor-fitness repo. Set once on first run. |
 | `githubRepo` | Repo string: "JoelColeman/condor-fitness". Set once on first run. |
-| `lastCompleted` | Object: `{ week: 3, day: 1 }`. Updated after each saved session. Drives next workout logic. Default: week 3, day 1 (Week 3 Day 1 was completed 3/22/2026). |
-| `programCache` | Cached copy of program.json. Re-fetched if older than 24 hours. |
+| `lastCompleted` | Object: `{ week: 3, day: 1 }`. Updated after each saved non-bonus session. Drives next workout logic. Default: week 3, day 1. |
+| `programCache` | Cached copy of program.json with timestamp. Re-fetched if older than 24 hours. |
 
 ---
 
@@ -71,8 +70,6 @@ Fields:
 - GitHub Personal Access Token
 - Repo name (pre-filled: JoelColeman/condor-fitness)
 - Last completed: Week [3–10] Day [1–4] (default: Week 3, Day 1)
-
-Instruction shown: "Create a token at github.com/settings/tokens with 'repo' scope selected."
 
 Save → writes all to localStorage → go to Screen 2.
 
@@ -133,14 +130,21 @@ Completed cards show a green checkmark in header.
 
 **Circuit Card:**
 - Shows round count
-- Grid: exercises as rows, rounds as columns
-- Each cell is a checkbox
-- OR: per-round "Complete round [N]" button with full exercise list shown for reference
+- Per-round "Complete round [N]" button with full exercise list shown for reference
 
 **Finisher Card:**
 - Labeled "Grip Finisher"
 - Note shown: "Complete after all circuit rounds."
-- Per-exercise checkboxes same as strength card
+- Per-exercise checkboxes
+
+**Superset Card:**
+- Sub-exercise sections with weight+reps or duration inputs
+
+**Cardio Card:**
+- Single "Mark complete" checkbox (e.g. Stair Stepper, Row Erg)
+
+**Rehab Card:**
+- Per-sub-exercise "Done" checkboxes (e.g. Calf Rehab)
 
 #### Rest Timer
 Auto-starts when a set is checked.
@@ -160,29 +164,37 @@ Tapping it goes to Screen 4 regardless of completion state.
 ---
 
 ### Screen 4 — End of Session Summary
-Shown when all exercises checked OR "Finish" tapped.
+Shown when "Finish Workout" is tapped.
 
-Fields:
-- Overall feel: 1 2 3 4 5 (tap to select)
-- Calf rating: 0 to 3 in 0.5 steps (tap or slider)
-- Grip endurance: 1 2 3 4 5
-- Shoulder stability: 1 2 3 4 5
-- Monkey bars: 1 2 3 4 5
+Displays workout label and duration at top.
+
+**Always shown:**
+- Overall feel: 1–5 (tap to select, required)
+- Calf rating: 0–10 whole numbers (tap to select, optional)
+  - 0 = no awareness. >2 = flag per program rules.
+  - Hint shown: "(0 = none, >2 = flag)"
 - Notes: free text field
+
+**Conditionally shown** (based on exercises in current workout):
+- Grip endurance: 1–5 — shown if workout contains a finisher or any exercise with "farmer" or "carry" in the name
+- Shoulder stability: 1–5 — shown if workout contains a timed exercise (dead hangs) or any exercise with "pull-up" or "row" in the name
+- Monkey bars: 1–5 — shown if any exercise name contains "monkey"
+
+All skill ratings are optional even when shown.
 
 "Save Session" button.
 
 **On Save:**
-1. Assemble session JSON (schema below)
-2. Write `sessions/YYYY-MM-DD.json` to GitHub via API
-3. If not bonus: advance `lastCompleted`, write to localStorage
-4. Show success screen with green ✓ and next workout preview
-5. If GitHub write fails: show error + "Copy JSON" button so no data is lost
+1. Validate overall feel is set (required — show inline error if missing)
+2. Assemble session JSON (schema below)
+3. Write `sessions/YYYY-MM-DD.json` to GitHub via API
+4. If not bonus: advance `lastCompleted`, write to localStorage
+5. Show success screen with green ✓ and next workout preview
+6. If GitHub write fails: show inline error + "Copy JSON" button so no data is lost. Do not advance `lastCompleted`.
 
 ---
 
 ## Session JSON Schema
-
 ```json
 {
   "date": "2026-03-22",
@@ -209,7 +221,7 @@ Fields:
       ]
     }
   ],
-  "calf_rating": 1.0,
+  "calf_rating": 1,
   "overall_feel": 4,
   "skills": {
     "grip_endurance": 3,
@@ -219,6 +231,11 @@ Fields:
   "note": "Felt strong. Calf stable throughout."
 }
 ```
+
+**Schema notes:**
+- `calf_rating`: integer 0–10. Lower is better. Omitted if not rated.
+- `skills`: object containing only keys for ratings that were both shown (exercise matched) and filled in. May be empty `{}`. Keys omitted individually if not rated.
+- `overall_feel`: integer 1–5. Required — session will not save without it.
 
 ---
 
@@ -233,7 +250,7 @@ This is used between sets — not admired.
 | Background | `#0f0f0f` | Page background |
 | Card background | `#1a1a1a` | Exercise cards |
 | Primary accent | `#e63946` | Red — Spartan/Condor |
-| Secondary | `#2E5FA3` | Blue |
+| Secondary | `#2E5FA3` | Blue — calf rating selected state |
 | Text primary | `#f0f0f0` | Main text |
 | Text secondary | `#888888` | Labels, meta |
 | Success | `#2a9d5c` | Save confirmation |
@@ -285,6 +302,8 @@ GET https://api.github.com/repos/{owner}/{repo}/contents/sessions/{filename}
 Handle errors gracefully. If write fails, do not lose
 the data — surface a "Copy JSON" fallback.
 
+Base64 encoding: `btoa(unescape(encodeURIComponent(JSON.stringify(sessionData, null, 2))))` — handles Unicode in notes field.
+
 ---
 
 ## program.json Read
@@ -297,16 +316,9 @@ https://raw.githubusercontent.com/JoelColeman/condor-fitness/main/program.json
 Cache in localStorage as `programCache`.
 Re-fetch if cache is older than 24 hours or on manual refresh.
 
-Used to:
-1. Determine next workout from `lastCompleted` pointer
-2. Render exercise cards with targets
-3. Source alternate workouts
-4. Get rest timer defaults per exercise type
-
 ---
 
 ## Workout Pointer Logic
-
 ```
 lastCompleted = { week: 3, day: 1 }
 
@@ -324,16 +336,13 @@ On save (non-bonus):
 
 Sequential only — no date logic. If Joel skips a day,
 the app shows the same next workout whenever he opens it.
-If he wants to skip ahead, the pre-workout prompt has
-an alternate/bonus selector.
 
 ---
 
 ## Out of Scope — Build 1
 
-Explicitly deferred to later builds or future phases:
 - Dashboard / athletic history visualization (Build 2)
-- Oura Ring or Apple Health sync (future — requires desktop Claude Code)
+- Oura Ring or Apple Health sync (future)
 - Any AI or LLM API calls (none, ever)
 - User authentication beyond GitHub token
 - Multiple athlete support
@@ -346,7 +355,9 @@ Explicitly deferred to later builds or future phases:
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-03-22 | Initial spec created | Build 1 kickoff |
+| 2026-03-27 | Phases 4 & 5 built: Screen 4, GitHub API write, success flow | Build complete |
+| 2026-03-27 | Calf rating changed from float 0–3 (0.5 steps) to integer 0–10. Hint text added. | Program uses 0–10 pain scale |
+| 2026-03-27 | Skill ratings (grip, shoulder, monkey bars) made conditional on workout content | Monkey bars shouldn't appear on days without them |
+| 2026-03-27 | Cardio and Rehab card types added to Screen 3 | program.json contains these types |
 
-*This table is updated by Chat whenever the spec changes.
-Code notes deviations in condor-build.md; Chat updates
-this table and the relevant sections above.*
+*This table is updated by Chat whenever the spec changes.*
