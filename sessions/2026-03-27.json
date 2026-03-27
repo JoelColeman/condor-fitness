@@ -1,0 +1,47 @@
+{
+  "date": "2026-03-27",
+  "week": 3,
+  "day": 4,
+  "day_type": "circuit",
+  "day_label": "Spartan Circuit",
+  "phase": "foundation",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 0,
+  "exercises": [
+    {
+      "name": "Main Circuit",
+      "sets": [
+        {
+          "rounds_completed": 4,
+          "total_rounds": 4
+        }
+      ]
+    },
+    {
+      "name": "Grip Finisher",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 5,
+  "skills": {
+    "grip_endurance": 3,
+    "shoulder_stability": 3,
+    "monkey_bars": 3
+  },
+  "note": "Test"
+}
