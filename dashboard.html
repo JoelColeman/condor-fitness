@@ -90,24 +90,37 @@
     /* Section 1: Race Countdown */
     .countdown-banner {
       text-align: center;
-      padding: 28px 16px 24px;
+      padding: 14px 16px 12px;
     }
-    .countdown-days {
-      font-size: 80px;
+    .countdown-grid {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .countdown-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 52px;
+    }
+    .countdown-num {
+      font-size: 52px;
       font-weight: 900;
       line-height: 1;
       color: var(--accent);
+      font-variant-numeric: tabular-nums;
     }
-    .countdown-days-label {
-      font-size: 13px;
-      letter-spacing: 3px;
+    .countdown-lbl {
+      font-size: 10px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-top: 4px;
+      margin-top: 3px;
     }
     .countdown-phase {
-      margin-top: 12px;
-      font-size: 15px;
+      margin-top: 8px;
+      font-size: 14px;
       color: var(--text-primary);
       font-weight: 600;
     }
@@ -244,6 +257,14 @@
       vertical-align: middle;
     }
     .run-done { color: var(--success); font-weight: 700; }
+    .run-table th:first-child,
+    .run-table td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--card-bg);
+      z-index: 1;
+      border-right: 1px solid var(--border);
+    }
 
     /* Section 7: Training Timeline */
     .timeline-scroll-wrap {
@@ -429,6 +450,12 @@
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  function decodeHtml(str) {
+    if (!str) return '';
+    var el = document.createElement('textarea');
+    el.innerHTML = str;
+    return el.value;
+  }
   function sectionError(el, msg) {
     el.innerHTML = '<div class="section-error">&#9888; ' + esc(msg) + '</div>';
   }
@@ -493,15 +520,10 @@
   }
 
   // ---- Section 1: Race Countdown ----
+  var countdownInterval = null;
   function renderCountdown(prog) {
     var el = document.getElementById('countdown-content');
-    var today = new Date(); today.setHours(0,0,0,0);
-    var raceDay = new Date('2026-05-31T00:00:00');
-    var diff = Math.ceil((raceDay.getTime() - today.getTime()) / 86400000);
-    if (diff <= 0) {
-      el.innerHTML = '<div class="countdown-complete">Race Complete &#127942;</div>';
-      return;
-    }
+    var RACE = new Date('2026-05-31T00:00:00').getTime();
     var phaseHtml = '';
     if (prog) {
       var ap = getActivePhase(prog.meta.phases);
@@ -510,10 +532,30 @@
           '<div class="countdown-phase-dates">' + esc(ap.dates) + '</div>';
       }
     }
-    el.innerHTML = '<div class="countdown-banner">' +
-      '<div class="countdown-days">' + diff + '</div>' +
-      '<div class="countdown-days-label">Days to Race</div>' +
-      phaseHtml + '</div>';
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function updateCountdown() {
+      var remaining = RACE - Date.now();
+      if (remaining <= 0) {
+        clearInterval(countdownInterval);
+        el.innerHTML = '<div class="countdown-complete">Race Complete &#127942;</div>';
+        return;
+      }
+      var totalSec = Math.floor(remaining / 1000);
+      var days = Math.floor(totalSec / 86400);
+      var hrs  = Math.floor((totalSec % 86400) / 3600);
+      var min  = Math.floor((totalSec % 3600) / 60);
+      var sec  = totalSec % 60;
+      el.innerHTML = '<div class="countdown-banner">' +
+        '<div class="countdown-grid">' +
+          '<div class="countdown-cell"><div class="countdown-num">' + days + '</div><div class="countdown-lbl">Days</div></div>' +
+          '<div class="countdown-cell"><div class="countdown-num">' + pad(hrs) + '</div><div class="countdown-lbl">Hrs</div></div>' +
+          '<div class="countdown-cell"><div class="countdown-num">' + pad(min) + '</div><div class="countdown-lbl">Min</div></div>' +
+          '<div class="countdown-cell"><div class="countdown-num">' + pad(sec) + '</div><div class="countdown-lbl">Sec</div></div>' +
+        '</div>' +
+        phaseHtml + '</div>';
+    }
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
   }
 
   // ---- Section 3: Body Weight SVG ----
@@ -671,7 +713,7 @@
       return '<tr class="' + (isCurrent ? 'current-week' : '') + '">' +
         '<td><span class="run-wk">Wk ' + w.week + '</span>' + phaseTag + '</td>' +
         '<td>' + esc(w.run_protocol || '&mdash;') + '</td>' +
-        '<td style="font-size:12px">' + esc(w.calf_gate || '&mdash;') + '</td>' +
+        '<td style="font-size:12px">' + decodeHtml(w.calf_gate || '—') + '</td>' +
         '<td class="run-done">' + (isDone ? '&#10003;' : '') + '</td>' +
         '</tr>';
     }).join('');
@@ -682,6 +724,15 @@
   }
 
   // ---- Section 7: Training Timeline ----
+  function getOffsetLeftRelativeTo(el, container) {
+    var offset = 0;
+    while (el && el !== container) {
+      offset += el.offsetLeft;
+      el = el.offsetParent;
+    }
+    return offset;
+  }
+
   function renderTimeline(athlete, prog, sessions, hasToken) {
     var scrollEl  = document.getElementById('sec-timeline-scroll');
     var detailEl  = document.getElementById('sec-timeline-detail');
@@ -766,12 +817,15 @@
       '</div>';
 
     // Scroll active block to center
-    var activeBlock = scrollEl.querySelector('.active-block');
-    if (activeBlock) {
-      scrollEl.scrollLeft = activeBlock.offsetLeft
-        - (scrollEl.clientWidth / 2)
-        + (activeBlock.offsetWidth / 2);
-    }
+    setTimeout(function() {
+      var activeBlock = scrollEl.querySelector('.active-block');
+      if (activeBlock) {
+        var offsetLeft = getOffsetLeftRelativeTo(activeBlock, scrollEl);
+        scrollEl.scrollLeft = offsetLeft
+          - (scrollEl.clientWidth / 2)
+          + (activeBlock.offsetWidth / 2);
+      }
+    }, 0);
 
     scrollEl.addEventListener('click', function(e) {
       var target = e.target.closest ? e.target.closest('[data-id]') : null;
