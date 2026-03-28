@@ -18,6 +18,7 @@ See condor_workflow.txt for the spec update protocol.
 | Fix: Dynamic skill ratings | Screen 4 grip/shoulder/monkey visibility | ✅ Complete |
 | Build 2 Phase 1 | Training Dashboard (dashboard.html) | ✅ Complete |
 | Dashboard Task A | Structural redesign — section order, timeline, milestones | ✅ Complete |
+| Dashboard Task B | Polish and data fixes — countdown, timeline scroll, sticky column, HTML entity bug, Week 10 calf gate | ✅ Complete |
 
 ---
 
@@ -146,6 +147,38 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ---
 
+### Dashboard Task B — Polish and Data Fixes
+**Branch:** `claude/dashboard-polish-data-fixes-rRtnu`
+**Date:** 2026-03-28
+
+Five targeted changes to `dashboard.html` and one to `program.json`:
+
+#### Change 1 — Live Countdown Clock
+- Replaced static "X Days to Race" display with a live 4-unit widget (Days / Hrs / Min / Sec).
+- Computes remaining time against `2026-05-31T00:00:00` local time.
+- Renders immediately on load; `setInterval(updateCountdown, 1000)` updates all four values every second.
+- After race date: `clearInterval`, shows "Race Complete" message.
+- CSS redesigned as compact widget: `.countdown-grid`, `.countdown-cell`, `.countdown-num` (52px), `.countdown-lbl`. Padding reduced from 28px to 14px top.
+
+#### Change 2 — Fix Timeline Scroll-to-Active-Block
+- Added module-level helper `getOffsetLeftRelativeTo(el, container)` that walks `offsetParent` chain.
+- Replaced direct `scrollLeft = activeBlock.offsetLeft` with helper result.
+- Wrapped scroll call in `setTimeout(fn, 0)` so it executes after browser layout paint.
+
+#### Change 3 — Run Progression Table Sticky Week Column
+- Added CSS for `.run-table th:first-child` and `.run-table td:first-child`: `position: sticky; left: 0; background: var(--card-bg); z-index: 1; border-right: 1px solid var(--border)`.
+
+#### Change 4 — Fix Week 10 Calf Gate HTML Entity Bug
+- Added module-level `decodeHtml(str)` helper using a detached `<textarea>` to decode HTML entities.
+- `calf_gate` cell renders via `decodeHtml(w.calf_gate || '—')` with no `esc()` wrapper.
+- Fallback is a literal em dash `—`. `esc()` omitted since `calf_gate` comes from trusted `program.json`.
+
+#### Change 5 — Week 10 Calf Gate Added to program.json
+- Added `"calf_gate": "Taper week — easy pace only. Stop if any awareness above 1/10. No pushing through."` to Week 10 in `program.json`.
+- JSON validated with `python3 -m json.tool`.
+
+---
+
 ### Dashboard Task A — Structural Redesign
 **Branch:** `claude/condor-dashboard-redesign-YhrjD`
 **Date:** 2026-03-28
@@ -184,6 +217,14 @@ Five targeted structural changes to `dashboard.html`:
 ---
 
 ## Spec Deviations
+
+### Dashboard Task B — Polish and Data Fixes
+
+1. **Countdown now shows days/hours/minutes/seconds (spec says "X days to race").**
+   The spec (section 1, Race Countdown) defines the display as "X days to race" — a single integer. The task prompt replaces this with a live 4-unit widget. This is an intentional enhancement per the task spec. `condor-build-spec.md` should be updated to describe the 4-unit live countdown format.
+
+2. **`calf_gate` rendered without `esc()` sanitization.**
+   All other table cells run through `esc()`. The `calf_gate` cell uses `decodeHtml()` only, with no XSS escaping. This is safe because the value comes from `program.json` (Chat-owned, committed to repo) and not from user input or external API. If `calf_gate` values ever include `<`, `>`, or `"` characters, this would need revisiting.
 
 ### Dashboard Task A — Structural Redesign
 
