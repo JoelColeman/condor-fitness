@@ -251,7 +251,13 @@
       -webkit-overflow-scrolling: touch;
       padding-bottom: 4px;
     }
-    .timeline-track {
+    .timeline-track-container { min-width: 1400px; }
+    .timeline-marker-row {
+      position: relative;
+      height: 44px;
+      min-width: 1400px;
+    }
+    .timeline-blocks-row {
       position: relative;
       height: 88px;
       min-width: 1400px;
@@ -274,7 +280,7 @@
     .tl-block-sub   { font-size: 10px; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tl-milestone {
       position: absolute;
-      top: 0;
+      top: 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -282,8 +288,11 @@
       width: 64px;
       margin-left: -32px;
     }
-    .tl-diamond { font-size: 22px; line-height: 1; color: #d4a017; margin-top: 0; }
+    .tl-diamond { font-size: 18px; line-height: 1; }
+    .tl-diamond-gold    { color: #d4a017; }
+    .tl-diamond-default { color: var(--text-secondary); }
     .tl-milestone-label { font-size: 9px; color: var(--text-secondary); text-align: center; white-space: nowrap; margin-top: 2px; }
+    .tl-milestone-date  { font-size: 8px; color: var(--text-secondary); text-align: center; white-space: nowrap; }
     .tl-detail {
       margin-top: 14px;
       padding: 14px;
@@ -292,11 +301,21 @@
       border-radius: var(--radius);
     }
     .tl-detail-title  { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .tl-detail-meta   { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
     .tl-detail-result { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
     .tl-detail-summary { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
     .tl-detail-highlights { list-style: none; padding: 0; }
     .tl-detail-highlights li { font-size: 13px; color: var(--text-primary); padding: 2px 0; }
     .tl-detail-highlights li::before { content: "• "; color: var(--accent); }
+    /* Mini phase timeline (Operation Spartan expand card only) */
+    .mini-phase-timeline { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .mini-phase-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .mini-phase-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .mini-phase-active    { background: var(--accent); color: #fff; }
+    .mini-phase-completed { background: var(--bg); color: var(--text-secondary); opacity: 0.4; border: 1px solid var(--border); }
+    .mini-phase-future    { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+    .mini-phase-arrow { color: var(--text-secondary); font-size: 12px; padding: 0 2px; }
+    .mini-phase-count { font-size: 12px; color: var(--text-secondary); }
     .tl-color-blue     { background: #2E5FA3; }
     .tl-color-orange   { background: #b86820; }
     .tl-color-purple   { background: #7b2d8b; }
@@ -339,7 +358,7 @@
 <body>
 
 <header class="dash-header">
-  <span class="dash-wordmark">CONDOR</span>
+  <span class="dash-wordmark">CONDOR FITNESS</span>
   <a href="index.html" class="dash-nav-link">&#8592; Workout</a>
 </header>
 
@@ -352,10 +371,13 @@
     <div id="countdown-content"></div>
   </div>
 
-  <!-- 2: Operation Spartan Progress -->
+  <!-- 2: Training Timeline -->
   <div class="dash-section">
-    <h2 class="section-heading">Operation Spartan</h2>
-    <div class="section-body" id="sec-progress-body"></div>
+    <h2 class="section-heading">Training Timeline</h2>
+    <div class="section-body">
+      <div class="timeline-scroll-wrap" id="sec-timeline-scroll"></div>
+      <div id="sec-timeline-detail" class="hidden"></div>
+    </div>
   </div>
 
   <!-- 3: Body Weight -->
@@ -384,16 +406,7 @@
     <div class="section-body" id="sec-run-body"></div>
   </div>
 
-  <!-- 7: Training Timeline -->
-  <div class="dash-section">
-    <h2 class="section-heading">Training Timeline</h2>
-    <div class="section-body">
-      <div class="timeline-scroll-wrap" id="sec-timeline-scroll"></div>
-      <div id="sec-timeline-detail" class="hidden"></div>
-    </div>
-  </div>
-
-  <!-- 8: Recent Sessions -->
+  <!-- 7: Recent Sessions -->
   <div class="dash-section">
     <h2 class="section-heading">Recent Sessions</h2>
     <div class="section-body" id="sec-sessions-body"></div>
@@ -501,31 +514,6 @@
       '<div class="countdown-days">' + diff + '</div>' +
       '<div class="countdown-days-label">Days to Race</div>' +
       phaseHtml + '</div>';
-  }
-
-  // ---- Section 2: Phase Progress ----
-  function renderPhaseProgress(prog, sessions, hasToken) {
-    var el = document.getElementById('sec-progress-body');
-    if (!prog) { sectionError(el, 'Program data unavailable.'); return; }
-    var phases = prog.meta.phases;
-    var active = getActivePhase(phases);
-    var pillsHtml = phases.map(function(p) {
-      var cls = (active && p.id === active.id) ? ' active' : '';
-      return '<span class="phase-pill' + cls + '">' + esc(p.label) + '</span>';
-    }).join('');
-    var countHtml = '';
-    if (!hasToken) {
-      countHtml = noTokenHtml();
-    } else {
-      var activeId = active ? active.id : '';
-      var activeSessions = sessions.filter(function(s) { return s.phase === activeId && !s.bonus; });
-      var phaseWeeks = prog.weeks.filter(function(w) { return active && active.weeks.indexOf(w.week) !== -1; });
-      var totalDays = phaseWeeks.reduce(function(sum, w) { return sum + (w.days ? w.days.length : 0); }, 0);
-      var remaining = Math.max(0, totalDays - activeSessions.length);
-      countHtml = '<div class="phase-session-count">' + activeSessions.length + ' sessions completed this phase</div>' +
-        '<div class="phase-session-sub">' + remaining + ' scheduled days remaining</div>';
-    }
-    el.innerHTML = '<div class="phase-pills">' + pillsHtml + '</div>' + countHtml;
   }
 
   // ---- Section 3: Body Weight SVG ----
@@ -694,7 +682,7 @@
   }
 
   // ---- Section 7: Training Timeline ----
-  function renderTimeline(athlete) {
+  function renderTimeline(athlete, prog, sessions, hasToken) {
     var scrollEl  = document.getElementById('sec-timeline-scroll');
     var detailEl  = document.getElementById('sec-timeline-detail');
     if (!athlete || !athlete.timeline) { sectionError(scrollEl, 'Timeline data unavailable.'); return; }
@@ -703,24 +691,63 @@
     var tEnd   = new Date('2027-01-01').getTime();
     function xS(t) { return (t - tStart) / (tEnd - tStart) * TW; }
     var openId = null;
+
+    // Mini phase timeline for Operation Spartan expand card
+    function buildMiniPhaseTimeline() {
+      if (!prog || !prog.meta || !prog.meta.phases) return '';
+      var phases = prog.meta.phases;
+      var active = getActivePhase(phases);
+      var activeIdx = active ? phases.indexOf(active) : -1;
+      var pillsArr = phases.map(function(p, i) {
+        var cls;
+        if (active && p.id === active.id) {
+          cls = 'mini-phase-pill mini-phase-active';
+        } else if (i < activeIdx) {
+          cls = 'mini-phase-pill mini-phase-completed';
+        } else {
+          cls = 'mini-phase-pill mini-phase-future';
+        }
+        return '<span class="' + cls + '">' + esc(p.label) + '</span>';
+      });
+      var row = pillsArr.join('<span class="mini-phase-arrow">&rarr;</span>');
+      var activeId = active ? active.id : '';
+      var completedCount = (sessions || []).filter(function(s) { return s.phase === activeId && !s.bonus; }).length;
+      var phaseWeeks = (prog.weeks || []).filter(function(w) { return active && active.weeks.indexOf(w.week) !== -1; });
+      var totalDays = phaseWeeks.reduce(function(sum, w) { return sum + (w.days ? w.days.length : 0); }, 0);
+      var remaining = Math.max(0, totalDays - completedCount);
+      return '<div class="mini-phase-timeline">' +
+        '<div class="mini-phase-row">' + row + '</div>' +
+        '<div class="mini-phase-count">' + completedCount + ' sessions completed this phase &middot; ' + remaining + ' sessions remaining</div>' +
+        '</div>';
+    }
+
     function showDetail(item) {
       if (!item) { detailEl.className = 'hidden'; detailEl.innerHTML = ''; return; }
+      var miniTimeline = (item.id === 'operation_spartan') ? buildMiniPhaseTimeline() : '';
       var hlItems = (item.highlights || []).map(function(h){ return '<li>' + esc(h) + '</li>'; }).join('');
       var resultHtml = item.result ? '<div class="tl-detail-result">Result: <strong>' + esc(item.result) + '</strong></div>' : '';
+      var dateHtml   = (item.type === 'milestone' && item.date) ? '<div class="tl-detail-meta">' + esc(item.date) + '</div>' : '';
+      var subHtml    = item.subtitle ? '<div class="tl-detail-meta">' + esc(item.subtitle) + '</div>' : '';
       detailEl.className = 'tl-detail';
-      detailEl.innerHTML = '<div class="tl-detail-title">' + esc(item.label) + '</div>' +
-        resultHtml +
+      detailEl.innerHTML = miniTimeline +
+        '<div class="tl-detail-title">' + esc(item.label) + '</div>' +
+        dateHtml + subHtml + resultHtml +
         '<div class="tl-detail-summary">' + esc(item.summary || '') + '</div>' +
         (hlItems ? '<ul class="tl-detail-highlights">' + hlItems + '</ul>' : '');
     }
-    var trackHtml = '';
+
+    // Build two separate rows: marker row (milestones) and blocks row
+    var markerHtml = '';
+    var blocksHtml = '';
     athlete.timeline.forEach(function(item) {
       if (item.type === 'milestone') {
         var t = new Date(item.date + 'T00:00:00').getTime();
         var x = xS(t).toFixed(1);
-        trackHtml += '<div class="tl-milestone" data-id="' + esc(item.id) + '" style="left:' + x + 'px;">' +
-          '<div class="tl-diamond">&#9670;</div>' +
-          '<div class="tl-milestone-label">' + esc(item.label) + '</div></div>';
+        var diamondCls = (item.color === 'gold') ? 'tl-diamond-gold' : 'tl-diamond-default';
+        markerHtml += '<div class="tl-milestone" data-id="' + esc(item.id) + '" style="left:' + x + 'px;">' +
+          '<div class="tl-diamond ' + diamondCls + '">&#9670;</div>' +
+          '<div class="tl-milestone-label">' + esc(item.label) + '</div>' +
+          '<div class="tl-milestone-date">' + esc(item.date || '') + '</div></div>';
       } else {
         var t1 = new Date(item.start + 'T00:00:00').getTime();
         var t2 = new Date(item.end   + 'T00:00:00').getTime();
@@ -728,12 +755,24 @@
         var w  = Math.max(55, xS(t2) - xS(t1)).toFixed(1);
         var activeCls = item.status === 'active' ? ' active-block' : '';
         var colorCls  = 'tl-color-' + (item.color || 'gray');
-        trackHtml += '<div class="tl-block ' + colorCls + activeCls + '" data-id="' + esc(item.id) + '" style="left:' + x + 'px;width:' + w + 'px;">' +
+        blocksHtml += '<div class="tl-block ' + colorCls + activeCls + '" data-id="' + esc(item.id) + '" style="left:' + x + 'px;width:' + w + 'px;">' +
           '<div class="tl-block-label">' + esc(item.label) + '</div>' +
           '<div class="tl-block-sub">' + esc(item.subtitle || '') + '</div></div>';
       }
     });
-    scrollEl.innerHTML = '<div class="timeline-track">' + trackHtml + '</div>';
+    scrollEl.innerHTML = '<div class="timeline-track-container">' +
+      '<div class="timeline-marker-row">' + markerHtml + '</div>' +
+      '<div class="timeline-blocks-row">' + blocksHtml + '</div>' +
+      '</div>';
+
+    // Scroll active block to center
+    var activeBlock = scrollEl.querySelector('.active-block');
+    if (activeBlock) {
+      scrollEl.scrollLeft = activeBlock.offsetLeft
+        - (scrollEl.clientWidth / 2)
+        + (activeBlock.offsetWidth / 2);
+    }
+
     scrollEl.addEventListener('click', function(e) {
       var target = e.target.closest ? e.target.closest('[data-id]') : null;
       if (!target) return;
@@ -820,12 +859,11 @@
     var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
     renderCountdown(prog);
-    renderPhaseProgress(prog, sessions, hasToken);
+    renderTimeline(athlete, prog, sessions, hasToken);
     renderBodyWeight(athlete);
     renderPRBoard(athlete);
     renderSkillTrends(sessions, hasToken);
     renderRunProgression(prog, sessions, hasToken);
-    renderTimeline(athlete);
     renderRecentSessions(sessions, hasToken);
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-main').classList.remove('hidden');

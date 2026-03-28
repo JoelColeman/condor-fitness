@@ -17,6 +17,7 @@ See condor_workflow.txt for the spec update protocol.
 | Fix: Calf rating scale 0–10 | Screen 4 calf widget + JSON | ✅ Complete |
 | Fix: Dynamic skill ratings | Screen 4 grip/shoulder/monkey visibility | ✅ Complete |
 | Build 2 Phase 1 | Training Dashboard (dashboard.html) | ✅ Complete |
+| Dashboard Task A | Structural redesign — section order, timeline, milestones | ✅ Complete |
 
 ---
 
@@ -145,7 +146,58 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ---
 
+### Dashboard Task A — Structural Redesign
+**Branch:** `claude/condor-dashboard-redesign-YhrjD`
+**Date:** 2026-03-28
+
+Five targeted structural changes to `dashboard.html`:
+
+#### Change 1 — Header wordmark
+- Changed `CONDOR` → `CONDOR FITNESS` in `.dash-wordmark` span.
+
+#### Change 2 — Section order
+- Removed standalone Operation Spartan Progress section (was position 2).
+- Moved Training Timeline from position 7 to position 2 (immediately after Race Countdown).
+- New order: Race Countdown → Training Timeline → Body Weight → PR Board → Skill Trends → Run Progression → Recent Sessions.
+- Removed `renderPhaseProgress()` function (dead code after section removal).
+- Updated `init()` render call sequence accordingly.
+
+#### Change 3 — Timeline default scroll position
+- After `renderTimeline` builds the DOM, `scrollLeft` is set to center the active block:
+  `scrollEl.scrollLeft = activeBlock.offsetLeft - (scrollEl.clientWidth / 2) + (activeBlock.offsetWidth / 2)`
+
+#### Change 4 — Operation Spartan expand card redesign
+- `renderTimeline` signature changed to `(athlete, prog, sessions, hasToken)`.
+- Added inner function `buildMiniPhaseTimeline()` that renders a horizontal row of four phase pills (Foundation → Volume Build → Race Specific → Taper) connected by → arrows.
+- Active phase: red (--accent) background. Completed phases: 0.4 opacity dark. Future: dark with secondary text.
+- Below pills: "X sessions completed this phase · Y sessions remaining" (same math as old renderPhaseProgress).
+- Mini timeline only appears when `item.id === 'operation_spartan'` is tapped.
+
+#### Change 5 — Milestone redesign
+- Timeline scroll container now renders two rows: `.timeline-marker-row` (44px, milestones) above `.timeline-blocks-row` (88px, block bars).
+- Milestones are no longer positioned in the blocks row — no overlap with block bars.
+- Each milestone diamond shows label and date below it.
+- Diamond color sourced from `item.color`: `gold` → `.tl-diamond-gold` (#d4a017), otherwise `.tl-diamond-default` (secondary text color).
+- Tapping a milestone opens the expand card (same pattern as blocks) showing label, date, subtitle, result, summary.
+- Click handler unchanged — `e.target.closest('[data-id]')` works across both rows.
+
+---
+
 ## Spec Deviations
+
+### Dashboard Task A — Structural Redesign
+
+1. **Operation Spartan Progress removed as standalone section.**
+   The spec (section 2) defines a standalone Operation Spartan Progress section with phase pills and session counts. Per the task prompt, this section is removed entirely as a standalone card. Its content (phase pills and session count) now lives exclusively in the Operation Spartan expand card inside the Training Timeline. The spec should be updated to reflect that Operation Spartan progress is surfaced via the timeline expand card, not a separate section.
+
+2. **Milestone rendering redesigned: two-row layout instead of overlapping diamonds.**
+   The spec says milestone entries are "shown as a diamond marker with label and date." The original implementation placed diamonds in the same 88px track as block bars, causing visual overlap. The new design uses a separate 44px marker row above the blocks row. This is a layout improvement not described in the spec — the spec should be updated to document the two-row structure.
+
+3. **Training Timeline moved to position 2 in section order.**
+   The spec defines section order as: Race Countdown, Operation Spartan Progress, Body Weight, PR Board, Skill Trends, Run Progression, Training Timeline, Recent Sessions. Per the task prompt, the new order is: Race Countdown, Training Timeline, Body Weight, PR Board, Skill Trends, Run Progression, Recent Sessions. The spec should be updated.
+
+4. **Mini phase timeline in Operation Spartan expand card (new, not in spec).**
+   The spec does not describe the content of the timeline expand card for Operation Spartan. The mini phase timeline (four phase pills + session count) is a new feature added per the task prompt. The spec should document this behavior.
 
 ### Build 2 Phase 1 — Training Dashboard
 
