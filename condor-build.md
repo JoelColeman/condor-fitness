@@ -16,6 +16,7 @@ See condor_workflow.txt for the spec update protocol.
 | Phase 5 | GitHub API session write | ✅ Complete |
 | Fix: Calf rating scale 0–10 | Screen 4 calf widget + JSON | ✅ Complete |
 | Fix: Dynamic skill ratings | Screen 4 grip/shoulder/monkey visibility | ✅ Complete |
+| Build 2 Phase 1 | Training Dashboard (dashboard.html) | ✅ Complete |
 
 ---
 
@@ -146,6 +147,22 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 
 ## Spec Deviations
 
+### Build 2 Phase 1 — Training Dashboard
+
+1. **Body weight chart labels always visible (spec: hover on desktop, always on phone).**
+   The spec calls for hover-only labels on desktop and always-visible on phone. Implemented as always-visible small SVG text labels at all breakpoints. Hover state in SVG is complex without JavaScript per-element handlers. Always-visible is more useful on a read-only dashboard and causes no layout issues. No data is hidden.
+
+2. **Phase active detection uses anchor-date week math, not ISO date parsing.**
+   `program.meta.phases` provides date ranges as display strings ("Mar 22 – Apr 4"), not ISO dates. Active phase is computed by counting weeks since anchor date (2026-03-22 = start of week 3) and matching to phase.weeks arrays. This is equivalent and correct for the current program structure.
+
+3. **PR Board shows highest-weight entry per lift (one row per lift), not all entries.**
+   The spec says "group by lift name, show the highest weight entry per lift." Implemented as one row per lift (the entry with the highest `weight_lbs`). This means for Back Squat, the 365 lb single is shown rather than the 335 lb working set. If Chat wants all entries per lift listed under each group heading, that is a one-function change.
+
+4. **Week 10 calf_gate field absent in program.json — rendered as "—".**
+   `program.json` week 10 (Taper) does not include a `calf_gate` field. Dashboard displays "—" in that cell with no error.
+
+---
+
 ### Calf Rating + Dynamic Skills Fix
 
 1. **Calf rating scale changed from 0–3 (0.5 steps) to 0–10 (whole numbers).**
@@ -204,6 +221,27 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
    The rest timer overlay `<div id="rest-timer">` is present in the DOM but carries no JS logic yet.
    CSS is complete. This was included proactively so Phase 3 can wire it without structural changes.
    Minor scope expansion, not a spec deviation.
+
+---
+
+### Build 2 Phase 1 — Training Dashboard (dashboard.html)
+**Branch:** `claude/build-training-dashboard-NGsUb`
+**Date:** 2026-03-28
+
+#### What was built:
+- `dashboard.html` — single-file vanilla HTML/CSS/JS training dashboard. Phone and desktop compatible.
+- Header: CONDOR wordmark + ← Workout link to index.html.
+- **Section 1 — Race Countdown:** Days to May 31, 2026 computed daily. Active phase label + date range from `program.meta.phases` via anchor-date week math. "Race Complete 🏆" after race date.
+- **Section 2 — Operation Spartan Progress:** Four phase pills from `program.meta.phases`, active pill highlighted. Session count and remaining days from `sessionsCache` when token is present.
+- **Section 3 — Body Weight:** Pure SVG line chart. X axis Apr 2025–Jun 2026. Y axis fits data with 12 lb padding. Dashed red vertical line at May 31 (Race Day). Dashed green horizontal line at 250 lbs target. Data point labels always visible.
+- **Section 4 — PR Board:** Two-column grid. Left: current PRs grouped by lift (highest weight per lift shown). Right: PR goals. Clean table, no interaction.
+- **Section 5 — Skill Trends:** Three rows — Calf Rating (lower is better, flag > 2 red), Grip Endurance, Shoulder Stability. SVG sparklines for last 10 sessions. Trend arrow compares last-3 avg vs prev-3 avg. "Not enough data yet" when < 2 data points.
+- **Section 6 — Run Progression:** Table from all `program.weeks` with `run_protocol`. Current week highlighted. Completed run weeks cross-referenced from sessions (day_type === 'run').
+- **Section 7 — Training Timeline:** Horizontal scroll container. Blocks proportionally sized by duration (1400px total width, 2025-04-01 to 2027-01-01 range). Milestones as ◆ markers. Active block (status: "active") has red accent border. Click/tap any item to expand details panel showing summary + highlights.
+- **Section 8 — Recent Sessions:** Last 10 sessions newest first. Row shows date / label / duration / feel dots / calf rating. Click to expand full session detail (exercises, skills, notes).
+- **Token handling:** All athlete.json sections render without token. Sessions-dependent content (Sections 2 partial, 5, 6 partial, 8) shows friendly notice when token absent.
+- **Caching:** `athleteCache` (24hr TTL), `programCache` (24hr TTL, reuses Build 1 cache), `sessionsCache` (1hr TTL).
+- **index.html edit:** "Dashboard →" link added to Screen 2 (`#pw-panel-main`) below the three main buttons.
 
 ---
 

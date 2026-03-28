@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Condor Dashboard</title>
+  <style>
+    :root {
+      --bg:             #0f0f0f;
+      --card-bg:        #1a1a1a;
+      --accent:         #e63946;
+      --secondary:      #2E5FA3;
+      --text-primary:   #f0f0f0;
+      --text-secondary: #888888;
+      --success:        #2a9d5c;
+      --border:         #2a2a2a;
+      --font-base: system-ui, -apple-system, sans-serif;
+      --pad: 16px;
+      --radius: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-base);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .dash-wordmark {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: var(--accent);
+    }
+    .dash-nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .dash-nav-link:hover { color: var(--text-primary); }
+    .dash-main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px var(--pad) 60px;
+    }
+    .dash-loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .dash-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .section-heading {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 14px 16px 0;
+      border-left: 3px solid var(--accent);
+      margin-left: -1px;
+    }
+    .section-body { padding: 14px 16px 16px; }
+    .section-notice {
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-style: italic;
+      padding: 4px 0;
+    }
+    .section-error { color: #e63946; font-size: 13px; padding: 4px 0; }
+    .hidden { display: none !important; }
+
+    /* Section 1: Race Countdown */
+    .countdown-banner {
+      text-align: center;
+      padding: 28px 16px 24px;
+    }
+    .countdown-days {
+      font-size: 80px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .countdown-days-label {
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .countdown-phase {
+      margin-top: 12px;
+      font-size: 15px;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .countdown-phase-dates {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .countdown-complete {
+      font-size: 36px;
+      text-align: center;
+      padding: 30px 16px;
+    }
+
+    /* Section 2: Phase Progress */
+    .phase-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .phase-pill {
+      padding: 5px 13px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg);
+    }
+    .phase-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    .phase-session-count { font-size: 15px; color: var(--text-primary); }
+    .phase-session-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+    /* Section 3: Body Weight */
+    .chart-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Section 4: PR Board */
+    .pr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 540px) { .pr-grid { grid-template-columns: 1fr; } }
+    .pr-col-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .pr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pr-table td {
+      padding: 7px 4px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .pr-table tr:last-child td { border-bottom: none; }
+    .pr-lift { color: var(--text-primary); font-weight: 600; padding-right: 8px; }
+    .pr-weight { color: var(--accent); font-weight: 700; font-size: 15px; white-space: nowrap; }
+    .pr-weight-unit { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+    .pr-type {
+      color: var(--text-secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .pr-goal-block { font-size: 11px; color: var(--text-secondary); }
+
+    /* Section 5: Skill Trends */
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .skill-row:last-child { border-bottom: none; }
+    .skill-name {
+      min-width: 130px;
+    }
+    .skill-name strong { display: block; font-size: 14px; color: var(--text-primary); }
+    .skill-name span { font-size: 11px; color: var(--text-secondary); }
+    .skill-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 44px;
+      text-align: right;
+    }
+    .skill-trend { font-size: 18px; min-width: 20px; }
+    .trend-up-good   { color: var(--success); }
+    .trend-down-good { color: var(--success); }
+    .trend-up-bad    { color: var(--accent); }
+    .trend-down-bad  { color: var(--accent); }
+    .trend-flat      { color: var(--text-secondary); }
+    .skill-spark { flex: 1; min-width: 120px; }
+    .spark-nodata { font-size: 12px; color: var(--text-secondary); font-style: italic; }
+
+    /* Section 6: Run Progression */
+    .run-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .run-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+    .run-table th {
+      text-align: left;
+      padding: 6px 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .run-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .run-table tr:last-child td { border-bottom: none; }
+    .run-table tr.current-week td { background: rgba(230,57,70,0.07); }
+    .run-wk { font-weight: 600; color: var(--text-primary); }
+    .run-table tr.current-week .run-wk { color: var(--accent); }
+    .run-phase-tag {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    .run-done { color: var(--success); font-weight: 700; }
+
+    /* Section 7: Training Timeline */
+    .timeline-scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .timeline-track {
+      position: relative;
+      height: 88px;
+      min-width: 1400px;
+    }
+    .tl-block {
+      position: absolute;
+      top: 18px;
+      height: 54px;
+      border-radius: 5px;
+      padding: 5px 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      overflow: hidden;
+      transition: filter 0.1s;
+      min-width: 50px;
+    }
+    .tl-block:hover { filter: brightness(1.2); }
+    .tl-block.active-block { border-color: var(--accent) !important; box-shadow: 0 0 0 1px var(--accent); }
+    .tl-block-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.95); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tl-block-sub   { font-size: 10px; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tl-milestone {
+      position: absolute;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      width: 64px;
+      margin-left: -32px;
+    }
+    .tl-diamond { font-size: 22px; line-height: 1; color: #d4a017; margin-top: 0; }
+    .tl-milestone-label { font-size: 9px; color: var(--text-secondary); text-align: center; white-space: nowrap; margin-top: 2px; }
+    .tl-detail {
+      margin-top: 14px;
+      padding: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .tl-detail-title  { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .tl-detail-result { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+    .tl-detail-summary { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+    .tl-detail-highlights { list-style: none; padding: 0; }
+    .tl-detail-highlights li { font-size: 13px; color: var(--text-primary); padding: 2px 0; }
+    .tl-detail-highlights li::before { content: "• "; color: var(--accent); }
+    .tl-color-blue     { background: #2E5FA3; }
+    .tl-color-orange   { background: #b86820; }
+    .tl-color-purple   { background: #7b2d8b; }
+    .tl-color-gray     { background: #444; }
+    .tl-color-red      { background: #b82030; }
+    .tl-color-gold     { background: #a07010; }
+    .tl-color-green    { background: #1e7a44; }
+    .tl-color-darkblue { background: #1a3a6b; }
+
+    /* Section 8: Recent Sessions */
+    .session-row {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .session-row:last-child { border-bottom: none; }
+    .session-row-header { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .sess-date  { font-size: 13px; color: var(--text-secondary); min-width: 90px; }
+    .sess-label { font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 1; min-width: 110px; }
+    .sess-dur   { font-size: 12px; color: var(--text-secondary); }
+    .sess-feel  { font-size: 13px; letter-spacing: 1px; color: var(--accent); }
+    .sess-calf  { font-size: 12px; color: var(--text-secondary); }
+    .session-detail {
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .sess-ex-row { padding: 3px 0; color: var(--text-secondary); }
+    .sess-ex-name { color: var(--text-primary); font-weight: 600; }
+    .sess-skill-row { margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .sess-skill-item { font-size: 12px; }
+    .sess-skill-label { color: var(--text-secondary); }
+    .sess-skill-val   { color: var(--accent); font-weight: 700; }
+    .sess-note { color: var(--text-secondary); font-style: italic; margin-top: 8px; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<header class="dash-header">
+  <span class="dash-wordmark">CONDOR</span>
+  <a href="index.html" class="dash-nav-link">&#8592; Workout</a>
+</header>
+
+<div class="dash-loading" id="dash-loading">Loading dashboard&hellip;</div>
+
+<main class="dash-main hidden" id="dash-main">
+
+  <!-- 1: Race Countdown -->
+  <div class="dash-section" id="sec-countdown">
+    <div id="countdown-content"></div>
+  </div>
+
+  <!-- 2: Operation Spartan Progress -->
+  <div class="dash-section">
+    <h2 class="section-heading">Operation Spartan</h2>
+    <div class="section-body" id="sec-progress-body"></div>
+  </div>
+
+  <!-- 3: Body Weight -->
+  <div class="dash-section">
+    <h2 class="section-heading">Body Weight</h2>
+    <div class="section-body">
+      <div class="chart-wrap" id="sec-bw-chart"></div>
+    </div>
+  </div>
+
+  <!-- 4: PR Board -->
+  <div class="dash-section">
+    <h2 class="section-heading">PR Board</h2>
+    <div class="section-body" id="sec-pr-body"></div>
+  </div>
+
+  <!-- 5: Skill Trends -->
+  <div class="dash-section">
+    <h2 class="section-heading">Skill Trends</h2>
+    <div class="section-body" id="sec-skills-body"></div>
+  </div>
+
+  <!-- 6: Run Progression -->
+  <div class="dash-section">
+    <h2 class="section-heading">Run Progression</h2>
+    <div class="section-body" id="sec-run-body"></div>
+  </div>
+
+  <!-- 7: Training Timeline -->
+  <div class="dash-section">
+    <h2 class="section-heading">Training Timeline</h2>
+    <div class="section-body">
+      <div class="timeline-scroll-wrap" id="sec-timeline-scroll"></div>
+      <div id="sec-timeline-detail" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- 8: Recent Sessions -->
+  <div class="dash-section">
+    <h2 class="section-heading">Recent Sessions</h2>
+    <div class="section-body" id="sec-sessions-body"></div>
+  </div>
+
+</main>
+
+<script>
+(function() {
+  'use strict';
+
+  const RAW_BASE = 'https://raw.githubusercontent.com/JoelColeman/condor-fitness/main';
+  const ANCHOR_DATE = new Date('2026-03-22T00:00:00');
+  const TTL_24H = 24 * 3600 * 1000;
+  const TTL_1H  = 3600 * 1000;
+
+  // ---- Utilities ----
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function sectionError(el, msg) {
+    el.innerHTML = '<div class="section-error">&#9888; ' + esc(msg) + '</div>';
+  }
+  function noTokenHtml() {
+    return '<div class="section-notice">Open the workout companion app first to connect your GitHub account.</div>';
+  }
+
+  // ---- Cache helpers ----
+  function readCache(key) {
+    try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; }
+  }
+  function writeCache(key, data) {
+    try { localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data: data })); } catch(e) {}
+  }
+  async function fetchWithCache(key, url, ttl) {
+    var cached = readCache(key);
+    if (cached && Date.now() - cached.timestamp < ttl) return cached.data;
+    var resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status + ': ' + url);
+    var data = await resp.json();
+    writeCache(key, data);
+    return data;
+  }
+  async function fetchSessions(token, repo) {
+    var cached = readCache('sessionsCache');
+    if (cached && Date.now() - cached.timestamp < TTL_1H) return cached.data;
+    var headers = { 'Authorization': 'token ' + token };
+    var listUrl = 'https://api.github.com/repos/' + repo + '/contents/sessions/';
+    var listResp = await fetch(listUrl, { headers: headers });
+    if (listResp.status === 404) { writeCache('sessionsCache', []); return []; }
+    if (!listResp.ok) throw new Error('Sessions list HTTP ' + listResp.status);
+    var files = await listResp.json();
+    var jsonFiles = files.filter(function(f) { return f.name.endsWith('.json'); });
+    var sessions = await Promise.all(jsonFiles.map(async function(f) {
+      try {
+        var r = await fetch(f.download_url, { headers: headers });
+        return r.ok ? r.json() : null;
+      } catch(e) { return null; }
+    }));
+    var data = sessions.filter(Boolean).sort(function(a,b) {
+      return (a.date||'').localeCompare(b.date||'');
+    });
+    writeCache('sessionsCache', data);
+    return data;
+  }
+
+  // ---- Phase / week helpers ----
+  function getCurrentWeekNum() {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var days = Math.floor((today.getTime() - ANCHOR_DATE.getTime()) / 86400000);
+    return 3 + Math.floor(days / 7);
+  }
+  function getActivePhase(phases) {
+    var wk = getCurrentWeekNum();
+    var found = phases.find(function(p) { return p.weeks.indexOf(wk) !== -1; });
+    if (!found) {
+      var today = new Date();
+      return today < ANCHOR_DATE ? phases[0] : phases[phases.length - 1];
+    }
+    return found;
+  }
+
+  // ---- Section 1: Race Countdown ----
+  function renderCountdown(prog) {
+    var el = document.getElementById('countdown-content');
+    var today = new Date(); today.setHours(0,0,0,0);
+    var raceDay = new Date('2026-05-31T00:00:00');
+    var diff = Math.ceil((raceDay.getTime() - today.getTime()) / 86400000);
+    if (diff <= 0) {
+      el.innerHTML = '<div class="countdown-complete">Race Complete &#127942;</div>';
+      return;
+    }
+    var phaseHtml = '';
+    if (prog) {
+      var ap = getActivePhase(prog.meta.phases);
+      if (ap) {
+        phaseHtml = '<div class="countdown-phase">' + esc(ap.label) + '</div>' +
+          '<div class="countdown-phase-dates">' + esc(ap.dates) + '</div>';
+      }
+    }
+    el.innerHTML = '<div class="countdown-banner">' +
+      '<div class="countdown-days">' + diff + '</div>' +
+      '<div class="countdown-days-label">Days to Race</div>' +
+      phaseHtml + '</div>';
+  }
+
+  // ---- Section 2: Phase Progress ----
+  function renderPhaseProgress(prog, sessions, hasToken) {
+    var el = document.getElementById('sec-progress-body');
+    if (!prog) { sectionError(el, 'Program data unavailable.'); return; }
+    var phases = prog.meta.phases;
+    var active = getActivePhase(phases);
+    var pillsHtml = phases.map(function(p) {
+      var cls = (active && p.id === active.id) ? ' active' : '';
+      return '<span class="phase-pill' + cls + '">' + esc(p.label) + '</span>';
+    }).join('');
+    var countHtml = '';
+    if (!hasToken) {
+      countHtml = noTokenHtml();
+    } else {
+      var activeId = active ? active.id : '';
+      var activeSessions = sessions.filter(function(s) { return s.phase === activeId && !s.bonus; });
+      var phaseWeeks = prog.weeks.filter(function(w) { return active && active.weeks.indexOf(w.week) !== -1; });
+      var totalDays = phaseWeeks.reduce(function(sum, w) { return sum + (w.days ? w.days.length : 0); }, 0);
+      var remaining = Math.max(0, totalDays - activeSessions.length);
+      countHtml = '<div class="phase-session-count">' + activeSessions.length + ' sessions completed this phase</div>' +
+        '<div class="phase-session-sub">' + remaining + ' scheduled days remaining</div>';
+    }
+    el.innerHTML = '<div class="phase-pills">' + pillsHtml + '</div>' + countHtml;
+  }
+
+  // ---- Section 3: Body Weight SVG ----
+  function renderBodyWeight(athlete) {
+    var el = document.getElementById('sec-bw-chart');
+    if (!athlete || !athlete.body_weight || !athlete.body_weight.length) {
+      sectionError(el, 'Body weight data unavailable.'); return;
+    }
+    el.innerHTML = buildBodyWeightSVG(athlete.body_weight);
+  }
+  function buildBodyWeightSVG(data) {
+    var W=820, H=270, ML=54, MR=20, MT=28, MB=50;
+    var PW=W-ML-MR, PH=H-MT-MB;
+    var weights = data.map(function(d){return d.weight_lbs;});
+    var minW = Math.min.apply(null, weights.concat([250])) - 12;
+    var maxW = Math.max.apply(null, weights.concat([250])) + 12;
+    var xMin = new Date('2025-04-01').getTime();
+    var xMax = new Date('2026-07-01').getTime();
+    function xS(t) { return ML + (t - xMin) / (xMax - xMin) * PW; }
+    function yS(w) { return MT + PH - (w - minW) / (maxW - minW) * PH; }
+    var raceX = xS(new Date('2026-05-31').getTime());
+    var targetY = yS(250);
+    // Month grid
+    var monthTicks = '';
+    var d = new Date('2025-04-01');
+    while (d.getTime() <= xMax) {
+      var x = xS(d.getTime()).toFixed(1);
+      var lbl = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      monthTicks += '<line x1="' + x + '" y1="' + MT + '" x2="' + x + '" y2="' + (MT+PH) + '" stroke="#222" stroke-width="1"/>';
+      monthTicks += '<text x="' + x + '" y="' + (H-10) + '" text-anchor="middle" font-size="9" fill="#555">' + esc(lbl) + '</text>';
+      d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+    }
+    // Y grid
+    var yGrid = '';
+    for (var w = Math.ceil(minW/10)*10; w <= maxW; w += 10) {
+      var y = yS(w).toFixed(1);
+      yGrid += '<line x1="' + ML + '" y1="' + y + '" x2="' + (ML+PW) + '" y2="' + y + '" stroke="#1e1e1e" stroke-width="1"/>';
+      yGrid += '<text x="' + (ML-6) + '" y="' + (parseFloat(y)+4).toFixed(1) + '" text-anchor="end" font-size="10" fill="#555">' + w + '</text>';
+    }
+    // Data line
+    var linePts = data.map(function(d) {
+      return xS(new Date(d.date + 'T00:00:00').getTime()).toFixed(1) + ',' + yS(d.weight_lbs).toFixed(1);
+    }).join(' ');
+    // Dots + labels
+    var dots = '';
+    data.forEach(function(d) {
+      var dx = xS(new Date(d.date + 'T00:00:00').getTime()).toFixed(1);
+      var dy = yS(d.weight_lbs).toFixed(1);
+      dots += '<circle cx="' + dx + '" cy="' + dy + '" r="5" fill="#2E5FA3" stroke="#0f0f0f" stroke-width="1.5"/>';
+      dots += '<text x="' + dx + '" y="' + (parseFloat(dy)-9).toFixed(1) + '" text-anchor="middle" font-size="11" fill="#e0e0e0">' + d.weight_lbs + '</text>';
+    });
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;min-width:480px;display:block;" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect x="' + ML + '" y="' + MT + '" width="' + PW + '" height="' + PH + '" fill="#111" rx="2"/>' +
+      monthTicks + yGrid +
+      '<line x1="' + raceX.toFixed(1) + '" y1="' + MT + '" x2="' + raceX.toFixed(1) + '" y2="' + (MT+PH) + '" stroke="#e63946" stroke-dasharray="6,4" stroke-width="1.5"/>' +
+      '<text x="' + (raceX+4).toFixed(1) + '" y="' + (MT+14) + '" font-size="10" fill="#e63946">Race Day</text>' +
+      '<line x1="' + ML + '" y1="' + targetY.toFixed(1) + '" x2="' + (ML+PW) + '" y2="' + targetY.toFixed(1) + '" stroke="#2a9d5c" stroke-dasharray="6,4" stroke-width="1.5"/>' +
+      '<text x="' + (ML+PW-4) + '" y="' + (targetY-5).toFixed(1) + '" text-anchor="end" font-size="10" fill="#2a9d5c">250 lbs target</text>' +
+      '<polyline points="' + linePts + '" fill="none" stroke="#2E5FA3" stroke-width="2" stroke-linejoin="round"/>' +
+      dots + '</svg>';
+  }
+
+  // ---- Section 4: PR Board ----
+  function renderPRBoard(athlete) {
+    var el = document.getElementById('sec-pr-body');
+    if (!athlete) { sectionError(el, 'Athlete data unavailable.'); return; }
+    // Group by lift, keep highest weight per lift
+    var liftMap = {};
+    (athlete.prs || []).forEach(function(pr) {
+      if (!liftMap[pr.lift] || pr.weight_lbs > liftMap[pr.lift].weight_lbs) liftMap[pr.lift] = pr;
+    });
+    var prRows = Object.values(liftMap).map(function(pr) {
+      var typeStr = (pr.type || '').replace(/_/g,' ');
+      return '<tr><td class="pr-lift">' + esc(pr.lift) + '</td>' +
+        '<td class="pr-weight">' + pr.weight_lbs + '<span class="pr-weight-unit"> lbs</span></td>' +
+        '<td class="pr-type">' + esc(typeStr) + '</td></tr>';
+    }).join('');
+    var goalRows = (athlete.pr_goals || []).map(function(g) {
+      return '<tr><td class="pr-lift">' + esc(g.lift) + '</td>' +
+        '<td class="pr-weight">' + g.target_lbs + '<span class="pr-weight-unit"> lbs</span></td>' +
+        '<td class="pr-goal-block">' + esc(g.by_block || '') + '</td></tr>';
+    }).join('');
+    el.innerHTML = '<div class="pr-grid">' +
+      '<div><div class="pr-col-title">Current PRs</div><table class="pr-table"><tbody>' + prRows + '</tbody></table></div>' +
+      '<div><div class="pr-col-title">PR Goals</div><table class="pr-table"><tbody>' + goalRows + '</tbody></table></div>' +
+      '</div>';
+  }
+
+  // ---- Section 5: Skill Trends ----
+  function buildSparkline(values, flagFn) {
+    if (values.length < 2) return '<span class="spark-nodata">Not enough data yet</span>';
+    var last10 = values.slice(-10);
+    var W=120, H=36, pad=5, PW=W-2*pad, PH=H-2*pad;
+    var minV=Math.min.apply(null,last10), maxV=Math.max.apply(null,last10);
+    var range = maxV - minV || 1;
+    function xs(i) { return pad + i / (last10.length-1) * PW; }
+    function ys(v) { return pad + PH - (v - minV) / range * PH; }
+    var pts = last10.map(function(v,i){ return xs(i).toFixed(1)+','+ys(v).toFixed(1); }).join(' ');
+    var circles = last10.map(function(v,i) {
+      var fill = (flagFn && flagFn(v)) ? '#e63946' : '#2E5FA3';
+      return '<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(v).toFixed(1)+'" r="3" fill="'+fill+'"/>';
+    }).join('');
+    return '<svg viewBox="0 0 '+W+' '+H+'" style="width:'+W+'px;height:'+H+'px;display:inline-block;" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#111" rx="2"/>' +
+      '<polyline points="'+pts+'" fill="none" stroke="#2E5FA3" stroke-width="1.5" stroke-linejoin="round"/>' +
+      circles + '</svg>';
+  }
+  function trendArrow(values, invertedGood) {
+    if (values.length < 4) return { arrow: '&#8594;', cls: 'trend-flat' };
+    var last3 = values.slice(-3), prev3 = values.slice(-6,-3);
+    if (prev3.length < 3) return { arrow: '&#8594;', cls: 'trend-flat' };
+    var avgL = last3.reduce(function(a,b){return a+b;},0)/3;
+    var avgP = prev3.reduce(function(a,b){return a+b;},0)/3;
+    var diff = avgL - avgP;
+    if (Math.abs(diff) <= 0.2) return { arrow: '&#8594;', cls: 'trend-flat' };
+    if (diff > 0) return invertedGood ? { arrow: '&#9650;', cls: 'trend-up-bad' } : { arrow: '&#9650;', cls: 'trend-up-good' };
+    return invertedGood ? { arrow: '&#9660;', cls: 'trend-down-good' } : { arrow: '&#9660;', cls: 'trend-down-bad' };
+  }
+  function renderSkillTrends(sessions, hasToken) {
+    var el = document.getElementById('sec-skills-body');
+    if (!hasToken) { el.innerHTML = noTokenHtml(); return; }
+    var calfVals     = sessions.filter(function(s){ return s.calf_rating != null; }).map(function(s){ return s.calf_rating; });
+    var gripVals     = sessions.filter(function(s){ return s.skills && s.skills.grip_endurance != null; }).map(function(s){ return s.skills.grip_endurance; });
+    var shoulderVals = sessions.filter(function(s){ return s.skills && s.skills.shoulder_stability != null; }).map(function(s){ return s.skills.shoulder_stability; });
+    function row(label, sub, vals, flagFn, invertedGood) {
+      var recent = vals.length ? vals[vals.length-1] : null;
+      var tr = trendArrow(vals, invertedGood);
+      return '<div class="skill-row">' +
+        '<div class="skill-name"><strong>' + esc(label) + '</strong><span>' + sub + '</span></div>' +
+        '<div class="skill-value">' + (recent != null ? recent : '&mdash;') + '</div>' +
+        '<div class="skill-trend ' + tr.cls + '">' + tr.arrow + '</div>' +
+        '<div class="skill-spark">' + buildSparkline(vals, flagFn) + '</div>' +
+        '</div>';
+    }
+    el.innerHTML =
+      row('Calf Rating',        'Lower is better &bull; 0&ndash;10', calfVals,     function(v){return v>2;}, true) +
+      row('Grip Endurance',     'Higher is better &bull; 1&ndash;5', gripVals,     null, false) +
+      row('Shoulder Stability', 'Higher is better &bull; 1&ndash;5', shoulderVals, null, false);
+  }
+
+  // ---- Section 6: Run Progression ----
+  function renderRunProgression(prog, sessions, hasToken) {
+    var el = document.getElementById('sec-run-body');
+    if (!prog) { sectionError(el, 'Program data unavailable.'); return; }
+    var currentWk = getCurrentWeekNum();
+    var runWeeksDone = {};
+    if (hasToken) {
+      sessions.filter(function(s){ return s.day_type === 'run'; })
+        .forEach(function(s){ runWeeksDone[s.week] = true; });
+    }
+    var rows = prog.weeks.map(function(w) {
+      var isCurrent = w.week === currentWk;
+      var isDone = hasToken && runWeeksDone[w.week];
+      var phaseTag = w.phase ? '<span class="run-phase-tag">' + esc(w.phase.replace(/_/g,' ')) + '</span>' : '';
+      return '<tr class="' + (isCurrent ? 'current-week' : '') + '">' +
+        '<td><span class="run-wk">Wk ' + w.week + '</span>' + phaseTag + '</td>' +
+        '<td>' + esc(w.run_protocol || '&mdash;') + '</td>' +
+        '<td style="font-size:12px">' + esc(w.calf_gate || '&mdash;') + '</td>' +
+        '<td class="run-done">' + (isDone ? '&#10003;' : '') + '</td>' +
+        '</tr>';
+    }).join('');
+    var notice = !hasToken ? '<div class="section-notice" style="margin-bottom:10px;">Completion marks require app connection.</div>' : '';
+    el.innerHTML = notice + '<div class="run-table-wrap"><table class="run-table">' +
+      '<thead><tr><th>Week</th><th>Protocol</th><th>Calf Gate</th><th>Done</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }
+
+  // ---- Section 7: Training Timeline ----
+  function renderTimeline(athlete) {
+    var scrollEl  = document.getElementById('sec-timeline-scroll');
+    var detailEl  = document.getElementById('sec-timeline-detail');
+    if (!athlete || !athlete.timeline) { sectionError(scrollEl, 'Timeline data unavailable.'); return; }
+    var TW = 1400;
+    var tStart = new Date('2025-04-01').getTime();
+    var tEnd   = new Date('2027-01-01').getTime();
+    function xS(t) { return (t - tStart) / (tEnd - tStart) * TW; }
+    var openId = null;
+    function showDetail(item) {
+      if (!item) { detailEl.className = 'hidden'; detailEl.innerHTML = ''; return; }
+      var hlItems = (item.highlights || []).map(function(h){ return '<li>' + esc(h) + '</li>'; }).join('');
+      var resultHtml = item.result ? '<div class="tl-detail-result">Result: <strong>' + esc(item.result) + '</strong></div>' : '';
+      detailEl.className = 'tl-detail';
+      detailEl.innerHTML = '<div class="tl-detail-title">' + esc(item.label) + '</div>' +
+        resultHtml +
+        '<div class="tl-detail-summary">' + esc(item.summary || '') + '</div>' +
+        (hlItems ? '<ul class="tl-detail-highlights">' + hlItems + '</ul>' : '');
+    }
+    var trackHtml = '';
+    athlete.timeline.forEach(function(item) {
+      if (item.type === 'milestone') {
+        var t = new Date(item.date + 'T00:00:00').getTime();
+        var x = xS(t).toFixed(1);
+        trackHtml += '<div class="tl-milestone" data-id="' + esc(item.id) + '" style="left:' + x + 'px;">' +
+          '<div class="tl-diamond">&#9670;</div>' +
+          '<div class="tl-milestone-label">' + esc(item.label) + '</div></div>';
+      } else {
+        var t1 = new Date(item.start + 'T00:00:00').getTime();
+        var t2 = new Date(item.end   + 'T00:00:00').getTime();
+        var x  = xS(t1).toFixed(1);
+        var w  = Math.max(55, xS(t2) - xS(t1)).toFixed(1);
+        var activeCls = item.status === 'active' ? ' active-block' : '';
+        var colorCls  = 'tl-color-' + (item.color || 'gray');
+        trackHtml += '<div class="tl-block ' + colorCls + activeCls + '" data-id="' + esc(item.id) + '" style="left:' + x + 'px;width:' + w + 'px;">' +
+          '<div class="tl-block-label">' + esc(item.label) + '</div>' +
+          '<div class="tl-block-sub">' + esc(item.subtitle || '') + '</div></div>';
+      }
+    });
+    scrollEl.innerHTML = '<div class="timeline-track">' + trackHtml + '</div>';
+    scrollEl.addEventListener('click', function(e) {
+      var target = e.target.closest ? e.target.closest('[data-id]') : null;
+      if (!target) return;
+      var id = target.dataset ? target.dataset.id : target.getAttribute('data-id');
+      if (openId === id) { openId = null; showDetail(null); }
+      else {
+        openId = id;
+        showDetail(athlete.timeline.find(function(i){ return i.id === id; }) || null);
+      }
+    });
+  }
+
+  // ---- Section 8: Recent Sessions ----
+  function feelDots(n) {
+    n = Math.max(0, Math.min(5, Math.round(n)));
+    var s = '';
+    for (var i=0;i<n;i++) s += '&#9679;';
+    for (var j=n;j<5;j++) s += '&#9675;';
+    return s;
+  }
+  function renderRecentSessions(sessions, hasToken) {
+    var el = document.getElementById('sec-sessions-body');
+    if (!hasToken) { el.innerHTML = noTokenHtml(); return; }
+    if (!sessions.length) {
+      el.innerHTML = '<div class="section-notice">No sessions recorded yet. Complete a workout in the companion app to see data here.</div>';
+      return;
+    }
+    var recent = sessions.slice().reverse().slice(0,10);
+    var html = '';
+    recent.forEach(function(s, i) {
+      var calfStr = s.calf_rating != null ? 'Calf: ' + s.calf_rating + '/10' : '';
+      var durStr  = s.duration_min ? s.duration_min + 'm' : '';
+      // Build detail HTML
+      var exRows = (s.exercises || []).map(function(ex) {
+        var sets = (ex.sets || []).map(function(st) {
+          if (st.actual_weight_lbs != null && st.actual_reps != null) return st.actual_weight_lbs + 'x' + st.actual_reps;
+          if (st.actual_duration_sec != null) return st.actual_duration_sec + 's';
+          return st.completed ? '&#10003;' : '&#9675;';
+        }).join(', ');
+        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(ex.name||'') + '</span>' +
+          (sets ? ': ' + esc(sets) : '') + '</div>';
+      }).join('');
+      var sk = s.skills || {};
+      var skillParts = [];
+      if (sk.grip_endurance     != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Grip: </span><span class="sess-skill-val">'+sk.grip_endurance+'</span></span>');
+      if (sk.shoulder_stability != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Shoulder: </span><span class="sess-skill-val">'+sk.shoulder_stability+'</span></span>');
+      if (sk.monkey_bars        != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Monkey bars: </span><span class="sess-skill-val">'+sk.monkey_bars+'</span></span>');
+      var noteHtml = s.note ? '<div class="sess-note">&ldquo;' + esc(s.note) + '&rdquo;</div>' : '';
+      var detailHtml = '<div class="session-detail">' +
+        (exRows || '<span style="color:#666">No exercise data</span>') +
+        (skillParts.length ? '<div class="sess-skill-row">'+skillParts.join('')+'</div>' : '') +
+        noteHtml + '</div>';
+      html += '<div class="session-row" data-idx="'+i+'">' +
+        '<div class="session-row-header">' +
+        '<span class="sess-date">' + esc(s.date||'') + '</span>' +
+        '<span class="sess-label">' + esc(s.day_label||s.day_type||'') + '</span>' +
+        (durStr  ? '<span class="sess-dur">'  + esc(durStr) + '</span>' : '') +
+        (s.overall_feel ? '<span class="sess-feel">' + feelDots(s.overall_feel) + '</span>' : '') +
+        (calfStr ? '<span class="sess-calf">' + esc(calfStr) + '</span>' : '') +
+        '</div>' +
+        '<div class="session-expand hidden">' + detailHtml + '</div>' +
+        '</div>';
+    });
+    el.innerHTML = html;
+    el.addEventListener('click', function(e) {
+      var row = e.target.closest ? e.target.closest('.session-row') : null;
+      if (!row) return;
+      var exp = row.querySelector('.session-expand');
+      if (exp) exp.classList.toggle('hidden');
+    });
+  }
+
+  // ---- Main Init ----
+  async function init() {
+    var token   = localStorage.getItem('githubToken');
+    var repo    = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
+    var hasToken = !!token;
+    var results = await Promise.allSettled([
+      fetchWithCache('athleteCache', RAW_BASE + '/athlete.json', TTL_24H),
+      fetchWithCache('programCache', RAW_BASE + '/program.json', TTL_24H),
+      hasToken ? fetchSessions(token, repo) : Promise.resolve(null)
+    ]);
+    var athlete  = results[0].status === 'fulfilled' ? results[0].value : null;
+    var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
+    var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
+    renderCountdown(prog);
+    renderPhaseProgress(prog, sessions, hasToken);
+    renderBodyWeight(athlete);
+    renderPRBoard(athlete);
+    renderSkillTrends(sessions, hasToken);
+    renderRunProgression(prog, sessions, hasToken);
+    renderTimeline(athlete);
+    renderRecentSessions(sessions, hasToken);
+    document.getElementById('dash-loading').style.display = 'none';
+    document.getElementById('dash-main').classList.remove('hidden');
+  }
+
+  init().catch(function(err) {
+    console.error('Dashboard init failed:', err);
+    document.getElementById('dash-loading').innerHTML =
+      '<div class="section-error">&#9888; Dashboard failed to load: ' + esc(err.message) + '</div>';
+  });
+
+})();
+</script>
+</body>
+</html>
