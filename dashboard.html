@@ -762,10 +762,21 @@
       });
       var row = pillsArr.join('<span class="mini-phase-arrow">&rarr;</span>');
       var activeId = active ? active.id : '';
-      var completedCount = (sessions || []).filter(function(s) { return s.phase === activeId && !s.bonus; }).length;
-      var phaseWeeks = (prog.weeks || []).filter(function(w) { return active && active.weeks.indexOf(w.week) !== -1; });
-      var totalDays = phaseWeeks.reduce(function(sum, w) { return sum + (w.days ? w.days.length : 0); }, 0);
-      var remaining = Math.max(0, totalDays - completedCount);
+      var fileCount = (sessions || []).filter(function(s) { return s.phase === activeId && !s.bonus; }).length;
+      var lc = JSON.parse(localStorage.getItem('lastCompleted') || 'null');
+      var pointerCount = 0;
+      if (lc && active) {
+        (prog.weeks || []).forEach(function(w) {
+          if (w.phase !== activeId) return;
+          (w.days || []).forEach(function(d) {
+            if (w.week < lc.week || (w.week === lc.week && d.day <= lc.day)) pointerCount++;
+          });
+        });
+      }
+      var completedCount = Math.max(fileCount, pointerCount);
+      var phaseWeeks = (prog.weeks || []).filter(function(w) { return active && w.phase === activeId; });
+      var totalPhaseDays = phaseWeeks.reduce(function(sum, w) { return sum + (w.days ? w.days.length : 0); }, 0);
+      var remaining = Math.max(0, totalPhaseDays - completedCount);
       return '<div class="mini-phase-timeline">' +
         '<div class="mini-phase-row">' + row + '</div>' +
         '<div class="mini-phase-count">' + completedCount + ' sessions completed this phase &middot; ' + remaining + ' sessions remaining</div>' +

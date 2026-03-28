@@ -19,6 +19,7 @@ See condor_workflow.txt for the spec update protocol.
 | Build 2 Phase 1 | Training Dashboard (dashboard.html) | ✅ Complete |
 | Dashboard Task A | Structural redesign — section order, timeline, milestones | ✅ Complete |
 | Dashboard Task B | Polish and data fixes — countdown, timeline scroll, sticky column, HTML entity bug, Week 10 calf gate | ✅ Complete |
+| Dashboard Task C | Fix Operation Spartan phase session count — two-source completed count, correct remaining | ✅ Complete |
 
 ---
 
@@ -144,6 +145,37 @@ Built `index.html` as a single-file vanilla HTML/CSS/JS app.
 - Copy JSON: uses `navigator.clipboard.writeText()` with `prompt()` fallback for older browsers
 - "Back to workout" button routes to `screen-preworkout` and calls `window.initPreworkout()`
 - `nextWorkout()` pointer logic inlined in Screen 4 IIFE (self-contained; no cross-IIFE dependency)
+
+---
+
+### Dashboard Task C — Fix Operation Spartan Phase Session Count
+**Branch:** `claude/fix-spartan-session-count-NLKjl`
+**Date:** 2026-03-28
+
+Single targeted fix inside `buildMiniPhaseTimeline()` in `dashboard.html`.
+
+#### Problem
+1. **Completed count** read only from session files (`sessionsCache`). Sessions logged before the app was built were never written to files, so the count showed 0.
+2. **Remaining count** subtracted completed from total but `completedCount` was always 0, so it showed all scheduled phase days as remaining instead of the actual days left.
+
+#### Fix — Two-source completed count
+
+**Source 1 — session files (unchanged):**
+`fileCount` = non-bonus session files where `phase === activeId`.
+
+**Source 2 — `lastCompleted` pointer (new fallback):**
+Reads `lastCompleted` from localStorage (`{ week, day }`). Counts scheduled non-bonus days in the active phase at or before the pointer: `w.week < lc.week`, or `w.week === lc.week && d.day <= lc.day`.
+
+`completedCount = Math.max(fileCount, pointerCount)` — whichever is higher wins. Once real session files catch up or exceed the pointer, file count takes over naturally.
+
+**Remaining:** `Math.max(0, totalPhaseDays - completedCount)` — correctly subtracts completed from total phase days.
+
+**Edge cases covered:**
+- `lastCompleted` null → `pointerCount = 0`, fileCount drives
+- `lastCompleted` in a different phase → `w.phase !== activeId` skips all weeks, `pointerCount = 0`
+- `completedCount > totalPhaseDays` → `remaining` clamped to 0
+
+Also changed `phaseWeeks` filter from `active.weeks.indexOf(w.week) !== -1` to `w.phase === activeId` (equivalent, more direct).
 
 ---
 
