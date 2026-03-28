@@ -521,18 +521,23 @@
 
   // ---- Section 1: Race Countdown ----
   var countdownInterval = null;
-  function renderCountdown(prog) {
+  function renderCountdown(prog, athlete) {
     var el = document.getElementById('countdown-content');
     var RACE = new Date('2026-05-31T00:00:00').getTime();
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
     var phaseHtml = '';
-    if (prog) {
-      var ap = getActivePhase(prog.meta.phases);
-      if (ap) {
-        phaseHtml = '<div class="countdown-phase">' + esc(ap.label) + '</div>' +
-          '<div class="countdown-phase-dates">' + esc(ap.dates) + '</div>';
+    if (athlete && athlete.timeline) {
+      var upcoming = athlete.timeline.find(function(item) {
+        return item.type === 'milestone' && item.result === 'upcoming';
+      });
+      if (upcoming) {
+        var d = new Date(upcoming.date + 'T00:00:00');
+        var dateStr = (d.getMonth() + 1) + '.' + pad(d.getDate()) + '.' + String(d.getFullYear()).slice(2);
+        phaseHtml = '<div class="countdown-phase-dates">' +
+          esc(upcoming.label) + ' \u2014 ' + esc(upcoming.subtitle) + ' \u2014 ' + esc(dateStr) +
+          '</div>';
       }
     }
-    function pad(n) { return n < 10 ? '0' + n : '' + n; }
     function updateCountdown() {
       var remaining = RACE - Date.now();
       if (remaining <= 0) {
@@ -923,7 +928,7 @@
     var athlete  = results[0].status === 'fulfilled' ? results[0].value : null;
     var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
-    renderCountdown(prog);
+    renderCountdown(prog, athlete);
     renderTimeline(athlete, prog, sessions, hasToken);
     renderBodyWeight(athlete);
     renderPRBoard(athlete);

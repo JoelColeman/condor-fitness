@@ -20,6 +20,7 @@ See condor_workflow.txt for the spec update protocol.
 | Dashboard Task A | Structural redesign — section order, timeline, milestones | ✅ Complete |
 | Dashboard Task B | Polish and data fixes — countdown, timeline scroll, sticky column, HTML entity bug, Week 10 calf gate | ✅ Complete |
 | Dashboard Task C | Fix Operation Spartan phase session count — two-source completed count, correct remaining | ✅ Complete |
+| Dashboard Task D | Countdown banner label — replace phase name/dates with upcoming milestone label | ✅ Complete |
 
 ---
 
@@ -179,6 +180,23 @@ Also changed `phaseWeeks` filter from `active.weeks.indexOf(w.week) !== -1` to `
 
 ---
 
+### Dashboard Task D — Countdown Banner Label
+**Branch:** `claude/update-countdown-banner-label-OvCml`
+**Date:** 2026-03-28
+
+Single targeted change to `renderCountdown` in `dashboard.html`.
+
+#### What changed:
+- `renderCountdown(prog)` signature changed to `renderCountdown(prog, athlete)`.
+- Removed: two-line phase name + date range block (`getActivePhase` lookup, `.countdown-phase` + `.countdown-phase-dates` divs).
+- Added: find first `athlete.timeline` entry where `type === "milestone"` and `result === "upcoming"`. If found, render a single `.countdown-phase-dates` div: `{label} — {subtitle} — {date formatted as M.DD.YY}`.
+  - Date format: `(month, no leading zero) + '.' + (day, zero-padded) + '.' + (2-digit year)`. Example: `2026-05-31` → `5.31.26`.
+- Graceful degradation: if no upcoming milestone found, nothing renders below the countdown numbers.
+- Call site updated: `renderCountdown(prog)` → `renderCountdown(prog, athlete)`.
+- `pad()` helper moved above `phaseHtml` block so it is available during date formatting.
+
+---
+
 ### Dashboard Task B — Polish and Data Fixes
 **Branch:** `claude/dashboard-polish-data-fixes-rRtnu`
 **Date:** 2026-03-28
@@ -249,6 +267,13 @@ Five targeted structural changes to `dashboard.html`:
 ---
 
 ## Spec Deviations
+
+### Dashboard Task D — Countdown Banner Label
+
+1. **Race Countdown section — phase label and date range replaced with upcoming milestone label.**
+   The spec (section 1, Race Countdown) says "Show current phase label and date range below the count." This label is now replaced with a single line sourced from `athlete.json`: the first timeline entry where `type === "milestone"` and `result === "upcoming"`, formatted as `{label} — {subtitle} — {M.DD.YY}`. The spec should be updated to describe this behavior.
+
+---
 
 ### Dashboard Task B — Polish and Data Fixes
 
