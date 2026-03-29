@@ -1,5 +1,5 @@
 # Condor Fitness — Build Spec
-Version 1.3 — March 28, 2026
+Version 1.4 — March 29, 2026
 Repo: JoelColeman/condor-fitness
 
 This document is the source of truth for what the app
@@ -26,9 +26,8 @@ the repo when done.
 ### Build 2 — Training Dashboard (dashboard.html)
 Phone and desktop. Reads athlete.json, program.json,
 and sessions/. Displays full athletic timeline, PR
-board, body weight trend, skill history, run
-progression, phase checkpoints, and forward-looking
-goals.
+board, body weight trend, skill history, phase
+checkpoints, and forward-looking goals.
 Status: Complete. Live at /dashboard.html.
 
 ---
@@ -64,6 +63,7 @@ Dashboard URL: https://joelcoleman.github.io/condor-fitness/dashboard.html
 | `programCache` | Cached copy of program.json with timestamp. Re-fetched if older than 24 hours. |
 | `athleteCache` | Cached copy of athlete.json with timestamp. Re-fetched if older than 24 hours. |
 | `sessionsCache` | Cached copy of all session files with timestamp. Re-fetched if older than 1 hour. |
+| `workoutProgress` | Auto-saved in-progress workout state. Schema: `{ week, day, savedAt, completed[] }`. TTL: 4 hours. Cleared on successful session save, refresh confirm, and new workout start. |
 
 ---
 
@@ -112,7 +112,18 @@ Session saved with `"bonus": true` flag.
 ### Screen 3 — Active Workout
 Header: "Week [X] Day [Y] — [Label]" + elapsed timer.
 ↻ Refresh button in header — confirm dialog before
-swapping (progress will be lost).
+swapping (clears workoutProgress, progress will be lost).
+
+**Auto-save / Restore:**
+After every set check or round tap, completion state is
+saved to `workoutProgress` in localStorage. On load,
+if `workoutProgress` matches the current week/day and
+is less than 4 hours old, completed cards are restored
+and a banner is shown: "Session in progress restored.
+[Clear]". Clear button removes the banner and clears
+the key. On successful session save, workoutProgress
+is cleared. Only card-level completion is restored —
+individual set inputs are not restored.
 
 #### Exercise Cards
 One card per exercise. Cards collapsed by default.
@@ -139,13 +150,20 @@ Completed cards show a green checkmark in header.
 - Shows round count
 - Per-round "Complete round [N]" button with full exercise list shown for reference
 
-**Finisher Card:**
-- Labeled "Grip Finisher"
-- Note shown: "Complete after all circuit rounds."
-- Per-exercise checkboxes
+**Finisher Circuit Card** (`type: "finisher_circuit"`):
+- Used for Grip Finisher blocks.
+- Subtitle: "[N] rounds · No rest within round"
+- Body: exercise reference list (name + reps/duration/weight)
+  + optional note line + one "Complete round N" button per round.
+- No rest timer between exercises within a round (grip_finisher
+  default = 0 sec). Rest between rounds at discretion.
+- Last round completion marks card complete and advances.
 
 **Superset Card:**
-- Sub-exercise sections with weight+reps or duration inputs
+- Sub-exercise sections with weight+reps or duration inputs.
+- If `ex.rounds` is present: subtitle shows
+  "[N] rounds · [ExName1 + ExName2]".
+- Otherwise: subtitle shows "Superset · N exercises".
 
 **Cardio Card:**
 - Single "Mark complete" checkbox (e.g. Stair Stepper, Row Erg)
@@ -183,8 +201,9 @@ Displays workout label and duration at top.
 - Notes: free text field
 
 **Conditionally shown** (based on exercises in current workout):
-- Grip endurance: 1–5 — shown if workout contains a finisher
-  or any exercise with "farmer" or "carry" in the name
+- Grip endurance: 1–5 — shown if workout contains a
+  finisher_circuit or any exercise with "farmer" or "carry"
+  in the name
 - Shoulder stability: 1–5 — shown if workout contains a timed
   exercise (dead hangs) or any exercise with "pull-up" or
   "row" in the name
@@ -201,8 +220,9 @@ All skill ratings are optional even when shown.
 2. Assemble session JSON (schema below)
 3. Write `sessions/YYYY-MM-DD.json` to GitHub via API
 4. If not bonus: advance `lastCompleted`, write to localStorage
-5. Show success screen with green ✓ and next workout preview
-6. If GitHub write fails: show inline error + "Copy JSON"
+5. Clear `workoutProgress` from localStorage
+6. Show success screen with green ✓ and next workout preview
+7. If GitHub write fails: show inline error + "Copy JSON"
    button so no data is lost. Do not advance `lastCompleted`.
 
 ---
@@ -364,79 +384,53 @@ the app shows the same next workout whenever he opens it.
 ## Build 2 — Training Dashboard (dashboard.html)
 
 ### Purpose
-A read-only training dashboard. Shows where you've been,
-where you are, and what's coming. Updates automatically
-as session files accumulate in sessions/.
+A read-only training dashboard. Reads athlete.json,
+program.json, and sessions/. No editing from dashboard.
 
-Single file: dashboard.html.
-Stack: vanilla HTML, CSS, JavaScript. No frameworks.
-No npm. No build tools. No API keys.
-
-Phone and desktop compatible.
-
----
-
-### Navigation
-
-dashboard.html header:
-- Left: "CONDOR FITNESS" wordmark
-- Right: "← Workout" link → index.html
-
-index.html Screen 2: "Dashboard →" link below the
-three main buttons.
+### Section Order
+1. Race Countdown
+2. Training Timeline
+3. Body Weight
+4. PR Board
+5. Skill Trends
+6. Training Log
 
 ---
 
-### Sections (top to bottom)
+### Dashboard Sections
 
 #### 1. Race Countdown
-Compact banner at top. Live countdown updating every
-second showing days, hours, minutes, and seconds:
-
-  [63]  [14]  [38]  [28]
-  DAYS   HRS   MIN   SEC
-
-Below the numbers: a single label sourced from the
-first milestone entry in athlete.json where
-result === "upcoming". Format:
-  {label} — {subtitle} — {M.DD.YY}
-Example: "Spartan Super 10K — Colorado Springs, CO — 5.31.26"
-
-After race date passes: clear interval, show
-"Race Complete 🏆".
+Live 4-unit widget: Days / Hrs / Min / Sec.
+Updates every second via setInterval.
+Label sourced from first upcoming milestone in
+athlete.json timeline (type === "milestone",
+result === "upcoming"). Format: M.DD.YY.
+After race date: shows "Race Complete 🏆".
 
 #### 2. Training Timeline
-Horizontal scrolling timeline. Two-row layout:
-- Marker row (top, ~44px): milestone diamonds positioned
-  by date. Each diamond has a label and date below it.
-  Gold color for Spartan Super 10K milestone.
-- Blocks row (below): colored horizontal block bars
-  for each training block, labeled with name and subtitle.
+Horizontal scroll container. Blocks proportionally
+sized by duration. Milestones rendered in a separate
+44px marker row above the blocks row (two-row layout).
+Active block has accent border.
+Tap/click any block to expand a detail panel with
+summary and highlights.
 
-Active block (status: "active"): red accent border.
-On load: scrolled so active block is centered.
+Operation Spartan block expand card includes a mini
+phase timeline: four phase pills (Foundation → Volume
+Build → Race Specific → Taper) connected by arrows.
+Active phase: accent background. Completed: 0.4 opacity.
+Future: muted. Below pills: session count and remaining
+days for the active phase (two-source logic — see
+Session Count Logic below).
 
-Tap/click any block or milestone diamond: expand a
-details panel below the timeline showing summary and
-highlights. Click again to collapse.
-
-For the Operation Spartan block specifically, the
-expand panel also shows:
-- Mini phase timeline: Foundation → Volume Build →
-  Race Specific → Taper (pills connected by arrows)
-  Active phase highlighted red. Completed phases dimmed.
-- Sessions completed this phase (using higher of:
-  session file count OR lastCompleted pointer count)
-- Sessions remaining in active phase
+Auto-scrolls to active block on load.
 
 #### 3. Body Weight
-SVG line chart. No external libraries.
-Plots all body_weight entries from athlete.json.
-Dashed horizontal line at 250 lbs: "Race Day Target".
-Dashed vertical line at 2026-05-31: "Race Day".
-Data point labels always visible.
+SVG line chart. X axis April 2025 – June 2026.
 Y axis: data range with 10 lb padding.
-X axis: April 2025 through June 2026.
+Dashed red vertical line at May 31 (Race Day).
+Dashed green horizontal line at 250 lbs target.
+Data point labels always visible.
 
 #### 4. PR Board
 Two columns: Current PRs / PR Goals.
@@ -454,20 +448,49 @@ Calf: lower is better, red dot on any value > 2.
 Skills: higher is better.
 If fewer than 2 data points: "Not enough data yet".
 
-#### 6. Run Progression
-Table from program.json. Week column is sticky on
-mobile scroll. Columns: Week / Protocol / Calf Gate.
-Current week highlighted. Completed run weeks marked ✓.
-Calf gate values decoded from HTML entities before
-display.
+#### 6. Training Log
+Replaces the former "Recent Sessions" section.
+Shows all 32 program days (Weeks 3–10, 4 days each)
+in chronological order, grouped by week with week
+header separators.
 
-#### 7. Recent Sessions
-Last 10 sessions from sessions/, newest first.
-Each row: date / day_label / duration / overall_feel
-(dots) / calf_rating.
-Tap to expand full session detail.
-If no sessions: "No sessions recorded yet."
-If no token: "Open the workout companion app first."
+**Week header row:**
+"Week N — [dates]" + phase pill (active/completed/future).
+
+**Row states:**
+
+*Logged* — non-bonus session file exists for that week/day:
+  Date, day label, feel dots, calf rating.
+  Tap to expand full session detail (exercises, skills,
+  notes). One expanded row at a time.
+
+*Skipped* — past day with no session file:
+  Date and day label only. Opacity 0.45. No interaction.
+
+*Next* — first upcoming non-logged day:
+  Day label + "NEXT" accent badge + left accent border.
+  Exercise preview sub-line: first 3 exercise names
+  (skip "Scapular" warm-up), joined with " · ", truncated
+  with "…" if more. No interaction.
+
+*Future* — all days after Next:
+  Day label. Opacity 0.65. Exercise preview sub-line.
+  No interaction.
+
+**Run protocol on Day 2 rows:**
+For all Day 2 rows (Run + Grip) in all states, a second
+sub-line appears below the exercise preview line at the
+same font size: "[run_protocol] · [calf_gate]".
+HTML entities in calf_gate are decoded before display.
+
+**Auto-scroll:**
+On load, the NEXT row scrolls into view (block: center)
+at 150ms after all render functions complete in init().
+Falls back to last row if all days are complete.
+
+**No-token state:**
+All rows render in future/preview style. Notice shown:
+"Connect the workout companion app to see logged sessions."
 
 ---
 
@@ -532,7 +555,13 @@ not blank the whole page.
 | 2026-03-28 | Dashboard: Milestone redesign — two-row layout (marker row + blocks row), tappable expand cards | Milestones were overlapping blocks |
 | 2026-03-28 | Dashboard: Race countdown changed to live 4-unit widget (days/hrs/min/sec), label sourced from upcoming milestone in athlete.json | More motivating than static day count |
 | 2026-03-28 | Dashboard: Session count uses two-source logic (file count vs lastCompleted pointer, take higher) | App had no session history before Build 1 |
-| 2026-03-28 | Dashboard: Run progression Week column sticky on mobile | Column was clipping on scroll |
 | 2026-03-28 | Dashboard: Week 10 calf gate added to program.json | Missing field causing &mdash; render bug |
+| 2026-03-29 | Pull-Up Superset split into two blocks: standalone Pull-Ups 5×5 + Row/Press Superset 3 rounds | Clearer structure in app and training log |
+| 2026-03-29 | Grip Finisher changed to finisher_circuit type with round-based UI | Flat checklist didn't communicate circuit intent |
+| 2026-03-29 | Auto-save / session restore added to Screen 3 (workoutProgress localStorage key) | Accidental navigation was wiping in-progress data |
+| 2026-03-29 | Dashboard: Recent Sessions replaced by Training Log (all 32 days, chronological) | User wants to scroll ahead and see upcoming workouts |
+| 2026-03-29 | Dashboard: Run Progression table removed; run protocol + calf gate inline on Day 2 Training Log rows | Consolidation — same data, fewer sections |
+| 2026-03-29 | Dashboard: Section count reduced from 7 to 6 | Run Progression removed |
+| 2026-03-29 | Dashboard: Training Log auto-scroll moved to post-render init() call at 150ms | Previous 80ms scroll fired before layout painted |
 
 *This table is updated by Chat whenever the spec changes.*
