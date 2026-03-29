@@ -226,46 +226,6 @@
     .skill-spark { flex: 1; min-width: 120px; }
     .spark-nodata { font-size: 12px; color: var(--text-secondary); font-style: italic; }
 
-    /* Section 6: Run Progression */
-    .run-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .run-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
-    .run-table th {
-      text-align: left;
-      padding: 6px 8px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border);
-    }
-    .run-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    .run-table tr:last-child td { border-bottom: none; }
-    .run-table tr.current-week td { background: rgba(230,57,70,0.07); }
-    .run-wk { font-weight: 600; color: var(--text-primary); }
-    .run-table tr.current-week .run-wk { color: var(--accent); }
-    .run-phase-tag {
-      display: inline-block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: var(--text-secondary);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 1px 5px;
-      margin-left: 5px;
-      vertical-align: middle;
-    }
-    .run-done { color: var(--success); font-weight: 700; }
-    .run-table th:first-child,
-    .run-table td:first-child {
-      position: sticky;
-      left: 0;
-      background: var(--card-bg);
-      z-index: 1;
-      border-right: 1px solid var(--border);
-    }
-
     /* Section 7: Training Timeline */
     .timeline-scroll-wrap {
       overflow-x: auto;
@@ -504,13 +464,7 @@
     <div class="section-body" id="sec-skills-body"></div>
   </div>
 
-  <!-- 6: Run Progression -->
-  <div class="dash-section">
-    <h2 class="section-heading">Run Progression</h2>
-    <div class="section-body" id="sec-run-body"></div>
-  </div>
-
-  <!-- 7: Training Log -->
+  <!-- 6: Training Log -->
   <div class="dash-section">
     <h2 class="section-heading">Training Log</h2>
     <div class="section-body" id="sec-sessions-body"></div>
@@ -784,34 +738,7 @@
       row('Shoulder Stability', 'Higher is better &bull; 1&ndash;5', shoulderVals, null, false);
   }
 
-  // ---- Section 6: Run Progression ----
-  function renderRunProgression(prog, sessions, hasToken) {
-    var el = document.getElementById('sec-run-body');
-    if (!prog) { sectionError(el, 'Program data unavailable.'); return; }
-    var currentWk = getCurrentWeekNum();
-    var runWeeksDone = {};
-    if (hasToken) {
-      sessions.filter(function(s){ return s.day_type === 'run'; })
-        .forEach(function(s){ runWeeksDone[s.week] = true; });
-    }
-    var rows = prog.weeks.map(function(w) {
-      var isCurrent = w.week === currentWk;
-      var isDone = hasToken && runWeeksDone[w.week];
-      var phaseTag = w.phase ? '<span class="run-phase-tag">' + esc(w.phase.replace(/_/g,' ')) + '</span>' : '';
-      return '<tr class="' + (isCurrent ? 'current-week' : '') + '">' +
-        '<td><span class="run-wk">Wk ' + w.week + '</span>' + phaseTag + '</td>' +
-        '<td>' + esc(w.run_protocol || '&mdash;') + '</td>' +
-        '<td style="font-size:12px">' + decodeHtml(w.calf_gate || '—') + '</td>' +
-        '<td class="run-done">' + (isDone ? '&#10003;' : '') + '</td>' +
-        '</tr>';
-    }).join('');
-    var notice = !hasToken ? '<div class="section-notice" style="margin-bottom:10px;">Completion marks require app connection.</div>' : '';
-    el.innerHTML = notice + '<div class="run-table-wrap"><table class="run-table">' +
-      '<thead><tr><th>Week</th><th>Protocol</th><th>Calf Gate</th><th>Done</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table></div>';
-  }
-
-  // ---- Section 7: Training Timeline ----
+  // ---- Section 2: Training Timeline ----
   function getOffsetLeftRelativeTo(el, container) {
     var offset = 0;
     while (el && el !== container) {
@@ -947,7 +874,7 @@
     return s;
   }
 
-  // ---- Section 7: Training Log ----
+  // ---- Section 6: Training Log ----
   function renderTrainingLog(prog, sessions, hasToken) {
     var el = document.getElementById('sec-sessions-body');
     if (!prog || !prog.weeks) { sectionError(el, 'Program data unavailable.'); return; }
@@ -1084,6 +1011,11 @@
           var sub = exSubLine(day.exercises);
           if (sub) html += '<div class="tl-log-sub">' + esc(sub) + '</div>';
         }
+        if (day.day === 2 && w.run_protocol) {
+          var calfGateDecoded = w.calf_gate ? decodeHtml(w.calf_gate) : '';
+          var runInfoText = w.run_protocol + (calfGateDecoded ? ' \u00b7 ' + calfGateDecoded : '');
+          html += '<div class="tl-log-sub" style="margin-top:4px;">' + esc(runInfoText) + '</div>';
+        }
         html += '</div>'; // tl-row-left
 
         html += '<div class="tl-row-right">';
@@ -1121,12 +1053,10 @@
       openRowId = expand.classList.contains('hidden') ? null : row.id;
     });
 
-    // Auto-scroll to next row (or last if program complete)
-    setTimeout(function() {
-      var target = nextRowId ? document.getElementById(nextRowId) :
-                   lastRowId ? document.getElementById(lastRowId) : null;
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
+    // Return the NEXT row element (or last if program complete) for caller to scroll into view
+    var scrollTarget = nextRowId ? document.getElementById(nextRowId) :
+                       lastRowId ? document.getElementById(lastRowId) : null;
+    return scrollTarget;
   }
 
   // ---- Main Init ----
@@ -1147,9 +1077,13 @@
     renderBodyWeight(athlete);
     renderPRBoard(athlete);
     renderSkillTrends(sessions, hasToken);
-    renderRunProgression(prog, sessions, hasToken);
-    renderTrainingLog(prog, sessions, hasToken);
+    var nextEl = renderTrainingLog(prog, sessions, hasToken);
     document.getElementById('dash-loading').style.display = 'none';
+    if (nextEl) {
+      setTimeout(function() {
+        nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
     document.getElementById('dash-main').classList.remove('hidden');
   }
 

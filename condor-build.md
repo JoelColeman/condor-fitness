@@ -21,10 +21,56 @@ See condor_workflow.txt for the spec update protocol.
 | Dashboard Task B | Polish and data fixes — countdown, timeline scroll, sticky column, HTML entity bug, Week 10 calf gate | ✅ Complete |
 | Dashboard Task C | Fix Operation Spartan phase session count — two-source completed count, correct remaining | ✅ Complete |
 | Dashboard Task D | Countdown banner label — replace phase name/dates with upcoming milestone label | ✅ Complete |
+| Dashboard Prompt 3 | Training Log scroll fix + Run Progression consolidation | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Prompt 3 — Training Log scroll fix + Run Progression consolidation
+**Branch:** `claude/fix-dashboard-autoscroll-Sv9EC`
+**Date:** 2026-03-29
+
+#### What changed:
+
+**dashboard.html — Auto-scroll fix:**
+- Removed `setTimeout(..., 80)` from inside `renderTrainingLog`.
+- `renderTrainingLog` now returns the NEXT row DOM element (or last row if program complete, or null).
+- In `init()`, scroll fires after all render functions complete: `setTimeout(..., 150)` on the returned element.
+- 150ms delay ensures browser layout is fully painted after all sections render.
+
+**dashboard.html — Run Progression removed:**
+- Deleted the `<!-- 6: Run Progression -->` section HTML div (`id="sec-run-body"`).
+- Deleted `renderRunProgression()` function entirely.
+- Removed `renderRunProgression()` call from `init()`.
+- Removed all run-table CSS: `.run-table-wrap`, `.run-table`, `.run-wk`, `.run-phase-tag`, `.run-done`, `.current-week` (run table context).
+
+**dashboard.html — Run protocol + calf gate inline on Day 2 rows:**
+- For every Training Log row where `day.day === 2` (Run + Grip day), a second sub-line is appended in `tl-row-left`.
+- Format: `[run_protocol] · [calf_gate]` (calf_gate HTML entities decoded via `decodeHtml()`).
+- Styled as `.tl-log-sub` with `margin-top: 4px` to separate from exercise preview line.
+- Applies to all states: logged, next, future, skipped.
+
+**dashboard.html — Section comments updated:**
+- `<!-- 7: Training Log -->` updated to `<!-- 6: Training Log -->`.
+- `// ---- Section 7: Training Log ----` updated to `// ---- Section 6: Training Log ----`.
+- `// ---- Section 7: Training Timeline ----` updated to `// ---- Section 2: Training Timeline ----`.
+
+#### Spec Deviations
+
+1. **Run Progression section removed.**
+   Spec (Section 6) describes a standalone Run Progression table. This section is removed entirely. Run protocol and calf gate are now shown inline on Day 2 Training Log rows.
+
+2. **Run protocol and calf gate now inline on Day 2 Training Log rows.**
+   Not described in the spec. Applies to all row states (logged, next, future, skipped).
+
+3. **Section count reduced from 7 to 6.**
+   Dashboard now has 6 sections: Race Countdown, Training Timeline, Body Weight, PR Board, Skill Trends, Training Log.
+
+4. **Auto-scroll moved to post-render init() call.**
+   Scroll was previously inside `renderTrainingLog` with 80ms delay. Now fires at 150ms after all render functions complete in `init()`.
+
+---
 
 ### Prompt 2 — Training Log (replaces Recent Sessions in dashboard.html)
 **Branch:** `claude/update-program-json-display-WaCi0`
