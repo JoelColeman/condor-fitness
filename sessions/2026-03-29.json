@@ -1,0 +1,228 @@
+{
+  "date": "2026-03-29",
+  "week": 4,
+  "day": 1,
+  "day_type": "strength",
+  "day_label": "Full Body Strength",
+  "phase": "foundation",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 1,
+  "exercises": [
+    {
+      "name": "Back Squat",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 330,
+          "actual_weight_lbs": 335,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 330,
+          "actual_weight_lbs": 335,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 330,
+          "actual_weight_lbs": 335,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        },
+        {
+          "set_number": 4,
+          "target_weight_lbs": 330,
+          "actual_weight_lbs": 335,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "RDL",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 265,
+          "actual_weight_lbs": 265,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 265,
+          "actual_weight_lbs": 265,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 265,
+          "actual_weight_lbs": 265,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Bulgarian Split Squat",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 135,
+          "actual_weight_lbs": 135,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 135,
+          "actual_weight_lbs": 135,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 135,
+          "actual_weight_lbs": 135,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Scapular Pull-Ups",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Pull-Up Superset",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 2,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 3,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 4,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 5,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 6,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 7,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 8,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 9,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 10,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 11,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 10
+        }
+      ]
+    },
+    {
+      "name": "Grip Finisher",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "completed": true
+        },
+        {
+          "set_number": 4,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 4,
+  "skills": {
+    "grip_endurance": 3,
+    "shoulder_stability": 3
+  },
+  "note": ""
+}
