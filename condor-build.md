@@ -26,6 +26,68 @@ See condor_workflow.txt for the spec update protocol.
 
 ## Completed Tasks
 
+### Prompt 1 — program.json Updates + index.html Display Fixes
+**Branch:** `claude/update-program-json-display-WaCi0`
+**Date:** 2026-03-29
+
+#### What changed:
+
+**program.json — A1: Pull-Up Superset split (Week 4, 5, 7 Day 1)**
+- Replaced the single "Pull-Up Superset" block (Pull-Ups + Row + Press) with two sequential entries in each day:
+  1. Standalone Pull-Ups (5×5) with note "Comfortable range. No forced extension."
+  2. "Row/Press Superset" (`superset: true, rounds: 3`) containing only Chest-Supported Row and Incline DB Press.
+- Week 4: Row 65 lbs, Press 65 lbs
+- Week 5: Row 67 lbs, Press 65 lbs
+- Week 7: Row 70 lbs, Press 67 lbs
+- Week 6 Day 1 already has these as separate entries — not changed.
+- Week 3 Day 1 is completed — not changed.
+
+**program.json — A2: Farmer Carry weight update**
+- Week 4 Day 1 Grip Finisher: Farmer Carry target_weight_lbs 92 → 97 lbs.
+
+**program.json — A3: Grip Finisher restructured as finisher_circuit**
+- All Grip Finisher blocks in Weeks 3–7 (Day 1 and Day 4 where present) now use `"type": "finisher_circuit"` with a `"rounds"` field and the `"note"` field describing the no-rest-within-round rule.
+- `"finisher": true` and `"type": "finisher"` flags removed from these blocks.
+- `"sets"` removed from individual exercises within finishers (rounds drive repetition count).
+- Per-week weights and reps per spec: Week 3 Day 1 (3r, PU20, FC97), Week 4 Day 1 (3r, PU20, FC97), Week 4 Day 4 (3r, PU20, FC97, DH20), Week 5 Day 1 (3r, PU25, FC97, DH25), Week 5 Day 4 (3r, PU20, FC92, DH25, MB1), Week 6 Day 1 (2r deload, PU20, FC88), Week 6 Day 4 (3r, PU25, FC92, DH30, MB2), Week 7 Day 1 (3r, PU25, FC95, DH30), Week 7 Day 4 (3r, PU25, FC95, DH35, MB2).
+- JSON validated with `python3 -m json.tool`.
+
+**index.html — B1: renderCards dispatch updated**
+- Added `ex.type === 'finisher_circuit'` → `buildFinisherCircuitCard` before the existing `ex.finisher || ex.type === 'finisher'` branch.
+
+**index.html — B2: buildFinisherCircuitCard added**
+- New card builder modeled on `buildCircuitCard`.
+- Subtitle: "[N] rounds · No rest within round"
+- Body: exercise reference list (name + reps/duration/weight) + optional note line + one "Complete round N" button per round.
+- Last round completion marks card complete and advances.
+- No rest timer (restSec = 0, matching grip_finisher default).
+
+**index.html — B3: buildSupersetCard subtitle updated**
+- If `ex.rounds` is present, subtitle shows "[N] rounds · [ExName1 + ExName2]" (first word of each exercise name).
+- Otherwise falls back to "Superset · N exercises".
+
+**index.html — B4: Auto-save / session restore**
+- `saveProgressToStorage()` added: writes `{ week, day, savedAt, completed[] }` to localStorage key `workoutProgress` after every set check / round tap.
+- `onSetChecked()` now calls `saveProgressToStorage()` before starting rest timer.
+- `initWorkout()` checks `workoutProgress` after rendering cards. If week+day match and savedAt < 4 hours old and any card is completed: shows a "Session in progress restored. [Clear]" banner above the cards and replays completed cards via `markCardComplete`. Reveals Finish Workout button.
+- Clear button removes the banner and clears localStorage key.
+- Refresh button confirm: clears `workoutProgress` before routing to preworkout.
+- Save success (Screen 4): clears `workoutProgress` after successful GitHub write.
+- `updateSkillVisibility` and `collectSessionExercises` updated to handle `finisher_circuit` type (grip shown; rounds_completed tracked).
+
+#### Spec Deviations
+
+1. **Pull-Up Superset split into two blocks.**
+   The spec (Screen 3, Superset Card) describes the Pull-Up Superset as a single superset entry. Per this prompt, it is split: Pull-Ups becomes a standalone strength card and the Row+Press become "Row/Press Superset". The spec should be updated to reflect this structure.
+
+2. **Grip Finisher now uses `finisher_circuit` type with round buttons.**
+   The spec (Screen 3, Finisher Card) describes the Grip Finisher as a flat checklist with per-exercise checkboxes. The new `finisher_circuit` type renders it as a round-based circuit (same UI as Circuit card). The spec should document `finisher_circuit` as a new card type.
+
+3. **Auto-save / session restore is a new feature not currently in spec.**
+   The spec has no auto-save behavior. The implementation stores only completion state (not input values) in localStorage and restores completed cards only. Partial-set restoration is not attempted. The spec should document `workoutProgress` as a new localStorage key with its schema and 4-hour TTL.
+
+---
+
 ### Phase 1 — Scaffold and Setup Screen
 **Branch:** `claude/setup-screen-scaffold-EjE4G`
 **Date:** 2026-03-27

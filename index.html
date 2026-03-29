@@ -1366,7 +1366,26 @@
           firstSetLogged = true;
           document.getElementById('wo-finish-wrap').classList.remove('hidden');
         }
+        saveProgressToStorage();
         startRest(restSec);
+      }
+
+      // ── Auto-save progress to localStorage ────────────
+      function saveProgressToStorage() {
+        var pw = window.pendingWorkout;
+        if (!pw) return;
+        try {
+          var completed = [];
+          cardStates.forEach(function(s, i) {
+            completed.push(s.completed);
+          });
+          localStorage.setItem('workoutProgress', JSON.stringify({
+            week:      pw.weekData.week,
+            day:       pw.dayData.day,
+            savedAt:   Date.now(),
+            completed: completed
+          }));
+        } catch (e) {}
       }
 
       // ── Format duration helper ─────────────────────────
@@ -1640,6 +1659,72 @@
         return card;
       }
 
+      // ── Card builder: Finisher Circuit (round-based) ──
+      function buildFinisherCircuitCard(ex, cardIdx) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        var rounds  = ex.rounds || 3;
+        var exList  = ex.exercises_in_finisher || [];
+        var sub     = rounds + ' rounds \u00b7 No rest within round';
+
+        // build reference list HTML
+        var refHtml = '<div style="margin-bottom:12px;">';
+        exList.forEach(function(e, ei) {
+          var detail = '';
+          if (e.reps)              detail = e.reps + ' reps';
+          else if (e.duration_sec) detail = fmtDur(e.duration_sec);
+          if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs' + (e.weight_note ? ' ' + e.weight_note : '');
+          refHtml +=
+            '<div style="display:flex;justify-content:space-between;align-items:center;' +
+              'padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
+              'font-size:var(--font-meta);">' +
+              '<span>' + esc(e.name) + '</span>' +
+              (detail ? '<span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
+            '</div>';
+        });
+        refHtml += '</div>';
+        if (ex.note) {
+          refHtml += '<div style="font-size:var(--font-meta);color:var(--text-secondary);margin-bottom:12px;">' + esc(ex.note) + '</div>';
+        }
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + esc(sub) + '</div>' +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' + refHtml + '</div>';
+
+        var body = card.querySelector('.card-body');
+        var roundsDone = 0;
+
+        for (var r = 0; r < rounds; r++) {
+          var btn = document.createElement('button');
+          btn.className = 'btn btn-secondary';
+          btn.style.marginTop = '8px';
+          btn.textContent = 'Complete round ' + (r + 1);
+          body.appendChild(btn);
+
+          (function(btnEl, rIdx, aidx) {
+            btnEl.addEventListener('click', function() {
+              btnEl.disabled = true;
+              btnEl.className = 'btn btn-round-done';
+              btnEl.textContent = 'Round ' + (rIdx + 1) + ' \u2713';
+              roundsDone++;
+              onSetChecked(aidx, 0);
+              if (roundsDone >= rounds) {
+                markCardComplete(aidx); advanceCard();
+              }
+            });
+          })(btn, r, cardIdx);
+        }
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
       // ── Card builder: Finisher ─────────────────────────
       function buildFinisherCard(ex, cardIdx) {
         var card = document.createElement('div');
@@ -1705,11 +1790,19 @@
         card.className = 'card';
         var subExs = ex.exercises_in_superset || [];
 
+        var superSub;
+        if (ex.rounds) {
+          var exNames = subExs.map(function(se) { return se.name.split(' ')[0]; }).join(' + ');
+          superSub = ex.rounds + ' rounds \u00b7 ' + exNames;
+        } else {
+          superSub = 'Superset \u00b7 ' + subExs.length + ' exercises';
+        }
+
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
-              '<div class="card-subtitle">Superset \u00b7 ' + subExs.length + ' exercises</div>' +
+              '<div class="card-subtitle">' + esc(superSub) + '</div>' +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1893,6 +1986,8 @@
 
           if (ex.superset) {
             card = buildSupersetCard(ex, cardIdx, strRest);
+          } else if (ex.type === 'finisher_circuit') {
+            card = buildFinisherCircuitCard(ex, cardIdx);
           } else if (ex.finisher || ex.type === 'finisher') {
             card = buildFinisherCard(ex, cardIdx);
           } else if (ex.type === 'circuit') {
@@ -1919,6 +2014,7 @@
       // ── Refresh button ─────────────────────────────────
       document.getElementById('btn-wo-refresh').addEventListener('click', function() {
         if (confirm('Swap workout? Progress will be lost.')) {
+          localStorage.removeItem('workoutProgress');
           if (elapsedTimer) clearInterval(elapsedTimer);
           dismissRest();
           showScreen('preworkout');
@@ -1965,6 +2061,53 @@
         elapsedTimer = setInterval(tickElapsed, 1000);
 
         renderCards(exercises, pw.dayData);
+
+        // ── Restore in-progress session if available ───
+        try {
+          var savedRaw = localStorage.getItem('workoutProgress');
+          if (savedRaw) {
+            var saved = JSON.parse(savedRaw);
+            var FOUR_HOURS = 4 * 60 * 60 * 1000;
+            if (saved.week === pw.weekData.week &&
+                saved.day  === pw.dayData.day   &&
+                saved.savedAt && (Date.now() - saved.savedAt) < FOUR_HOURS &&
+                saved.completed && saved.completed.length > 0) {
+
+              var anyCompleted = saved.completed.some(function(c) { return c; });
+              if (anyCompleted) {
+                // Show restore banner
+                var banner = document.createElement('div');
+                banner.id = 'wo-restore-banner';
+                banner.style.cssText = 'background:var(--card-bg);border:1px solid var(--border);' +
+                  'border-radius:6px;padding:10px 14px;margin-bottom:12px;' +
+                  'display:flex;align-items:center;justify-content:space-between;' +
+                  'font-size:var(--font-meta);color:var(--text-secondary);';
+                banner.innerHTML =
+                  '<span>Session in progress restored.</span>' +
+                  '<button id="wo-restore-clear" style="background:none;border:none;color:var(--text-secondary);' +
+                    'font-size:var(--font-meta);cursor:pointer;padding:4px 8px;text-decoration:underline;">Clear</button>';
+
+                var container = document.getElementById('wo-cards');
+                container.insertBefore(banner, container.firstChild);
+
+                document.getElementById('wo-restore-clear').addEventListener('click', function() {
+                  localStorage.removeItem('workoutProgress');
+                  banner.remove();
+                });
+
+                // Replay completed cards
+                saved.completed.forEach(function(isComplete, idx) {
+                  if (isComplete && cardStates[idx]) {
+                    markCardComplete(idx);
+                  }
+                });
+
+                firstSetLogged = true;
+                document.getElementById('wo-finish-wrap').classList.remove('hidden');
+              }
+            }
+          }
+        } catch (e) {}
       }
 
       window.initWorkout = initWorkout;
@@ -1993,7 +2136,7 @@
 
         exercises.forEach(function(ex) {
           var name = (ex.name || '').toLowerCase();
-          if (ex.finisher || ex.type === 'finisher' ||
+          if (ex.finisher || ex.type === 'finisher' || ex.type === 'finisher_circuit' ||
               name.indexOf('farmer') !== -1 || name.indexOf('carry') !== -1) {
             showGrip = true;
           }
@@ -2105,6 +2248,10 @@
               }
               exEntry.sets.push(s);
             });
+
+          } else if (ex.type === 'finisher_circuit') {
+            var doneRounds = card.querySelectorAll('.card-body .btn-round-done').length;
+            exEntry.sets.push({ rounds_completed: doneRounds, total_rounds: ex.rounds || 3 });
 
           } else if (ex.finisher || ex.type === 'finisher') {
             card.querySelectorAll('.card-body input[type="checkbox"]').forEach(function(chk, si) {
@@ -2331,6 +2478,9 @@
               day:  pw.dayData.day
             }));
           }
+
+          // Clear in-progress auto-save after successful write
+          localStorage.removeItem('workoutProgress');
 
           showSuccess();
 
