@@ -26,6 +26,51 @@ See condor_workflow.txt for the spec update protocol.
 
 ## Completed Tasks
 
+### Prompt 2 — Training Log (replaces Recent Sessions in dashboard.html)
+**Branch:** `claude/update-program-json-display-WaCi0`
+**Date:** 2026-03-29
+
+#### What changed:
+
+**dashboard.html — Section 7 HTML:**
+- Section heading changed from "Recent Sessions" to "Training Log". `id="sec-sessions-body"` retained.
+
+**dashboard.html — CSS additions:**
+- Added `.tl-week-header`, `.tl-week-title`, `.tl-phase-pill-sm` (+ `.active`, `.completed` modifiers) for week separator rows.
+- Added `.tl-log-row` base + state modifiers: `.tl-log-row-logged`, `.tl-log-row-skipped`, `.tl-log-row-next`, `.tl-log-row-future`.
+- Added `.tl-row-header`, `.tl-row-left`, `.tl-row-right`, `.tl-row-label`, `.tl-row-date`, `.tl-log-sub` for row layout.
+- Added `.tl-next-badge` for the "NEXT" accent badge.
+- Added `.tl-log-detail` for expanded session detail container.
+- No existing CSS removed.
+
+**dashboard.html — JS:**
+- Replaced `renderRecentSessions(sessions, hasToken)` with `renderTrainingLog(prog, sessions, hasToken)`.
+- `feelDots()` helper moved up to a shared section (was inside the old function; now at module level).
+- `renderTrainingLog` logic:
+  - Reads `lastCompleted` from localStorage to determine next upcoming day.
+  - Iterates all `prog.weeks` and their `days[]` in order (32 rows total across weeks 3–10).
+  - Emits a week header row before each week showing "Week N — dates" and a phase pill.
+  - Phase pill class: `active` (current phase via `getActivePhase`), `completed` (all weeks past currentWeek), `future` otherwise.
+  - Each day row classified as: `logged` (non-bonus session file exists for that week/day), `next` (first non-completed upcoming day), `past+skipped` (before next, no session), `future` (after next).
+  - Logged rows: show date, feel dots, calf rating; expandable tap to reveal session detail. Expand/collapse with single-open-at-a-time behavior.
+  - Next row: left accent border + "NEXT" badge; exercise sub-line (first 3 names, skip "Scapular", join with ·, truncate with … if >3).
+  - Future rows: opacity 0.65, exercise sub-line only.
+  - Skipped rows: opacity 0.45, label only.
+  - Session detail HTML: identical structure to old renderRecentSessions expand view (exercises with sets, skills, notes). Handles `rounds_completed` format from new finisher_circuit sessions.
+  - No-token state: shows notice banner above list; all rows render in future/preview style.
+  - Auto-scroll: `scrollIntoView` on the NEXT row after 80ms timeout. Falls back to last row if program complete.
+- `init()` call updated: `renderRecentSessions(sessions, hasToken)` → `renderTrainingLog(prog, sessions, hasToken)`.
+
+#### Spec Deviations
+
+1. **Recent Sessions replaced by Training Log.**
+   The spec (Section 7 — Recent Sessions) describes last 10 sessions newest first. The Training Log replaces this entirely: it shows all 32 program days in chronological order grouped by week. No "last 10" limit. Order is oldest-first (Week 3 top → Week 10 bottom).
+
+2. **Training Log auto-scrolls to next workout.**
+   Not described in the spec. On page load the Training Log scrolls the NEXT row into the center of the viewport. This makes the section immediately useful without manual scrolling.
+
+---
+
 ### Prompt 1 — program.json Updates + index.html Display Fixes
 **Branch:** `claude/update-program-json-display-WaCi0`
 **Date:** 2026-03-29
