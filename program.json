@@ -76,11 +76,12 @@
             },
             {
               "name": "Grip Finisher",
-              "finisher": true,
-              "note": "After all main work is done. No rest between push-ups and carries.",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 20 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 88, "weight_note": "KBs each hand" }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 97, "weight_note": "KBs each hand" }
               ]
             }
           ],
@@ -276,19 +277,24 @@
             { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 265 },
             { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
             { "name": "Scapular Pull-Ups", "sets": 2, "reps": 8, "notes": "Do FIRST before pull-ups." },
+            { "name": "Pull-Ups", "sets": 5, "reps": 5, "notes": "Comfortable range. No forced extension." },
             {
-              "name": "Pull-Up Superset", "superset": true,
+              "name": "Row/Press Superset", "superset": true,
+              "rounds": 3,
+              "notes": "3 rounds: Row x10, then Press x10 back to back. Rest between rounds.",
               "exercises_in_superset": [
-                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
                 { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 65 },
                 { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 65 }
               ]
             },
             {
-              "name": "Grip Finisher", "finisher": true,
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 20 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92, "weight_note": "KBs" }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 97, "weight_note": "KBs each hand" }
               ]
             }
           ],
@@ -353,11 +359,14 @@
               ]
             },
             {
-              "name": "Grip Finisher", "type": "finisher",
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 20 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 20 }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 97, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 20 }
               ]
             }
           ]
@@ -380,20 +389,25 @@
             { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 267 },
             { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
             { "name": "Scapular Pull-Ups", "sets": 3, "reps": 8, "notes": "Adding a set." },
+            { "name": "Pull-Ups", "sets": 5, "reps": 5, "notes": "Comfortable range. No forced extension." },
             {
-              "name": "Pull-Up Superset", "superset": true,
+              "name": "Row/Press Superset", "superset": true,
+              "rounds": 3,
+              "notes": "3 rounds: Row x10, then Press x10 back to back. Rest between rounds.",
               "exercises_in_superset": [
-                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
                 { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 67 },
                 { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 65 }
               ]
             },
             {
-              "name": "Grip Finisher", "finisher": true,
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 25 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 25 }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 97, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 25 }
               ]
             }
           ]
@@ -462,11 +476,14 @@
               ]
             },
             {
-              "name": "Grip Finisher", "type": "finisher",
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 20 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 25 },
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 92, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 25 },
                 { "name": "Monkey Bars", "sets": 1, "notes": "1 pass." }
               ]
             }
@@ -494,10 +511,13 @@
             { "name": "Pull-Ups", "sets": 4, "reps": 5, "notes": "Drop a set. Focus on range." },
             { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 65 },
             {
-              "name": "Grip Finisher", "finisher": true,
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 2,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 20 },
-                { "name": "Farmer Carry", "sets": 2, "duration_sec": 60, "target_weight_lbs": 88 }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 88, "weight_note": "KBs each hand" }
               ]
             }
           ]
@@ -546,11 +566,14 @@
               ]
             },
             {
-              "name": "Grip Finisher", "type": "finisher",
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 25 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 92 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 30 },
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 92, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 30 },
                 { "name": "Monkey Bars", "sets": 2, "notes": "2 passes." }
               ]
             }
@@ -574,20 +597,25 @@
             { "name": "RDL", "sets": 3, "reps": 6, "target_weight_lbs": 267 },
             { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "reps_note": "per leg", "target_weight_lbs": 135, "weight_note": "barbell" },
             { "name": "Scapular Pull-Ups", "sets": 3, "reps": 10, "notes": "Most reps yet." },
+            { "name": "Pull-Ups", "sets": 5, "reps": 5, "notes": "Comfortable range. No forced extension." },
             {
-              "name": "Pull-Up Superset", "superset": true,
+              "name": "Row/Press Superset", "superset": true,
+              "rounds": 3,
+              "notes": "3 rounds: Row x10, then Press x10 back to back. Rest between rounds.",
               "exercises_in_superset": [
-                { "name": "Pull-Ups", "sets": 5, "reps": 5 },
                 { "name": "Chest-Supported Row", "sets": 3, "reps": 10, "target_weight_lbs": 70 },
                 { "name": "Incline DB Press", "sets": 3, "reps": 10, "target_weight_lbs": 67 }
               ]
             },
             {
-              "name": "Grip Finisher", "finisher": true,
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 25 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 95 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 30 }
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 95, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 30 }
               ]
             }
           ]
@@ -637,11 +665,14 @@
               ]
             },
             {
-              "name": "Grip Finisher", "type": "finisher",
+              "name": "Grip Finisher",
+              "type": "finisher_circuit",
+              "rounds": 3,
+              "note": "No rest between exercises within a round. Full rest between rounds.",
               "exercises_in_finisher": [
                 { "name": "Push-Ups", "reps": 25 },
-                { "name": "Farmer Carry", "sets": 3, "duration_sec": 60, "target_weight_lbs": 95 },
-                { "name": "Dead Hang", "sets": 2, "duration_sec": 35 },
+                { "name": "Farmer Carry", "duration_sec": 60, "target_weight_lbs": 95, "weight_note": "KBs each hand" },
+                { "name": "Dead Hang", "duration_sec": 35 },
                 { "name": "Monkey Bars", "sets": 2, "notes": "2 passes." }
               ]
             }
