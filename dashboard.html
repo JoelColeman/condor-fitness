@@ -374,6 +374,89 @@
     .sess-skill-label { color: var(--text-secondary); }
     .sess-skill-val   { color: var(--accent); font-weight: 700; }
     .sess-note { color: var(--text-secondary); font-style: italic; margin-top: 8px; font-size: 13px; }
+
+    /* Section 7: Training Log */
+    .tl-week-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 6px;
+      border-bottom: 2px solid var(--border);
+      margin-top: 10px;
+    }
+    .tl-week-header:first-child { margin-top: 0; }
+    .tl-week-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .tl-phase-pill-sm {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: var(--bg);
+    }
+    .tl-phase-pill-sm.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .tl-phase-pill-sm.completed { opacity: 0.4; }
+    .tl-log-row {
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tl-log-row:last-child { border-bottom: none; }
+    .tl-row-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .tl-row-left { flex: 1; min-width: 0; }
+    .tl-row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .tl-row-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .tl-row-date { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .tl-log-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tl-log-row-logged { cursor: pointer; user-select: none; }
+    .tl-log-row-logged:hover .tl-row-label { color: var(--accent); }
+    .tl-log-row-skipped { opacity: 0.45; }
+    .tl-log-row-next {
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
+      margin-left: -10px;
+    }
+    .tl-log-row-future { opacity: 0.65; }
+    .tl-next-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--accent);
+      background: rgba(230,57,70,0.12);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .tl-log-detail {
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 6px;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -427,9 +510,9 @@
     <div class="section-body" id="sec-run-body"></div>
   </div>
 
-  <!-- 7: Recent Sessions -->
+  <!-- 7: Training Log -->
   <div class="dash-section">
-    <h2 class="section-heading">Recent Sessions</h2>
+    <h2 class="section-heading">Training Log</h2>
     <div class="section-body" id="sec-sessions-body"></div>
   </div>
 
@@ -855,7 +938,7 @@
     });
   }
 
-  // ---- Section 8: Recent Sessions ----
+  // ---- Shared helpers ----
   function feelDots(n) {
     n = Math.max(0, Math.min(5, Math.round(n)));
     var s = '';
@@ -863,56 +946,187 @@
     for (var j=n;j<5;j++) s += '&#9675;';
     return s;
   }
-  function renderRecentSessions(sessions, hasToken) {
+
+  // ---- Section 7: Training Log ----
+  function renderTrainingLog(prog, sessions, hasToken) {
     var el = document.getElementById('sec-sessions-body');
-    if (!hasToken) { el.innerHTML = noTokenHtml(); return; }
-    if (!sessions.length) {
-      el.innerHTML = '<div class="section-notice">No sessions recorded yet. Complete a workout in the companion app to see data here.</div>';
-      return;
+    if (!prog || !prog.weeks) { sectionError(el, 'Program data unavailable.'); return; }
+
+    var weeks  = prog.weeks;
+    var phases = (prog.meta && prog.meta.phases) || [];
+    var currentWeek = getCurrentWeekNum();
+
+    // Derive next upcoming day from lastCompleted
+    var lc = null;
+    try { lc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
+
+    var nextUpcomingWeek = null, nextUpcomingDay = null;
+    for (var wi = 0; wi < weeks.length; wi++) {
+      var w = weeks[wi];
+      var wDays = w.days || [];
+      for (var di = 0; di < wDays.length; di++) {
+        var d = wDays[di];
+        if (lc) {
+          if (w.week < lc.week) continue;
+          if (w.week === lc.week && d.day <= lc.day) continue;
+        }
+        nextUpcomingWeek = w.week;
+        nextUpcomingDay  = d.day;
+        break;
+      }
+      if (nextUpcomingWeek !== null) break;
     }
-    var recent = sessions.slice().reverse().slice(0,10);
-    var html = '';
-    recent.forEach(function(s, i) {
-      var calfStr = s.calf_rating != null ? 'Calf: ' + s.calf_rating + '/10' : '';
-      var durStr  = s.duration_min ? s.duration_min + 'm' : '';
-      // Build detail HTML
+
+    // Session map: "week-day" → session (non-bonus only)
+    var sessionMap = {};
+    if (hasToken) {
+      sessions.forEach(function(s) {
+        if (!s.bonus) sessionMap[s.week + '-' + s.day] = s;
+      });
+    }
+
+    // Phase pill class
+    function pillCls(phaseId) {
+      var activePhase = getActivePhase(phases);
+      if (activePhase && phaseId === activePhase.id) return 'tl-phase-pill-sm active';
+      var phObj = phases.find(function(p) { return p.id === phaseId; });
+      if (!phObj) return 'tl-phase-pill-sm future';
+      var allPast = phObj.weeks.every(function(pw) { return pw < currentWeek; });
+      return allPast ? 'tl-phase-pill-sm completed' : 'tl-phase-pill-sm future';
+    }
+    function phaseLabel(phaseId) {
+      var p = phases.find(function(p) { return p.id === phaseId; });
+      return p ? p.label : (phaseId || '');
+    }
+
+    // Exercise sub-line (first 3 names, skip Scapular)
+    function exSubLine(exercises) {
+      var names = (exercises || [])
+        .map(function(e) { return e.name || ''; })
+        .filter(function(n) { return n.length > 0 && n.toLowerCase().indexOf('scapular') === -1; });
+      var first3 = names.slice(0, 3);
+      var result = first3.join(' \u00b7 ');
+      if (names.length > 3) result += ' \u2026';
+      return result;
+    }
+
+    // Session detail HTML (same structure as old renderRecentSessions)
+    function buildDetailHtml(s) {
       var exRows = (s.exercises || []).map(function(ex) {
         var sets = (ex.sets || []).map(function(st) {
           if (st.actual_weight_lbs != null && st.actual_reps != null) return st.actual_weight_lbs + 'x' + st.actual_reps;
           if (st.actual_duration_sec != null) return st.actual_duration_sec + 's';
+          if (st.rounds_completed != null) return st.rounds_completed + '/' + (st.total_rounds || '?') + ' rounds';
           return st.completed ? '&#10003;' : '&#9675;';
         }).join(', ');
-        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(ex.name||'') + '</span>' +
+        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(ex.name || '') + '</span>' +
           (sets ? ': ' + esc(sets) : '') + '</div>';
       }).join('');
       var sk = s.skills || {};
       var skillParts = [];
-      if (sk.grip_endurance     != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Grip: </span><span class="sess-skill-val">'+sk.grip_endurance+'</span></span>');
-      if (sk.shoulder_stability != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Shoulder: </span><span class="sess-skill-val">'+sk.shoulder_stability+'</span></span>');
-      if (sk.monkey_bars        != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Monkey bars: </span><span class="sess-skill-val">'+sk.monkey_bars+'</span></span>');
+      if (sk.grip_endurance     != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Grip: </span><span class="sess-skill-val">' + sk.grip_endurance + '</span></span>');
+      if (sk.shoulder_stability != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Shoulder: </span><span class="sess-skill-val">' + sk.shoulder_stability + '</span></span>');
+      if (sk.monkey_bars        != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Monkey bars: </span><span class="sess-skill-val">' + sk.monkey_bars + '</span></span>');
       var noteHtml = s.note ? '<div class="sess-note">&ldquo;' + esc(s.note) + '&rdquo;</div>' : '';
-      var detailHtml = '<div class="session-detail">' +
+      return '<div class="tl-log-detail">' +
         (exRows || '<span style="color:#666">No exercise data</span>') +
-        (skillParts.length ? '<div class="sess-skill-row">'+skillParts.join('')+'</div>' : '') +
+        (skillParts.length ? '<div class="sess-skill-row">' + skillParts.join('') + '</div>' : '') +
         noteHtml + '</div>';
-      html += '<div class="session-row" data-idx="'+i+'">' +
-        '<div class="session-row-header">' +
-        '<span class="sess-date">' + esc(s.date||'') + '</span>' +
-        '<span class="sess-label">' + esc(s.day_label||s.day_type||'') + '</span>' +
-        (durStr  ? '<span class="sess-dur">'  + esc(durStr) + '</span>' : '') +
-        (s.overall_feel ? '<span class="sess-feel">' + feelDots(s.overall_feel) + '</span>' : '') +
-        (calfStr ? '<span class="sess-calf">' + esc(calfStr) + '</span>' : '') +
-        '</div>' +
-        '<div class="session-expand hidden">' + detailHtml + '</div>' +
+    }
+
+    // Build HTML
+    var html = '';
+    var nextRowId = null, lastRowId = null, rowIdx = 0;
+
+    if (!hasToken) {
+      html += '<div class="section-notice" style="margin-bottom:10px;">Connect the workout companion app to see logged sessions.</div>';
+    }
+
+    weeks.forEach(function(w) {
+      html += '<div class="tl-week-header">' +
+        '<span class="tl-week-title">Week ' + w.week + (w.dates ? ' \u2014 ' + esc(w.dates) : '') + '</span>' +
+        '<span class="' + pillCls(w.phase) + '">' + esc(phaseLabel(w.phase)) + '</span>' +
         '</div>';
+
+      (w.days || []).forEach(function(day) {
+        var key     = w.week + '-' + day.day;
+        var session = sessionMap[key] || null;
+        var isLogged = !!session;
+
+        var isNext, isPast, isFuture;
+        if (nextUpcomingWeek === null) {
+          // Program complete — everything is past
+          isNext = false; isPast = true; isFuture = false;
+        } else {
+          isNext   = (w.week === nextUpcomingWeek && day.day === nextUpcomingDay);
+          isPast   = !isNext && (w.week < nextUpcomingWeek || (w.week === nextUpcomingWeek && day.day < nextUpcomingDay));
+          isFuture = !isNext && !isPast;
+        }
+
+        var rowId = 'tl-row-' + (rowIdx++);
+        lastRowId = rowId;
+        if (isNext) nextRowId = rowId;
+
+        var rowCls = 'tl-log-row';
+        if (isLogged)    rowCls += ' tl-log-row-logged';
+        else if (isNext) rowCls += ' tl-log-row-next';
+        else if (isPast) rowCls += ' tl-log-row-skipped';
+        else             rowCls += ' tl-log-row-future';
+
+        html += '<div class="' + rowCls + '" id="' + rowId + '">';
+        html += '<div class="tl-row-header">';
+        html += '<div class="tl-row-left">';
+        html += '<div class="tl-row-label">' + esc(day.label) + '</div>';
+        if (isLogged && session && session.date) {
+          html += '<div class="tl-row-date">' + esc(session.date) + '</div>';
+        }
+        if (isNext || isFuture) {
+          var sub = exSubLine(day.exercises);
+          if (sub) html += '<div class="tl-log-sub">' + esc(sub) + '</div>';
+        }
+        html += '</div>'; // tl-row-left
+
+        html += '<div class="tl-row-right">';
+        if (isNext) {
+          html += '<span class="tl-next-badge">NEXT</span>';
+        } else if (isLogged && hasToken && session) {
+          if (session.overall_feel) html += '<span class="sess-feel">' + feelDots(session.overall_feel) + '</span>';
+          if (session.calf_rating != null) html += '<span class="sess-calf">' + esc(session.calf_rating + '/10') + '</span>';
+        }
+        html += '</div>'; // tl-row-right
+        html += '</div>'; // tl-row-header
+
+        if (isLogged && session) {
+          html += '<div class="tl-log-expand hidden">' + buildDetailHtml(session) + '</div>';
+        }
+
+        html += '</div>'; // tl-log-row
+      });
     });
+
     el.innerHTML = html;
+
+    // Expand/collapse for logged rows
+    var openRowId = null;
     el.addEventListener('click', function(e) {
-      var row = e.target.closest ? e.target.closest('.session-row') : null;
+      var row = e.target.closest ? e.target.closest('.tl-log-row-logged') : null;
       if (!row) return;
-      var exp = row.querySelector('.session-expand');
-      if (exp) exp.classList.toggle('hidden');
+      var expand = row.querySelector('.tl-log-expand');
+      if (!expand) return;
+      if (openRowId && openRowId !== row.id) {
+        var prev = document.getElementById(openRowId);
+        if (prev) { var prevExp = prev.querySelector('.tl-log-expand'); if (prevExp) prevExp.classList.add('hidden'); }
+      }
+      expand.classList.toggle('hidden');
+      openRowId = expand.classList.contains('hidden') ? null : row.id;
     });
+
+    // Auto-scroll to next row (or last if program complete)
+    setTimeout(function() {
+      var target = nextRowId ? document.getElementById(nextRowId) :
+                   lastRowId ? document.getElementById(lastRowId) : null;
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
   }
 
   // ---- Main Init ----
@@ -934,7 +1148,7 @@
     renderPRBoard(athlete);
     renderSkillTrends(sessions, hasToken);
     renderRunProgression(prog, sessions, hasToken);
-    renderRecentSessions(sessions, hasToken);
+    renderTrainingLog(prog, sessions, hasToken);
     document.getElementById('dash-loading').style.display = 'none';
     document.getElementById('dash-main').classList.remove('hidden');
   }
