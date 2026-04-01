@@ -5,7 +5,7 @@ Repo: JoelColeman/condor-fitness
 This document is the source of truth for what the app
 does and how it works. It is owned by Chat and updated
 by Chat whenever design decisions change. Claude Code
-reads this but never edits it. See condor_workflow.txt
+reads this but never edits it. See CLAUDE.md
 for the spec update protocol.
 
 ---
