@@ -23,10 +23,46 @@ See condor_workflow.txt for the spec update protocol.
 | Dashboard Task D | Countdown banner label — replace phase name/dates with upcoming milestone label | ✅ Complete |
 | Dashboard Prompt 3 | Training Log scroll fix + Run Progression consolidation | ✅ Complete |
 | Cross-Device Sync | lastCompleted from session files + Skill Trends gate fix | ✅ Complete |
+| Cross-Device Sync (Part 2) | sessionMap gate + localStorage sync + Training Log token gates | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Cross-Device Sync Fix — Part 2 (remaining Training Log gates)
+**Branch:** `claude/fix-cross-device-sync-zVeTa`
+**Date:** 2026-04-14
+
+#### What changed:
+
+**dashboard.html — sessionMap now built unconditionally:**
+- Removed `if (hasToken)` gate around the `sessionMap` population loop in `renderTrainingLog`.
+- Previously, even though sessions were fetched on all devices (Part 1 fix), the map that drives "logged" row state was only built when the device had a local token. Token-less devices therefore showed all rows as future/skipped regardless of session data.
+- Now every fetched non-bonus session is inserted into `sessionMap` on all devices.
+
+**dashboard.html — Training Log no-token notice gated on empty sessions:**
+- Changed `if (!hasToken)` to `if (!hasToken && !sessions.length)` for the "Connect the companion app" notice.
+- A token-less desktop that can read public session files will no longer see the notice.
+
+**dashboard.html — Logged-row feel/calf display no longer gated on hasToken:**
+- Changed `else if (isLogged && hasToken && session)` to `else if (isLogged && session)`.
+- Feel dots and calf rating now render for any logged row regardless of which device holds the token.
+
+**dashboard.html — init() updates localStorage.lastCompleted when session files show more progress:**
+- After `resolveLastCompleted(sessions)` runs, compare `resolvedLc` to the current localStorage value.
+- If `resolvedLc` is further ahead (higher week, or same week higher day), write it back to `localStorage.lastCompleted`.
+- This ensures the next page load on this device starts with the correct pointer even if `sessionsCache` has not yet expired — the stale cache won't mask the furthest completed day because the pointer is already persisted.
+
+#### Spec Deviations
+
+1. **Training Log renders logged rows and feel/calf data on token-less devices.**
+   The original spec says sessions-dependent sections show a friendly notice when no token is present. Now if session files are publicly readable (which they are — public repo), the Training Log renders full logged state including feel dots and calf rating without a local token.
+
+#### Discovered Conventions
+
+- The `sessionMap` gate on `hasToken` was a latent bug introduced in the original Training Log implementation that survived the Part 1 cross-device sync fix. Removing it was the primary reason `resolveLastCompleted` "didn't take effect" — the NEXT pointer was correct but logged rows still appeared as skipped/future.
+
+---
 
 ### Cross-Device Sync Fix + Skill Trends Gate
 **Branch:** `claude/fix-cross-device-sync-ygNo1`

@@ -933,12 +933,12 @@
     }
 
     // Session map: "week-day" → session (non-bonus only)
+    // Built unconditionally — sessions are fetched from the public GitHub API
+    // even on devices without a token, so cross-device logged rows render correctly.
     var sessionMap = {};
-    if (hasToken) {
-      sessions.forEach(function(s) {
-        if (!s.bonus) sessionMap[s.week + '-' + s.day] = s;
-      });
-    }
+    sessions.forEach(function(s) {
+      if (!s.bonus) sessionMap[s.week + '-' + s.day] = s;
+    });
 
     // Phase pill class
     function pillCls(phaseId) {
@@ -993,7 +993,7 @@
     var html = '';
     var nextRowId = null, lastRowId = null, rowIdx = 0;
 
-    if (!hasToken) {
+    if (!hasToken && !sessions.length) {
       html += '<div class="section-notice" style="margin-bottom:10px;">Connect the workout companion app to see logged sessions.</div>';
     }
 
@@ -1049,7 +1049,7 @@
         html += '<div class="tl-row-right">';
         if (isNext) {
           html += '<span class="tl-next-badge">NEXT</span>';
-        } else if (isLogged && hasToken && session) {
+        } else if (isLogged && session) {
           if (session.overall_feel) html += '<span class="sess-feel">' + feelDots(session.overall_feel) + '</span>';
           if (session.calf_rating != null) html += '<span class="sess-calf">' + esc(session.calf_rating + '/10') + '</span>';
         }
@@ -1102,6 +1102,19 @@
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
     // Cross-device sync: resolve lastCompleted from localStorage + session files
     var resolvedLc = resolveLastCompleted(sessions);
+    // Fix 3: if session files show more progress than this device's localStorage,
+    // update localStorage now so the next page load is correct even if sessionsCache
+    // hasn't expired yet (stale cache won't mask the furthest completed day).
+    if (resolvedLc) {
+      var _localLc = null;
+      try { _localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
+      var _needsUpdate = !_localLc ||
+        resolvedLc.week > _localLc.week ||
+        (resolvedLc.week === _localLc.week && resolvedLc.day > _localLc.day);
+      if (_needsUpdate) {
+        localStorage.setItem('lastCompleted', JSON.stringify(resolvedLc));
+      }
+    }
     renderCountdown(prog, athlete);
     renderTimeline(athlete, prog, sessions, hasToken, resolvedLc);
     renderBodyWeight(athlete);
