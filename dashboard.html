@@ -519,7 +519,7 @@
   async function fetchSessions(token, repo) {
     var cached = readCache('sessionsCache');
     if (cached && Date.now() - cached.timestamp < TTL_1H) return cached.data;
-    var headers = { 'Authorization': 'token ' + token };
+    var headers = token ? { 'Authorization': 'token ' + token } : {};
     var listUrl = 'https://api.github.com/repos/' + repo + '/contents/sessions/';
     var listResp = await fetch(listUrl, { headers: headers });
     if (listResp.status === 404) { writeCache('sessionsCache', []); return []; }
@@ -718,7 +718,9 @@
   }
   function renderSkillTrends(sessions, hasToken) {
     var el = document.getElementById('sec-skills-body');
-    if (!hasToken) { el.innerHTML = noTokenHtml(); return; }
+    // Show no-token notice only when we have neither a local token nor fetched sessions.
+    // A token on another device can still produce session files we can read publicly.
+    if (!hasToken && !sessions.length) { el.innerHTML = noTokenHtml(); return; }
     var calfVals     = sessions.filter(function(s){ return s.calf_rating != null; }).map(function(s){ return s.calf_rating; });
     var gripVals     = sessions.filter(function(s){ return s.skills && s.skills.grip_endurance != null; }).map(function(s){ return s.skills.grip_endurance; });
     var shoulderVals = sessions.filter(function(s){ return s.skills && s.skills.shoulder_stability != null; }).map(function(s){ return s.skills.shoulder_stability; });
@@ -748,7 +750,7 @@
     return offset;
   }
 
-  function renderTimeline(athlete, prog, sessions, hasToken) {
+  function renderTimeline(athlete, prog, sessions, hasToken, resolvedLc) {
     var scrollEl  = document.getElementById('sec-timeline-scroll');
     var detailEl  = document.getElementById('sec-timeline-detail');
     if (!athlete || !athlete.timeline) { sectionError(scrollEl, 'Timeline data unavailable.'); return; }
@@ -778,7 +780,7 @@
       var row = pillsArr.join('<span class="mini-phase-arrow">&rarr;</span>');
       var activeId = active ? active.id : '';
       var fileCount = (sessions || []).filter(function(s) { return s.phase === activeId && !s.bonus; }).length;
-      var lc = JSON.parse(localStorage.getItem('lastCompleted') || 'null');
+      var lc = resolvedLc !== undefined ? resolvedLc : null;
       var pointerCount = 0;
       if (lc && active) {
         (prog.weeks || []).forEach(function(w) {
@@ -874,8 +876,35 @@
     return s;
   }
 
+  // ---- Cross-device lastCompleted resolver ----
+  // Returns the lastCompleted value that reflects the most progress,
+  // comparing localStorage (current device) against session files (all devices).
+  function resolveLastCompleted(sessions) {
+    var localLc = null;
+    try { localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
+
+    // Find the furthest non-bonus session by week/day from session files
+    var sessionLc = null;
+    (sessions || []).filter(function(s) { return !s.bonus && s.week && s.day; })
+      .forEach(function(s) {
+        if (!sessionLc ||
+            s.week > sessionLc.week ||
+            (s.week === sessionLc.week && s.day > sessionLc.day)) {
+          sessionLc = { week: s.week, day: s.day };
+        }
+      });
+
+    // Return whichever source indicates more progress
+    if (!localLc && !sessionLc) return null;
+    if (!localLc) return sessionLc;
+    if (!sessionLc) return localLc;
+    if (sessionLc.week > localLc.week) return sessionLc;
+    if (sessionLc.week === localLc.week && sessionLc.day > localLc.day) return sessionLc;
+    return localLc;
+  }
+
   // ---- Section 6: Training Log ----
-  function renderTrainingLog(prog, sessions, hasToken) {
+  function renderTrainingLog(prog, sessions, hasToken, resolvedLc) {
     var el = document.getElementById('sec-sessions-body');
     if (!prog || !prog.weeks) { sectionError(el, 'Program data unavailable.'); return; }
 
@@ -883,9 +912,8 @@
     var phases = (prog.meta && prog.meta.phases) || [];
     var currentWeek = getCurrentWeekNum();
 
-    // Derive next upcoming day from lastCompleted
-    var lc = null;
-    try { lc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
+    // Derive next upcoming day from resolvedLc (cross-device: max of localStorage + session files)
+    var lc = resolvedLc !== undefined ? resolvedLc : null;
 
     var nextUpcomingWeek = null, nextUpcomingDay = null;
     for (var wi = 0; wi < weeks.length; wi++) {
@@ -1067,17 +1095,19 @@
     var results = await Promise.allSettled([
       fetchWithCache('athleteCache', RAW_BASE + '/athlete.json', TTL_24H),
       fetchWithCache('programCache', RAW_BASE + '/program.json', TTL_24H),
-      hasToken ? fetchSessions(token, repo) : Promise.resolve(null)
+      fetchSessions(token, repo)  // Always attempt — public repo readable without auth
     ]);
     var athlete  = results[0].status === 'fulfilled' ? results[0].value : null;
     var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
+    // Cross-device sync: resolve lastCompleted from localStorage + session files
+    var resolvedLc = resolveLastCompleted(sessions);
     renderCountdown(prog, athlete);
-    renderTimeline(athlete, prog, sessions, hasToken);
+    renderTimeline(athlete, prog, sessions, hasToken, resolvedLc);
     renderBodyWeight(athlete);
     renderPRBoard(athlete);
     renderSkillTrends(sessions, hasToken);
-    var nextEl = renderTrainingLog(prog, sessions, hasToken);
+    var nextEl = renderTrainingLog(prog, sessions, hasToken, resolvedLc);
     document.getElementById('dash-loading').style.display = 'none';
     if (nextEl) {
       setTimeout(function() {

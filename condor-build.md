@@ -22,10 +22,64 @@ See condor_workflow.txt for the spec update protocol.
 | Dashboard Task C | Fix Operation Spartan phase session count — two-source completed count, correct remaining | ✅ Complete |
 | Dashboard Task D | Countdown banner label — replace phase name/dates with upcoming milestone label | ✅ Complete |
 | Dashboard Prompt 3 | Training Log scroll fix + Run Progression consolidation | ✅ Complete |
+| Cross-Device Sync | lastCompleted from session files + Skill Trends gate fix | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Cross-Device Sync Fix + Skill Trends Gate
+**Branch:** `claude/fix-cross-device-sync-ygNo1`
+**Date:** 2026-04-14
+
+#### What changed:
+
+**dashboard.html — `fetchSessions` now works without a token:**
+- Changed `var headers = { 'Authorization': 'token ' + token }` to `var headers = token ? { 'Authorization': 'token ' + token } : {}`.
+- The sessions/ folder is in a public repo so GitHub Contents API works without auth (60 req/hr per IP).
+- `fetchSessions(token, repo)` is now always called in `init()` regardless of `hasToken` (previously gated with `hasToken ? fetchSessions(...) : Promise.resolve(null)`).
+- This means a desktop device with no localStorage token can still fetch session files written by a mobile device.
+
+**dashboard.html — `resolveLastCompleted(sessions)` helper added:**
+- New module-level function placed before `renderTrainingLog`.
+- Reads `lastCompleted` from localStorage (current device pointer).
+- Scans all non-bonus session files for the furthest week/day (all-device pointer from GitHub).
+- Returns whichever source indicates more progress: higher week wins; tie on week → higher day wins.
+- Returns null if both sources are null.
+
+**dashboard.html — `renderTrainingLog` updated:**
+- Signature changed from `renderTrainingLog(prog, sessions, hasToken)` to `renderTrainingLog(prog, sessions, hasToken, resolvedLc)`.
+- Removed internal localStorage read for `lastCompleted`; uses `resolvedLc` parameter instead.
+- Covers both the "next" pointer computation and auto-scroll target.
+
+**dashboard.html — `renderTimeline` / `buildMiniPhaseTimeline` updated:**
+- `renderTimeline` signature changed to accept `resolvedLc` parameter.
+- `buildMiniPhaseTimeline` (closure inside `renderTimeline`) replaced `JSON.parse(localStorage.getItem('lastCompleted') || 'null')` with `resolvedLc !== undefined ? resolvedLc : null`.
+- Phase session completed/remaining counts now reflect all-device progress.
+
+**dashboard.html — `renderSkillTrends` token gate fixed:**
+- Changed gate from `if (!hasToken)` to `if (!hasToken && !sessions.length)`.
+- Skill Trends now renders whenever session files are available, regardless of which device originally set the GitHub token.
+- A device with no local token but with publicly-readable session files (via cross-device fetch) will render the section with live data.
+
+**dashboard.html — `init()` wired together:**
+- Calls `resolveLastCompleted(sessions)` after fetching to produce `resolvedLc`.
+- Passes `resolvedLc` to `renderTimeline(...)` and `renderTrainingLog(...)`.
+
+#### Spec Deviations
+
+1. **Sessions fetched on all devices, not just token-holding devices.**
+   The original design fetched sessions only when `hasToken`. Now sessions are always attempted via public GitHub Contents API. No token → no auth header → lower rate limit (60/hr IP) but fully functional for reading.
+
+2. **Skill Trends renders from session data on token-less devices.**
+   Previously gated entirely on `hasToken`. Now renders whenever sessions are non-empty. On a desktop with no token but with session files from mobile, Skill Trends will display.
+
+#### Discovered Conventions
+
+- GitHub Contents API (`/repos/{owner}/{repo}/contents/{path}`) works for public repos without an Authorization header. `download_url` values on individual files are raw.githubusercontent.com links, also public. No additional change needed for per-file fetches.
+- Sessions cache TTL (1hr) does not cause stale no-data on first load on a new device — cache is absent, so a fresh fetch always occurs.
+
+---
 
 ### Prompt 3 — Training Log scroll fix + Run Progression consolidation
 **Branch:** `claude/fix-dashboard-autoscroll-Sv9EC`
