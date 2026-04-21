@@ -24,10 +24,36 @@ See condor_workflow.txt for the spec update protocol.
 | Dashboard Prompt 3 | Training Log scroll fix + Run Progression consolidation | ✅ Complete |
 | Cross-Device Sync | lastCompleted from session files + Skill Trends gate fix | ✅ Complete |
 | Cross-Device Sync (Part 2) | sessionMap gate + localStorage sync + Training Log token gates | ✅ Complete |
+| Fix: CORS on unauthenticated session fetches | Use Contents API (api.github.com) instead of raw.githubusercontent.com when no token | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Fix: CORS on Unauthenticated Session Fetches
+**Branch:** `claude/fix-cors-unauthenticated-aWHVl`
+**Date:** 2026-04-21
+
+#### What changed:
+
+**dashboard.html — `fetchSessions` unauthenticated path uses Contents API:**
+- Previously, all individual session file fetches used `f.download_url` (raw.githubusercontent.com) regardless of auth state.
+- When no token is present, `headers` is `{}` — no Authorization header. `raw.githubusercontent.com` fails CORS preflight in this case.
+- Fix: branched on `token` inside the `Promise.all` map:
+  - **Token present:** unchanged — `fetch(f.download_url, { headers })` with auth header.
+  - **No token:** `fetch(f.url, { headers: {} })` — `f.url` is the Contents API URL (`api.github.com/repos/.../contents/sessions/filename.json`) already included in the directory listing response. Returns JSON with a base64 `content` field. Decoded with `JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))))` for Unicode safety.
+- The GitHub Contents API on a public repo works without auth and does not have CORS issues.
+
+#### Spec Deviations
+
+None — this is a pure bug fix within the existing unauthenticated fetch path.
+
+#### Discovered Conventions
+
+- The prior build note ("download_url values on individual files are raw.githubusercontent.com links, also public. No additional change needed for per-file fetches") was incorrect — raw.githubusercontent.com fails CORS preflight without an Authorization header from a GitHub Pages origin. The Contents API (`f.url`) must be used for unauthenticated fetches.
+- The directory listing from GitHub Contents API includes both `download_url` (raw link) and `url` (Contents API link) for each file. The `url` field is the correct choice for unauthenticated cross-origin fetches.
+
+---
 
 ### Cross-Device Sync Fix — Part 2 (remaining Training Log gates)
 **Branch:** `claude/fix-cross-device-sync-zVeTa`
