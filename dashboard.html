@@ -528,15 +528,10 @@
     var jsonFiles = files.filter(function(f) { return f.name.endsWith('.json'); });
     var sessions = await Promise.all(jsonFiles.map(async function(f) {
       try {
-        if (token) {
-          var r = await fetch(f.download_url, { headers: headers });
-          return r.ok ? r.json() : null;
-        } else {
-          var r = await fetch(f.url, { headers: {} });
-          if (!r.ok) return null;
-          var meta = await r.json();
-          return JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
-        }
+        var r = await fetch(f.url, { headers: headers });
+        if (!r.ok) return null;
+        var meta = await r.json();
+        return JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
       } catch(e) { return null; }
     }));
     var data = sessions.filter(Boolean).sort(function(a,b) {

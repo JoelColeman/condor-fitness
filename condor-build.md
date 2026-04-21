@@ -25,10 +25,37 @@ See condor_workflow.txt for the spec update protocol.
 | Cross-Device Sync | lastCompleted from session files + Skill Trends gate fix | ✅ Complete |
 | Cross-Device Sync (Part 2) | sessionMap gate + localStorage sync + Training Log token gates | ✅ Complete |
 | Fix: CORS on unauthenticated session fetches | Use Contents API (api.github.com) instead of raw.githubusercontent.com when no token | ✅ Complete |
+| Fix: Contents API for ALL session fetches | Eliminate raw.githubusercontent.com from token path too — single code path for all fetches | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Fix: Contents API for ALL Session Fetches
+**Branch:** `claude/contents-api-session-fetches-MyNEG`
+**Date:** 2026-04-21
+
+#### What changed:
+
+**dashboard.html — `fetchSessions` now uses a single code path for all fetches:**
+- Previously, the `Promise.all` map branched on `token`: token-present path used `f.download_url` (raw.githubusercontent.com); no-token path used `f.url` (Contents API).
+- The token-present path still used `raw.githubusercontent.com`, which fails CORS on corporate/managed networks (Imprivata endpoint security modifies or blocks auth headers on cross-origin requests).
+- Fix: removed the `if (token) / else` branch entirely. Single path for all fetches:
+  - Always fetches via `f.url` (Contents API at `api.github.com`)
+  - Passes `headers` unchanged — already `{ 'Authorization': 'token ...' }` when token present, `{}` when not
+  - Decodes base64 `content` field: `JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))))`
+- `raw.githubusercontent.com` is now used only for `athlete.json` and `program.json` (RAW_BASE constant) — never for session files.
+
+#### Spec Deviations
+
+None — pure bug fix. Token-authenticated fetches now use Contents API instead of raw URL; behavior is identical, CORS is fixed.
+
+#### Discovered Conventions
+
+- `raw.githubusercontent.com` fails CORS on corporate/managed networks even with a valid Authorization header. Imprivata endpoint security (and similar tools) intercept or modify cross-origin requests, breaking GitHub's CORS preflight. Always use the Contents API (`api.github.com`) for cross-origin file reads from GitHub Pages — it handles CORS correctly in all environments.
+- The Contents API returns a base64-encoded `content` field; `download_url` is never needed for reading file content via the API.
+
+---
 
 ### Fix: CORS on Unauthenticated Session Fetches
 **Branch:** `claude/fix-cors-unauthenticated-aWHVl`
