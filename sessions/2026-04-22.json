@@ -1,0 +1,37 @@
+{
+  "date": "2026-04-22",
+  "week": 5,
+  "day": 4,
+  "day_type": "circuit",
+  "day_label": "Spartan Circuit — Landmine Complex",
+  "phase": "volume_build",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 29,
+  "exercises": [
+    {
+      "name": "Main Circuit",
+      "sets": [
+        {
+          "rounds_completed": 5,
+          "total_rounds": 5
+        }
+      ]
+    },
+    {
+      "name": "Grip Finisher",
+      "sets": [
+        {
+          "rounds_completed": 2,
+          "total_rounds": 3
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 3,
+  "skills": {
+    "grip_endurance": 3
+  },
+  "note": ""
+}
