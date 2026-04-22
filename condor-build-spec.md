@@ -1,5 +1,5 @@
 # Condor Fitness — Build Spec
-Version 1.4 — March 29, 2026
+Version 1.5 — April 21, 2026
 Repo: JoelColeman/condor-fitness
 
 This document is the source of truth for what the app
@@ -59,7 +59,7 @@ Dashboard URL: https://joelcoleman.github.io/condor-fitness/dashboard.html
 |-----|-------------|
 | `githubToken` | GitHub personal access token. Requires Contents: read/write on the condor-fitness repo. Set once on first run. |
 | `githubRepo` | Repo string: "JoelColeman/condor-fitness". Set once on first run. |
-| `lastCompleted` | Object: `{ week: N, day: N }`. Updated after each saved non-bonus session. Drives next workout logic. Default: week 3, day 1. |
+| `lastCompleted` | Object: `{ week: N, day: N }`. Updated after each saved non-bonus session. Also updated by dashboard cross-device sync when session files show more progress than localStorage. Drives next workout logic. Default: week 3, day 1. |
 | `programCache` | Cached copy of program.json with timestamp. Re-fetched if older than 24 hours. |
 | `athleteCache` | Cached copy of athlete.json with timestamp. Re-fetched if older than 24 hours. |
 | `sessionsCache` | Cached copy of all session files with timestamp. Re-fetched if older than 1 hour. |
@@ -346,6 +346,61 @@ Unicode in notes field.
 
 ---
 
+## GitHub API — Session Read (Dashboard)
+
+**All session file reads use the GitHub Contents API
+exclusively** (`api.github.com/repos/.../contents/...`).
+Never use `raw.githubusercontent.com` — it fails CORS
+on corporate/managed networks.
+
+**Directory listing:**
+```
+GET https://api.github.com/repos/{owner}/{repo}/contents/sessions/
+```
+Returns array of file metadata including `url` field
+(the Contents API URL for each file).
+
+**Individual file read:**
+```
+GET {file.url}
+```
+Returns JSON with base64-encoded `content` field.
+Decode: `JSON.parse(decodeURIComponent(escape(
+atob(response.content.replace(/\n/g, '')))))`
+
+**Auth header:** Passed when token exists (5000 req/hr),
+omitted when no token (60 req/hr, sufficient for
+dashboard reads on public repos).
+
+Sessions are always fetched regardless of token presence.
+This enables cross-device sync.
+
+---
+
+## Cross-Device Sync (Dashboard)
+
+The dashboard resolves `lastCompleted` from two sources
+and takes the higher value:
+
+1. localStorage `lastCompleted` on the current device
+2. The furthest non-bonus `{week, day}` found in session
+   files fetched from GitHub
+
+`resolveLastCompleted(sessions)` compares both sources.
+Higher week wins; on tie, higher day wins. The resolved
+value is passed to `renderTrainingLog`, `renderTimeline`,
+and `buildMiniPhaseTimeline`.
+
+If session files show more progress than localStorage,
+localStorage is updated immediately so subsequent page
+loads are correct even if `sessionsCache` hasn't expired.
+
+This means: log a workout on your phone, open the
+dashboard on desktop, and it shows the correct next
+workout — no manual sync needed.
+
+---
+
 ## program.json Read
 
 Fetch from raw GitHub URL:
@@ -447,6 +502,8 @@ sessions, trend arrow (▲/▼/→).
 Calf: lower is better, red dot on any value > 2.
 Skills: higher is better.
 If fewer than 2 data points: "Not enough data yet".
+Renders when session data is available regardless of
+token presence (gate: no token AND no sessions).
 
 #### 6. Training Log
 Replaces the former "Recent Sessions" section.
@@ -489,7 +546,10 @@ at 150ms after all render functions complete in init().
 Falls back to last row if all days are complete.
 
 **No-token state:**
-All rows render in future/preview style. Notice shown:
+Sessions are still fetched from the public GitHub API
+(no token needed for reads on public repos). All rows
+render with session data when available. Notice shown
+only when no token AND no sessions exist:
 "Connect the workout companion app to see logged sessions."
 
 ---
@@ -514,12 +574,12 @@ completed count. Bonus sessions are never counted.
 |--------|-----|-----------|-----|
 | athlete.json | raw GitHub URL | athleteCache | 24hr |
 | program.json | raw GitHub URL | programCache | 24hr |
-| sessions/ | GitHub API | sessionsCache | 1hr |
+| sessions/ | GitHub Contents API | sessionsCache | 1hr |
 
-If token absent: athlete.json sections render normally.
-Sessions-dependent sections show a friendly notice.
-Section fetch failures are isolated — one failure does
-not blank the whole page.
+If token absent: athlete.json and program.json sections
+render normally. Sessions are fetched from the public
+Contents API without auth. Section fetch failures are
+isolated — one failure does not blank the whole page.
 
 ---
 
@@ -563,5 +623,8 @@ not blank the whole page.
 | 2026-03-29 | Dashboard: Run Progression table removed; run protocol + calf gate inline on Day 2 Training Log rows | Consolidation — same data, fewer sections |
 | 2026-03-29 | Dashboard: Section count reduced from 7 to 6 | Run Progression removed |
 | 2026-03-29 | Dashboard: Training Log auto-scroll moved to post-render init() call at 150ms | Previous 80ms scroll fired before layout painted |
+| 2026-04-14 | Cross-device sync: sessions fetched without token via public GitHub Contents API; resolveLastCompleted derives pointer from session files + localStorage (higher wins); localStorage updated when session files show more progress | Desktop wasn't seeing workouts logged on mobile |
+| 2026-04-14 | Skill Trends gate changed from hasToken to hasToken && sessions.length — renders when session data exists regardless of token | Skill Trends was blank on token-less devices with available session data |
+| 2026-04-21 | Session file fetches use GitHub Contents API exclusively (api.github.com) — raw.githubusercontent.com eliminated | CORS failures on corporate/managed networks (Imprivata endpoint security) |
 
 *This table is updated by Chat whenever the spec changes.*
