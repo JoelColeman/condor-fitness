@@ -26,10 +26,42 @@ See condor_workflow.txt for the spec update protocol.
 | Cross-Device Sync (Part 2) | sessionMap gate + localStorage sync + Training Log token gates | ✅ Complete |
 | Fix: CORS on unauthenticated session fetches | Use Contents API (api.github.com) instead of raw.githubusercontent.com when no token | ✅ Complete |
 | Fix: Contents API for ALL session fetches | Eliminate raw.githubusercontent.com from token path too — single code path for all fetches | ✅ Complete |
+| Dashboard — Training Log Redesign | Scrollable log window + collapsed cards with tap-to-expand + session snapshot on logged rows | ✅ Complete |
 
 ---
 
 ## Completed Tasks
+
+### Dashboard — Training Log Redesign
+**Branch:** `claude/redesign-training-log-2fH9m`
+**Date:** 2026-04-23
+
+#### What changed (dashboard.html only):
+
+**Change 1 — Scrollable log window:**
+- `#sec-sessions-body` now has `height: 420px; overflow-y: auto` (mobile default).
+- `@media (min-width: 768px)` overrides to `height: 520px`.
+- Page no longer auto-scrolls to the Training Log on load. The previous `scrollIntoView` call in `init()` is replaced with a container-internal scroll: `container.scrollTop = nRect.top - cRect.top - 8`, positioning the NEXT row near the top of the scroll window with 8px breathing room.
+
+**Change 2 — Collapsed cards with tap-to-expand:**
+- `cursor: pointer; user-select: none` moved from `.tl-log-row-logged` to the base `.tl-log-row` class — all rows are now tappable.
+- Every row gets a `<span class="tl-chevron">›</span>` in `tl-row-right`. CSS uses `transform: rotate(90deg)` on `.tl-chevron.open` — no icon library.
+- All rows get a `tl-log-expand` div. Logged rows use `buildDetailHtml(session)` (existing). All other rows use new `buildFutureDetailHtml(day)`.
+- `buildFutureDetailHtml(day)` iterates `day.exercises`, skips Scapular, and shows each exercise with its target sets×reps@weight (or duration/rounds where applicable). Handles sub-exercises for compound types (finisher_circuit, superset, circuit) indented at 12px.
+- NEXT row: expand div starts without `hidden` class; chevron starts with `open` class — NEXT row is expanded on load.
+- Click handler changed from `.tl-log-row-logged` selector to `.tl-log-row` — all rows open/close. Handler also toggles `tl-chevron.open` on the active row and removes it from the previously-open row. `openRowId` initialised to `nextRowId || null`.
+- Skipped rows now show `exSubLine` in collapsed state (previously showed label only).
+
+**Change 3 — Session snapshot on logged rows:**
+- New `buildSessionSnapshot(session)` function renders in `tl-row-left` for logged rows, replacing the old feel+calf display in `tl-row-right`.
+- `getShortName(name)` maps "Back Squat" → "Squat", "Romanian Deadlift" → "RDL", "Bulgarian Split Squat" → "BSS"; strips leading "Back " for others; truncates at 12 chars.
+- Snapshot layout: feel dots (`.sess-feel` with `feelDots()`) + workout highlight side by side in `.tl-snapshot-main`; calf line below in `.tl-snapshot-calf`.
+- Workout highlight priority: (1) first strength set with `actual_weight_lbs` + `actual_reps` → "335×5 Squat"; (2) first set with `rounds_completed` → "N rounds"; (3) `duration_min` → "N min".
+- Calf shows as "Calf: N/10" for any session where `calf_rating != null` (including 0).
+
+#### Spec Deviations
+
+None. All three changes implement the spec as written.
 
 ### Fix: Contents API for ALL Session Fetches
 **Branch:** `claude/contents-api-session-fetches-MyNEG`
