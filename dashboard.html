@@ -370,6 +370,8 @@
     .tl-log-row {
       padding: 9px 0;
       border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
     }
     .tl-log-row:last-child { border-bottom: none; }
     .tl-row-header {
@@ -390,7 +392,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .tl-log-row-logged { cursor: pointer; user-select: none; }
     .tl-log-row-logged:hover .tl-row-label { color: var(--accent); }
     .tl-log-row-skipped { opacity: 0.45; }
     .tl-log-row-next {
@@ -417,6 +418,21 @@
       border-radius: 6px;
       font-size: 13px;
     }
+    .tl-chevron {
+      color: var(--text-secondary);
+      font-size: 16px;
+      display: inline-block;
+      transition: transform 0.15s;
+      margin-left: 4px;
+      line-height: 1;
+    }
+    .tl-chevron.open { transform: rotate(90deg); }
+    .tl-snapshot { margin-top: 4px; }
+    .tl-snapshot-main { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .tl-snapshot-highlight { color: var(--text-primary); font-weight: 600; }
+    .tl-snapshot-calf { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    #sec-sessions-body { height: 420px; overflow-y: auto; }
+    @media (min-width: 768px) { #sec-sessions-body { height: 520px; } }
   </style>
 </head>
 <body>
@@ -991,6 +1007,100 @@
         noteHtml + '</div>';
     }
 
+    // Short name for session snapshot highlight
+    function getShortName(name) {
+      var n = name || '';
+      if (/back squat/i.test(n))            return 'Squat';
+      if (/romanian deadlift/i.test(n))     return 'RDL';
+      if (/bulgarian split squat/i.test(n)) return 'BSS';
+      var s = n.replace(/^Back\s+/i, '');
+      return s.length > 12 ? s.slice(0, 12) : s;
+    }
+
+    // Session snapshot for collapsed logged-row view (Change 3)
+    function buildSessionSnapshot(s) {
+      var dots = s.overall_feel
+        ? '<span class="sess-feel">' + feelDots(s.overall_feel) + '</span>'
+        : '';
+      var highlight = '';
+      var exs = s.exercises || [];
+      // Priority 1: first strength set with weight + reps
+      for (var si = 0; si < exs.length && !highlight; si++) {
+        var sets = exs[si].sets || [];
+        for (var sj = 0; sj < sets.length; sj++) {
+          var st = sets[sj];
+          if (st.actual_weight_lbs != null && st.actual_reps != null) {
+            highlight = st.actual_weight_lbs + '×' + st.actual_reps + ' ' + getShortName(exs[si].name || '');
+            break;
+          }
+        }
+      }
+      // Priority 2: first run/circuit with rounds_completed
+      if (!highlight) {
+        for (var ri = 0; ri < exs.length && !highlight; ri++) {
+          var rsets = exs[ri].sets || [];
+          for (var rj = 0; rj < rsets.length; rj++) {
+            if (rsets[rj].rounds_completed != null) {
+              highlight = rsets[rj].rounds_completed + ' rounds';
+              break;
+            }
+          }
+        }
+      }
+      // Priority 3: duration
+      if (!highlight && s.duration_min != null) {
+        highlight = s.duration_min + ' min';
+      }
+      var hlHtml = highlight ? '<span class="tl-snapshot-highlight">' + esc(highlight) + '</span>' : '';
+      var calfHtml = (s.calf_rating != null)
+        ? '<div class="tl-snapshot-calf">Calf: ' + s.calf_rating + '/10</div>'
+        : '';
+      return '<div class="tl-snapshot">' +
+        '<div class="tl-snapshot-main">' + dots + hlHtml + '</div>' +
+        calfHtml + '</div>';
+    }
+
+    // Full exercise list for future/next/skipped expanded view (Change 2)
+    function buildFutureDetailHtml(day) {
+      var exs = (day.exercises || []).filter(function(e) {
+        return (e.name || '').toLowerCase().indexOf('scapular') === -1;
+      });
+      if (!exs.length) return '<div class="tl-log-detail"><span style="color:#666">—</span></div>';
+      var rows = exs.map(function(e) {
+        var detail = '';
+        if (e.sets != null && e.reps != null && e.target_weight_lbs != null) {
+          detail = e.sets + '×' + e.reps + ' @ ' + e.target_weight_lbs + ' lb';
+        } else if (e.sets != null && e.reps != null) {
+          detail = e.sets + '×' + e.reps;
+        } else if (e.sets != null && e.duration_sec != null) {
+          detail = e.sets + '×' + e.duration_sec + 's';
+        } else if (e.duration_min != null) {
+          detail = e.duration_min + ' min';
+        } else if (e.rounds != null) {
+          detail = e.rounds + ' rounds';
+        }
+        var subRows = '';
+        if (e.exercises && e.exercises.length) {
+          subRows = e.exercises
+            .filter(function(se) { return (se.name || '').toLowerCase().indexOf('scapular') === -1; })
+            .map(function(se) {
+              var sd = '';
+              if (se.reps != null && se.target_weight_lbs != null) sd = se.reps + ' reps @ ' + se.target_weight_lbs + ' lb';
+              else if (se.reps != null) sd = se.reps + ' reps';
+              else if (se.duration_sec != null) sd = se.duration_sec + 's';
+              else if (se.duration_min != null) sd = se.duration_min + ' min';
+              return '<div class="sess-ex-row" style="padding-left:12px;">' +
+                '<span class="sess-ex-name" style="color:var(--text-secondary)">' + esc(se.name || '') + '</span>' +
+                (sd ? ': <span style="color:#666">' + esc(sd) + '</span>' : '') + '</div>';
+            }).join('');
+        }
+        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(e.name || '') + '</span>' +
+          (detail ? ': <span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
+          '</div>' + subRows;
+      }).join('');
+      return '<div class="tl-log-detail">' + rows + '</div>';
+    }
+
     // Build HTML
     var html = '';
     var nextRowId = null, lastRowId = null, rowIdx = 0;
@@ -1034,10 +1144,10 @@
         html += '<div class="tl-row-header">';
         html += '<div class="tl-row-left">';
         html += '<div class="tl-row-label">' + esc(day.label) + '</div>';
-        if (isLogged && session && session.date) {
-          html += '<div class="tl-row-date">' + esc(session.date) + '</div>';
-        }
-        if (isNext || isFuture) {
+        if (isLogged && session) {
+          if (session.date) html += '<div class="tl-row-date">' + esc(session.date) + '</div>';
+          html += buildSessionSnapshot(session);
+        } else {
           var sub = exSubLine(day.exercises);
           if (sub) html += '<div class="tl-log-sub">' + esc(sub) + '</div>';
         }
@@ -1049,18 +1159,13 @@
         html += '</div>'; // tl-row-left
 
         html += '<div class="tl-row-right">';
-        if (isNext) {
-          html += '<span class="tl-next-badge">NEXT</span>';
-        } else if (isLogged && session) {
-          if (session.overall_feel) html += '<span class="sess-feel">' + feelDots(session.overall_feel) + '</span>';
-          if (session.calf_rating != null) html += '<span class="sess-calf">' + esc(session.calf_rating + '/10') + '</span>';
-        }
+        if (isNext) html += '<span class="tl-next-badge">NEXT</span>';
+        html += '<span class="tl-chevron' + (isNext ? ' open' : '') + '">\u203a</span>';
         html += '</div>'; // tl-row-right
         html += '</div>'; // tl-row-header
 
-        if (isLogged && session) {
-          html += '<div class="tl-log-expand hidden">' + buildDetailHtml(session) + '</div>';
-        }
+        var expandContent = (isLogged && session) ? buildDetailHtml(session) : buildFutureDetailHtml(day);
+        html += '<div class="tl-log-expand' + (isNext ? '' : ' hidden') + '">' + expandContent + '</div>';
 
         html += '</div>'; // tl-log-row
       });
@@ -1068,18 +1173,25 @@
 
     el.innerHTML = html;
 
-    // Expand/collapse for logged rows
-    var openRowId = null;
+    // Expand/collapse for all rows — one open at a time
+    var openRowId = nextRowId || null;
     el.addEventListener('click', function(e) {
-      var row = e.target.closest ? e.target.closest('.tl-log-row-logged') : null;
+      var row = e.target.closest ? e.target.closest('.tl-log-row') : null;
       if (!row) return;
       var expand = row.querySelector('.tl-log-expand');
       if (!expand) return;
+      var chevron = row.querySelector('.tl-chevron');
       if (openRowId && openRowId !== row.id) {
         var prev = document.getElementById(openRowId);
-        if (prev) { var prevExp = prev.querySelector('.tl-log-expand'); if (prevExp) prevExp.classList.add('hidden'); }
+        if (prev) {
+          var prevExp = prev.querySelector('.tl-log-expand');
+          if (prevExp) prevExp.classList.add('hidden');
+          var prevChev = prev.querySelector('.tl-chevron');
+          if (prevChev) prevChev.classList.remove('open');
+        }
       }
       expand.classList.toggle('hidden');
+      if (chevron) chevron.classList.toggle('open', !expand.classList.contains('hidden'));
       openRowId = expand.classList.contains('hidden') ? null : row.id;
     });
 
@@ -1126,7 +1238,10 @@
     document.getElementById('dash-loading').style.display = 'none';
     if (nextEl) {
       setTimeout(function() {
-        nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var container = document.getElementById('sec-sessions-body');
+        var cRect = container.getBoundingClientRect();
+        var nRect = nextEl.getBoundingClientRect();
+        container.scrollTop = nRect.top - cRect.top - 8;
       }, 150);
     }
     document.getElementById('dash-main').classList.remove('hidden');
