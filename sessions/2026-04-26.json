@@ -1,0 +1,171 @@
+{
+  "date": "2026-04-26",
+  "week": 6,
+  "day": 2,
+  "day_type": "run",
+  "day_label": "Run — 2:1",
+  "phase": "volume_build",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 1,
+  "exercises": [
+    {
+      "name": "Scapular Pull-Ups",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Run/Walk Intervals",
+      "sets": [
+        {
+          "interval": 1,
+          "completed": true
+        },
+        {
+          "interval": 2,
+          "completed": true
+        },
+        {
+          "interval": 3,
+          "completed": true
+        },
+        {
+          "interval": 4,
+          "completed": true
+        },
+        {
+          "interval": 5,
+          "completed": true
+        },
+        {
+          "interval": 6,
+          "completed": true
+        },
+        {
+          "interval": 7,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Dead Hang",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_duration_sec": 37,
+          "actual_duration_sec": 27,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_duration_sec": 37,
+          "actual_duration_sec": 24,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_duration_sec": 37,
+          "actual_duration_sec": 22,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Monkey Bars",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": false
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": false
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": false
+        },
+        {
+          "set_number": 4,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "name": "Lat Pulldown",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 145,
+          "actual_weight_lbs": 140,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 145,
+          "actual_weight_lbs": 140,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 145,
+          "actual_weight_lbs": 140,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 1,
+  "overall_feel": 4,
+  "skills": {
+    "shoulder_stability": 4,
+    "monkey_bars": 4
+  },
+  "note": ""
+}
