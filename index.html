@@ -2533,14 +2533,57 @@
     // ═══════════════════════════════════════════════════════
     // Init — route to Screen 1 or Screen 2
     // ═══════════════════════════════════════════════════════
-    function init() {
+    async function init() {
       var token = localStorage.getItem('githubToken');
       if (!token) {
         showScreen('setup');
-      } else {
-        showScreen('preworkout');
-        window.initPreworkout();
+        return;
       }
+      // Cross-device sync — resolve lastCompleted from session files before Screen 2.
+      // Mirrors dashboard.html's resolveLastCompleted; inlined to avoid global naming collision.
+      try {
+        var repo = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
+        var headers = { 'Authorization': 'token ' + token };
+        var listResp = await fetch('https://api.github.com/repos/' + repo + '/contents/sessions/', { headers: headers });
+        if (listResp.ok) {
+          var files = await listResp.json();
+          var jsonFiles = files.filter(function(f) { return f.name.endsWith('.json'); });
+          var sessions = await Promise.all(jsonFiles.map(async function(f) {
+            try {
+              var r = await fetch(f.url, { headers: headers });
+              if (!r.ok) return null;
+              var meta = await r.json();
+              return JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
+            } catch(e) { return null; }
+          }));
+          var sessionLc = null;
+          sessions.filter(Boolean).filter(function(s) { return !s.bonus && s.week && s.day; })
+            .forEach(function(s) {
+              if (!sessionLc ||
+                  s.week > sessionLc.week ||
+                  (s.week === sessionLc.week && s.day > sessionLc.day)) {
+                sessionLc = { week: s.week, day: s.day };
+              }
+            });
+          var localLc = null;
+          try { localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
+          if (sessionLc) {
+            var resolved = localLc;
+            if (!localLc ||
+                sessionLc.week > localLc.week ||
+                (sessionLc.week === localLc.week && sessionLc.day > localLc.day)) {
+              resolved = sessionLc;
+            }
+            if (resolved && (!localLc || resolved.week !== localLc.week || resolved.day !== localLc.day)) {
+              localStorage.setItem('lastCompleted', JSON.stringify(resolved));
+            }
+          }
+        }
+      } catch(e) {
+        // Silent fall-through — existing localStorage lastCompleted is used as-is
+      }
+      showScreen('preworkout');
+      window.initPreworkout();
     }
 
     init();
