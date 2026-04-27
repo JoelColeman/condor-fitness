@@ -273,6 +273,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Dashboard — Training Log Redesign | Scrollable log window + collapsed cards + session snapshot | ✅ Complete |
 | v3.2 Migration | Merge build docs into CLAUDE.md, strategy doc to Drive | ✅ Complete |
 | Update Token affordance | Screen 2 footer link to clear `githubToken` and re-route to Screen 1 | ✅ Complete |
+| Cross-Device Sync (index.html) | `init()` resolves `lastCompleted` from GitHub session files before Screen 2 | ✅ Complete |
 
 ### Spec Deviations
 
@@ -299,6 +300,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-14 | Skill Trends renders from session data on token-less devices | Gate changed from hasToken to hasToken && sessions.length | Updated in spec |
 | 2026-04-14 | Training Log renders logged rows on token-less devices | sessionMap gate on hasToken was latent bug | Updated in spec |
 | 2026-04-23 | Training Log redesigned with scrollable window, tap-to-expand all rows, session snapshots | Per task prompt | Updated in spec |
+| 2026-04-27 | index.html `init()` also runs cross-device sync (was dashboard-only) | Per task prompt — desktop showed stale pointer when mobile saved a session | Spec update needed: Section A "App State" line for `lastCompleted` and "Cross-Device Sync" subsection should drop "(Dashboard)" qualifier — both index.html and dashboard.html now resolve from session files |
 
 ### Discovered Conventions
 
@@ -322,7 +324,6 @@ See Build Status table above for the complete task list.
 - [ ] Timed exercise timer: countdown timer for exercises with duration target (dead hangs, isometric holds, foam roll) — reuse rest timer overlay
 - [ ] Scapular pull-ups reorder: position immediately before pull-ups/monkey bars as movement-specific warmup (program.json change, Chat-owned)
 - [ ] Dashboard training log: better session summary with more detail on collapsed rows
-- [ ] Derive lastCompleted from most recent session file in GitHub rather than localStorage alone (cross-device reliability)
 - [ ] Confirm GitHub PAT has contents:write scope on first Code session on any new device
 
 ### Deferred
