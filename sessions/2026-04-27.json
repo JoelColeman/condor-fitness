@@ -1,0 +1,51 @@
+{
+  "date": "2026-04-27",
+  "week": 6,
+  "day": 3,
+  "day_type": "engine",
+  "day_label": "Engine",
+  "phase": "volume_build",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 6,
+  "exercises": [
+    {
+      "name": "Stair Stepper",
+      "sets": [
+        {
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Circuit",
+      "sets": [
+        {
+          "rounds_completed": 4,
+          "total_rounds": 4
+        }
+      ]
+    },
+    {
+      "name": "Calf Rehab",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 4,
+  "skills": {},
+  "note": ""
+}
