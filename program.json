@@ -449,10 +449,20 @@
                 {
                   "name": "Circuit", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
                   "exercises_in_circuit": [
-                    { "name": "Landmine Complex", "reps_note": "1 full round", "notes": "Row x8/arm → Squat x10 → Half-kneeling press x8/arm → Rotation x8/side. One 45 lb plate.", "target_weight_lbs": 45 },
                     { "name": "Modified Step Burpees", "reps": 8, "notes": "No jump." },
                     { "name": "Step-Ups", "reps": 25 },
-                    { "name": "Hanging Knee Raises", "reps": 12 }
+                    { "name": "Hanging Knee Raises", "reps": 12 },
+                    { "name": "Push-Ups", "reps": 20 }
+                  ]
+                },
+                {
+                  "name": "Landmine Complex", "type": "circuit", "rounds": 3, "rest_between_rounds_sec": 90,
+                  "note": "Do not put the bar down within a round.",
+                  "exercises_in_circuit": [
+                    { "name": "Landmine Row", "reps": 8, "reps_note": "per arm", "target_weight_lbs": 45 },
+                    { "name": "Landmine Squat", "reps": 10, "target_weight_lbs": 45 },
+                    { "name": "Half-Kneeling Press", "reps": 8, "reps_note": "per arm", "target_weight_lbs": 45 },
+                    { "name": "Landmine Rotation", "reps": 8, "reps_note": "per side", "target_weight_lbs": 45 }
                   ]
                 },
                 { "name": "Calf Rehab", "type": "rehab", "exercises_in_rehab": [
@@ -560,9 +570,19 @@
               "name": "Main Circuit", "type": "circuit", "rounds": 5, "rest_between_rounds_sec": 75,
               "exercises_in_circuit": [
                 { "name": "Row", "distance_m": 300 },
-                { "name": "Barbell Complex", "reps_note": "1 full round — bar stays up", "target_weight_lbs": 95, "notes": "Hang clean x5 → Front squat x5 → Bent-over row x5 → Good morning x5. Do not put the bar down." },
                 { "name": "Step-Ups", "reps": 25 },
-                { "name": "TRX Ring Rows", "reps": 15 }
+                { "name": "TRX Ring Rows", "reps": 15 },
+                { "name": "Push-Ups", "reps": 20 }
+              ]
+            },
+            {
+              "name": "Barbell Complex", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 120,
+              "note": "Do not put the bar down within a round. Full rest between rounds.",
+              "exercises_in_circuit": [
+                { "name": "Hang Clean", "reps": 5, "target_weight_lbs": 95 },
+                { "name": "Front Squat", "reps": 5, "target_weight_lbs": 95 },
+                { "name": "Bent-Over Row", "reps": 5, "target_weight_lbs": 95 },
+                { "name": "Good Morning", "reps": 5, "target_weight_lbs": 95 }
               ]
             },
             {
@@ -658,10 +678,20 @@
               "name": "Main Circuit", "type": "circuit", "rounds": 6, "rest_between_rounds_sec": 75,
               "exercises_in_circuit": [
                 { "name": "Row", "distance_m": 300 },
-                { "name": "Barbell Complex", "reps_note": "1 full round", "target_weight_lbs": 100, "notes": "Hang clean x5 → Front squat x5 → Bent-over row x5 → Good morning x5. Bar stays up." },
                 { "name": "Burpees", "reps": 10, "notes": "Same rule as Day 3." },
                 { "name": "Step-Ups", "reps": 25 },
-                { "name": "TRX Ring Rows", "reps": 15 }
+                { "name": "TRX Ring Rows", "reps": 15 },
+                { "name": "Push-Ups", "reps": 20 }
+              ]
+            },
+            {
+              "name": "Barbell Complex", "type": "circuit", "rounds": 4, "rest_between_rounds_sec": 120,
+              "note": "Do not put the bar down within a round. Full rest between rounds.",
+              "exercises_in_circuit": [
+                { "name": "Hang Clean", "reps": 5, "target_weight_lbs": 100 },
+                { "name": "Front Squat", "reps": 5, "target_weight_lbs": 100 },
+                { "name": "Bent-Over Row", "reps": 5, "target_weight_lbs": 100 },
+                { "name": "Good Morning", "reps": 5, "target_weight_lbs": 100 }
               ]
             },
             {

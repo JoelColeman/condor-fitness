@@ -274,6 +274,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | v3.2 Migration | Merge build docs into CLAUDE.md, strategy doc to Drive | ✅ Complete |
 | Update Token affordance | Screen 2 footer link to clear `githubToken` and re-route to Screen 1 | ✅ Complete |
 | Cross-Device Sync (index.html) | `init()` resolves `lastCompleted` from GitHub session files before Screen 2 | ✅ Complete |
+| Restructure complexes (program.json) | Barbell + Landmine complexes pulled out of Main Circuits into standalone circuit blocks with own rounds/rest | ✅ Complete |
 
 ### Spec Deviations
 
@@ -301,6 +302,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-14 | Training Log renders logged rows on token-less devices | sessionMap gate on hasToken was latent bug | Updated in spec |
 | 2026-04-23 | Training Log redesigned with scrollable window, tap-to-expand all rows, session snapshots | Per task prompt | Updated in spec |
 | 2026-04-27 | index.html `init()` also runs cross-device sync (was dashboard-only) | Per task prompt — desktop showed stale pointer when mobile saved a session | Spec update needed: Section A "App State" line for `lastCompleted` and "Cross-Device Sync" subsection should drop "(Dashboard)" qualifier — both index.html and dashboard.html now resolve from session files |
+| 2026-04-27 | Complexes restructured from embedded circuit exercises to standalone circuit blocks with dedicated rounds and rest. Chat-directed change. | Burying a complex as one station in a fast circuit rushed it and lost training value | Chat-owned content edit per explicit direction; no Section A spec change needed |
 
 ### Discovered Conventions
 
