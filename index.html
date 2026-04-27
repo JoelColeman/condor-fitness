@@ -758,7 +758,11 @@
       <button class="btn btn-primary btn-icon" id="btn-start-workout">&#10003; Start this workout</button>
       <button class="btn btn-secondary btn-icon" id="btn-swap-alternate">&#8635; Swap to alternate</button>
       <button class="btn btn-secondary btn-icon" id="btn-bonus-session">+ Bonus session</button>
-      <div style="text-align:center;margin-top:12px;"><a href="dashboard.html" style="color:#888;font-size:13px;text-decoration:none;">Dashboard &#8594;</a></div>
+      <div style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:8px;align-items:center;">
+        <button id="btn-update-token" type="button" style="background:none;border:none;color:var(--text-secondary);font-size:var(--font-meta);padding:12px 16px;cursor:pointer;font-family:inherit;">Update token</button>
+        <span style="color:var(--text-secondary);font-size:var(--font-meta);">&middot;</span>
+        <a href="dashboard.html" style="color:var(--text-secondary);font-size:var(--font-meta);text-decoration:none;padding:12px 16px;">Dashboard &#8594;</a>
+      </div>
     </div>
 
     <!-- Sub-panel: Alternate selector -->
@@ -1245,6 +1249,13 @@
       document.getElementById('btn-pw-retry').addEventListener('click', function() {
         localStorage.removeItem('programCache');
         initPreworkout();
+      });
+
+      // ── Update Token link ──────────────────────────────
+
+      document.getElementById('btn-update-token').addEventListener('click', function() {
+        localStorage.removeItem('githubToken');
+        showScreen('setup');
       });
 
       // ── Expose init to global scope ────────────────────
