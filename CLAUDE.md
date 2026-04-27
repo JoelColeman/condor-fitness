@@ -43,7 +43,7 @@ Save → writes all to localStorage → go to Screen 2.
 **Screen 2 — Pre-Workout Prompt**
 Shown on every load after setup. Reads `lastCompleted`, finds next workout in program.json. Displays "Next up:" with week/day/label and phase/date range.
 
-Three buttons: Start this workout → Screen 3, Swap to alternate → Alternate selector, + Bonus session → Day type selector. Dashboard link to dashboard.html.
+Three buttons: Start this workout → Screen 3, Swap to alternate → Alternate selector, + Bonus session → Day type selector. Footer row at bottom of main panel: "Update token" link (clears `githubToken` from localStorage and routes to Screen 1) · Dashboard link to dashboard.html. Both rendered in `--text-secondary` at `--font-meta`, padded for ≥44px touch target.
 
 Alternate Selector: Lists alternates for this day from program.json. Each tappable → load in Screen 3. If none available: show message, return to Screen 2.
 
@@ -242,6 +242,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-21 | Session reads use Contents API exclusively — raw.githubusercontent.com eliminated |
 | 2026-04-23 | Training Log redesign: scrollable window, collapsed cards with tap-to-expand, session snapshot on logged rows |
 | 2026-04-26 | Migration to v3.2 workflow: condor-build-spec.md absorbed into Section A, condor-build.md absorbed into Section B |
+| 2026-04-26 | Screen 2 footer row adds "Update token" link — clears `githubToken` and returns to Screen 1, enabling in-app token reset on any device |
 
 ---
 
@@ -271,6 +272,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Fix: Contents API for ALL session fetches | Eliminate raw.githubusercontent.com from token path too — single code path | ✅ Complete |
 | Dashboard — Training Log Redesign | Scrollable log window + collapsed cards + session snapshot | ✅ Complete |
 | v3.2 Migration | Merge build docs into CLAUDE.md, strategy doc to Drive | ✅ Complete |
+| Update Token affordance | Screen 2 footer link to clear `githubToken` and re-route to Screen 1 | ✅ Complete |
 
 ### Spec Deviations
 
