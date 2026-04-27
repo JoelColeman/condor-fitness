@@ -431,6 +431,30 @@
     .tl-snapshot-main { display: flex; align-items: center; gap: 8px; font-size: 12px; }
     .tl-snapshot-highlight { color: var(--text-primary); font-weight: 600; }
     .tl-snapshot-calf { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    /* Prescribed exercise tree (expanded detail) */
+    .tl-ex-row { padding: 3px 0; color: var(--text-secondary); font-size: 13px; }
+    .tl-ex-name { color: var(--text-primary); font-weight: 600; }
+    .tl-ex-detail { color: var(--text-secondary); }
+    .tl-ex-notes { display: block; font-size: 12px; color: var(--text-secondary); font-style: italic; margin-top: 2px; }
+    .tl-ex-group {
+      border-left: 2px solid var(--border);
+      padding: 4px 0 4px 10px;
+      margin: 4px 0 4px 4px;
+    }
+    .tl-ex-group-header { color: var(--text-primary); font-weight: 600; font-size: 13px; }
+    .tl-ex-group-meta { color: var(--text-secondary); font-weight: 400; }
+    .tl-ex-sub { padding: 2px 0; color: var(--text-secondary); font-size: 12px; }
+    .tl-ex-sub .tl-ex-name { font-weight: 500; }
+    .tl-prescribed-heading {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin: 12px 0 6px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
     #sec-sessions-body { height: 420px; overflow-y: auto; }
     @media (min-width: 768px) { #sec-sessions-body { height: 520px; } }
   </style>
@@ -983,7 +1007,7 @@
       return result;
     }
 
-    // Session detail HTML (same structure as old renderRecentSessions)
+    // Session detail HTML — actual session data, plus the prescribed exercise tree below.
     function buildDetailHtml(s) {
       var exRows = (s.exercises || []).map(function(ex) {
         var sets = (ex.sets || []).map(function(st) {
@@ -1001,10 +1025,26 @@
       if (sk.shoulder_stability != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Shoulder: </span><span class="sess-skill-val">' + sk.shoulder_stability + '</span></span>');
       if (sk.monkey_bars        != null) skillParts.push('<span class="sess-skill-item"><span class="sess-skill-label">Monkey bars: </span><span class="sess-skill-val">' + sk.monkey_bars + '</span></span>');
       var noteHtml = s.note ? '<div class="sess-note">&ldquo;' + esc(s.note) + '&rdquo;</div>' : '';
+
+      // Append the prescribed exercise tree below the session summary.
+      var progDay = findProgramDay(prog, s.week, s.day);
+      var prescribedHtml = '';
+      if (progDay) {
+        var exs = (progDay.exercises || []).filter(function(e) {
+          return (e.name || '').toLowerCase().indexOf('scapular') === -1;
+        });
+        if (exs.length) {
+          prescribedHtml = '<div class="tl-prescribed-heading">Prescribed</div>' +
+            exs.map(renderExercise).join('');
+        }
+      }
+
       return '<div class="tl-log-detail">' +
         (exRows || '<span style="color:#666">No exercise data</span>') +
         (skillParts.length ? '<div class="sess-skill-row">' + skillParts.join('') + '</div>' : '') +
-        noteHtml + '</div>';
+        noteHtml +
+        prescribedHtml +
+        '</div>';
     }
 
     // Short name for session snapshot highlight
@@ -1060,45 +1100,172 @@
         calfHtml + '</div>';
     }
 
+    // Format M:SS from seconds (e.g. 60 → "1:00", 90 → "1:30")
+    function fmtMSS(sec) {
+      if (sec == null) return '';
+      var m = Math.floor(sec / 60), s = sec % 60;
+      return m + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    // 0 = bodyweight in program.json — treat as no added weight.
+    function hasWeight(e) { return e.target_weight_lbs != null && e.target_weight_lbs > 0; }
+    function weightSuffix(e) { return hasWeight(e) ? ' @ ' + e.target_weight_lbs + ' lbs' : ''; }
+    function repsNoteSuffix(e) { return e.reps_note ? ' ' + e.reps_note : ''; }
+
+    // Inline detail string for a leaf exercise (no sub-array). Returns "" if nothing meaningful.
+    function leafDetail(e) {
+      // Run intervals
+      if (e.type === 'run' && e.intervals != null) {
+        var parts = [e.intervals + ' rounds'];
+        if (e.run_sec != null && e.walk_sec != null) {
+          parts.push(fmtMSS(e.run_sec) + ' run / ' + fmtMSS(e.walk_sec) + ' walk');
+        }
+        return parts.join(' · ');
+      }
+      // Run continuous
+      if (e.type === 'run' && e.duration_min != null) {
+        return e.duration_min + ' min continuous';
+      }
+      // Cardio
+      if (e.type === 'cardio' && e.duration_min != null) {
+        return e.duration_min + ' min';
+      }
+      // Sets × reps @ weight
+      if (e.sets != null && e.reps != null) {
+        return e.sets + '×' + e.reps + repsNoteSuffix(e) + weightSuffix(e);
+      }
+      // Sets × duration_sec @ weight (e.g. Farmer Carry 2×60s @ 88 lbs)
+      if (e.sets != null && e.duration_sec != null) {
+        return e.sets + '×' + e.duration_sec + 's' + weightSuffix(e);
+      }
+      // Reps only (sub-exercise inside a circuit/superset round)
+      if (e.reps != null) {
+        return '×' + e.reps + repsNoteSuffix(e) + weightSuffix(e);
+      }
+      // Duration_sec only (sub-exercise — e.g. carry within a circuit)
+      if (e.duration_sec != null) {
+        return e.duration_sec + 's' + weightSuffix(e);
+      }
+      // Distance (row, carry)
+      if (e.distance_m != null) {
+        return e.distance_m + 'm' + weightSuffix(e);
+      }
+      // Duration only (e.g. movement, mobility)
+      if (e.duration_min != null) {
+        return e.duration_min + ' min';
+      }
+      // Sets only (e.g. monkey bars passes)
+      if (e.sets != null) {
+        return e.sets + (e.sets === 1 ? ' round' : ' rounds');
+      }
+      return '';
+    }
+
+    // Detect a child container array on an exercise (returns array or null)
+    function exChildren(e) {
+      return (e.exercises_in_circuit && e.exercises_in_circuit.length) ? e.exercises_in_circuit
+           : (e.exercises_in_finisher && e.exercises_in_finisher.length) ? e.exercises_in_finisher
+           : (e.exercises_in_superset && e.exercises_in_superset.length) ? e.exercises_in_superset
+           : (e.exercises_in_rehab    && e.exercises_in_rehab.length)    ? e.exercises_in_rehab
+           : (e.exercises_in_block    && e.exercises_in_block.length)    ? e.exercises_in_block
+           : null;
+    }
+
+    // Header meta for a group container (rounds + rest if present)
+    function groupMeta(e) {
+      var bits = [];
+      if (e.rounds != null) bits.push(e.rounds + ' rounds');
+      if (e.rest_between_rounds_sec != null) bits.push(e.rest_between_rounds_sec + 's rest');
+      return bits.join(' · ');
+    }
+
+    // Is this exercise a "complex" (movement sequence in notes)?
+    function isComplex(e) {
+      var n = (e.name || '').toLowerCase();
+      var notes = e.notes || '';
+      return n.indexOf('complex') !== -1 || notes.indexOf('→') !== -1 || notes.indexOf('->') !== -1;
+    }
+
+    // Render one exercise (top-level). Returns HTML string.
+    function renderExercise(e) {
+      var children = exChildren(e);
+
+      if (children) {
+        // Group block: header + indented children
+        var meta = groupMeta(e);
+        var header = '<div class="tl-ex-group-header">' + esc(e.name || '') +
+          (meta ? ' <span class="tl-ex-group-meta">· ' + esc(meta) + '</span>' : '') +
+          '</div>';
+        var notesHtml = e.notes ? '<span class="tl-ex-notes">' + esc(e.notes) + '</span>'
+                       : (e.note ? '<span class="tl-ex-notes">' + esc(e.note) + '</span>' : '');
+        var subHtml = children.map(renderSubExercise).join('');
+        return '<div class="tl-ex-group">' + header + notesHtml + subHtml + '</div>';
+      }
+
+      // Simple / timed / cardio / run / complex leaf
+      var detail = leafDetail(e);
+      var line = '<div class="tl-ex-row"><span class="tl-ex-name">' + esc(e.name || '') + '</span>';
+      if (isComplex(e)) {
+        // Complex: show weight on header line, sequence from notes below
+        if (hasWeight(e)) line += '<span class="tl-ex-detail"> @ ' + e.target_weight_lbs + ' lbs</span>';
+        line += '</div>';
+        if (e.notes) line += '<div class="tl-ex-row" style="padding-left:12px;"><span class="tl-ex-notes" style="font-style:normal;">' + esc(e.notes) + '</span></div>';
+        return line;
+      }
+      if (detail) line += '<span class="tl-ex-detail"> · ' + esc(detail) + '</span>';
+      line += '</div>';
+      if (e.notes) line += '<div class="tl-ex-row" style="padding-left:12px;margin-top:-2px;"><span class="tl-ex-notes">' + esc(e.notes) + '</span></div>';
+      return line;
+    }
+
+    // Render one sub-exercise (inside a group). Indented, smaller weight.
+    function renderSubExercise(e) {
+      // Sub may itself contain children (rare but possible). Recurse.
+      var children = exChildren(e);
+      if (children) {
+        var meta = groupMeta(e);
+        var header = '<div class="tl-ex-group-header">' + esc(e.name || '') +
+          (meta ? ' <span class="tl-ex-group-meta">· ' + esc(meta) + '</span>' : '') +
+          '</div>';
+        return '<div class="tl-ex-group">' + header + children.map(renderSubExercise).join('') + '</div>';
+      }
+      var detail = leafDetail(e);
+      var line = '<div class="tl-ex-sub"><span class="tl-ex-name">' + esc(e.name || '') + '</span>';
+      if (isComplex(e) && e.notes) {
+        if (hasWeight(e)) line += '<span class="tl-ex-detail"> @ ' + e.target_weight_lbs + ' lbs</span>';
+        line += '</div>';
+        line += '<div class="tl-ex-sub" style="padding-left:12px;"><span class="tl-ex-notes" style="font-style:normal;">' + esc(e.notes) + '</span></div>';
+        return line;
+      }
+      if (detail) line += '<span class="tl-ex-detail"> · ' + esc(detail) + '</span>';
+      line += '</div>';
+      if (e.notes) line += '<div class="tl-ex-sub" style="padding-left:12px;"><span class="tl-ex-notes">' + esc(e.notes) + '</span></div>';
+      return line;
+    }
+
     // Full exercise list for future/next/skipped expanded view (Change 2)
+    // Also used by buildDetailHtml to append prescribed work below the session summary.
     function buildFutureDetailHtml(day) {
+      // Filter Scapular at top level only — sub-exercises inside circuits are part of prescribed work.
       var exs = (day.exercises || []).filter(function(e) {
         return (e.name || '').toLowerCase().indexOf('scapular') === -1;
       });
       if (!exs.length) return '<div class="tl-log-detail"><span style="color:#666">—</span></div>';
-      var rows = exs.map(function(e) {
-        var detail = '';
-        if (e.sets != null && e.reps != null && e.target_weight_lbs != null) {
-          detail = e.sets + '×' + e.reps + ' @ ' + e.target_weight_lbs + ' lb';
-        } else if (e.sets != null && e.reps != null) {
-          detail = e.sets + '×' + e.reps;
-        } else if (e.sets != null && e.duration_sec != null) {
-          detail = e.sets + '×' + e.duration_sec + 's';
-        } else if (e.duration_min != null) {
-          detail = e.duration_min + ' min';
-        } else if (e.rounds != null) {
-          detail = e.rounds + ' rounds';
+      return '<div class="tl-log-detail">' + exs.map(renderExercise).join('') + '</div>';
+    }
+
+    // Look up the program day matching a session (week, day). Returns null if not found.
+    function findProgramDay(prog, week, dayNum) {
+      if (!prog || !prog.weeks) return null;
+      for (var i = 0; i < prog.weeks.length; i++) {
+        var w = prog.weeks[i];
+        if (w.week !== week) continue;
+        var ds = w.days || [];
+        for (var j = 0; j < ds.length; j++) {
+          if (ds[j].day === dayNum) return ds[j];
         }
-        var subRows = '';
-        if (e.exercises && e.exercises.length) {
-          subRows = e.exercises
-            .filter(function(se) { return (se.name || '').toLowerCase().indexOf('scapular') === -1; })
-            .map(function(se) {
-              var sd = '';
-              if (se.reps != null && se.target_weight_lbs != null) sd = se.reps + ' reps @ ' + se.target_weight_lbs + ' lb';
-              else if (se.reps != null) sd = se.reps + ' reps';
-              else if (se.duration_sec != null) sd = se.duration_sec + 's';
-              else if (se.duration_min != null) sd = se.duration_min + ' min';
-              return '<div class="sess-ex-row" style="padding-left:12px;">' +
-                '<span class="sess-ex-name" style="color:var(--text-secondary)">' + esc(se.name || '') + '</span>' +
-                (sd ? ': <span style="color:#666">' + esc(sd) + '</span>' : '') + '</div>';
-            }).join('');
-        }
-        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(e.name || '') + '</span>' +
-          (detail ? ': <span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
-          '</div>' + subRows;
-      }).join('');
-      return '<div class="tl-log-detail">' + rows + '</div>';
+      }
+      return null;
     }
 
     // Build HTML

@@ -243,6 +243,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-23 | Training Log redesign: scrollable window, collapsed cards with tap-to-expand, session snapshot on logged rows |
 | 2026-04-26 | Migration to v3.2 workflow: condor-build-spec.md absorbed into Section A, condor-build.md absorbed into Section B |
 | 2026-04-26 | Screen 2 footer row adds "Update token" link — clears `githubToken` and returns to Screen 1, enabling in-app token reset on any device |
+| 2026-04-27 | Training Log expand panels now render the full prescribed exercise tree (sets/reps/weight/duration plus sub-exercises inside circuits, finishers, supersets, rehab, blocks, and movement complexes) on every row state. Logged rows show session summary first, then prescribed tree below |
 
 ---
 
@@ -275,6 +276,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Update Token affordance | Screen 2 footer link to clear `githubToken` and re-route to Screen 1 | ✅ Complete |
 | Cross-Device Sync (index.html) | `init()` resolves `lastCompleted` from GitHub session files before Screen 2 | ✅ Complete |
 | Restructure complexes (program.json) | Barbell + Landmine complexes pulled out of Main Circuits into standalone circuit blocks with own rounds/rest | ✅ Complete |
+| Dashboard — Training Log: Full Exercise Detail | Recursive renderer for all exercise types in expand panel (simple, timed, cardio, run, circuit, finisher, superset, rehab, block, complex). Logged rows show prescribed work below session summary. | ✅ Complete |
 
 ### Spec Deviations
 
@@ -303,6 +305,8 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-23 | Training Log redesigned with scrollable window, tap-to-expand all rows, session snapshots | Per task prompt | Updated in spec |
 | 2026-04-27 | index.html `init()` also runs cross-device sync (was dashboard-only) | Per task prompt — desktop showed stale pointer when mobile saved a session | Spec update needed: Section A "App State" line for `lastCompleted` and "Cross-Device Sync" subsection should drop "(Dashboard)" qualifier — both index.html and dashboard.html now resolve from session files |
 | 2026-04-27 | Complexes restructured from embedded circuit exercises to standalone circuit blocks with dedicated rounds and rest. Chat-directed change. | Burying a complex as one station in a fast circuit rushed it and lost training value | Chat-owned content edit per explicit direction; no Section A spec change needed |
+| 2026-04-27 | Training Log expand renders full prescribed exercise tree on every row state (logged, skipped, NEXT, future). Logged rows show session summary first, then "Prescribed" tree. Sub-exercises inside circuits/finishers/supersets/rehab/blocks render via recursive walker. | Per task prompt — previous expand only showed flat top-level names and never recursed into `exercises_in_circuit` etc. | Spec update needed: Section A "Training Log" should describe expand content as full prescribed tree (currently says "future detail" without specifying depth) |
+| 2026-04-27 | Renderer adds three quality-of-life touches not in prompt's literal examples: `target_weight_lbs: 0` treated as bodyweight (Pull-Ups in supersets — would otherwise show "@ 0 lbs"); `reps_note` (e.g., "per leg") appended inline to sets×reps; "1 round" singular instead of "1 rounds". | Direct readability fixes surfaced during manual trace against `program.json` | No spec change — minor presentation polish within the spirit of the prompt |
 
 ### Discovered Conventions
 
