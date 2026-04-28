@@ -5,7 +5,7 @@
 **Dashboard:** https://joelcoleman.github.io/condor-fitness/dashboard.html
 **Stack:** Vanilla HTML, CSS, JavaScript. No frameworks, no npm, no build tools.
 **Drive location:** NetTerminalGene - Drive > GitHub > condor-fitness
-**Last updated:** April 26, 2026
+**Last updated:** April 27, 2026
 
 ---
 
@@ -244,6 +244,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-26 | Migration to v3.2 workflow: condor-build-spec.md absorbed into Section A, condor-build.md absorbed into Section B |
 | 2026-04-26 | Screen 2 footer row adds "Update token" link — clears `githubToken` and returns to Screen 1, enabling in-app token reset on any device |
 | 2026-04-27 | Training Log expand panels now render the full prescribed exercise tree (sets/reps/weight/duration plus sub-exercises inside circuits, finishers, supersets, rehab, blocks, and movement complexes) on every row state. Logged rows show session summary first, then prescribed tree below |
+| 2026-04-27 | Companion app (Screen 3) cards now show exercise detail inline: notes line below title on Strength/Timed/Run/Cardio; Circuit/Finisher Circuit sub-exercise reference list shows reps/weight/duration with `reps_note`/`weight_note`; complex sub-exercises render their movement sequence as a sub-line; Superset and Rehab sub-exercises render their `notes` below the label |
 
 ---
 
@@ -277,6 +278,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Cross-Device Sync (index.html) | `init()` resolves `lastCompleted` from GitHub session files before Screen 2 | ✅ Complete |
 | Restructure complexes (program.json) | Barbell + Landmine complexes pulled out of Main Circuits into standalone circuit blocks with own rounds/rest | ✅ Complete |
 | Dashboard — Training Log: Full Exercise Detail | Recursive renderer for all exercise types in expand panel (simple, timed, cardio, run, circuit, finisher, superset, rehab, block, complex). Logged rows show prescribed work below session summary. | ✅ Complete |
+| Companion App — Exercise Detail on Cards | Notes line below title on Strength/Timed/Run/Cardio cards. Sub-exercise reps/weight/duration enriched (incl. `reps_note`/`weight_note`) on Circuit/Finisher Circuit reference lists. Complex sub-exercises render movement sequence (`notes`) inline. Superset and Rehab sub-exercises render their `notes` below the label. `decodeHtml` helper added for entity safety. | ✅ Complete |
 
 ### Spec Deviations
 
@@ -307,6 +309,8 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-27 | Complexes restructured from embedded circuit exercises to standalone circuit blocks with dedicated rounds and rest. Chat-directed change. | Burying a complex as one station in a fast circuit rushed it and lost training value | Chat-owned content edit per explicit direction; no Section A spec change needed |
 | 2026-04-27 | Training Log expand renders full prescribed exercise tree on every row state (logged, skipped, NEXT, future). Logged rows show session summary first, then "Prescribed" tree. Sub-exercises inside circuits/finishers/supersets/rehab/blocks render via recursive walker. | Per task prompt — previous expand only showed flat top-level names and never recursed into `exercises_in_circuit` etc. | Spec update needed: Section A "Training Log" should describe expand content as full prescribed tree (currently says "future detail" without specifying depth) |
 | 2026-04-27 | Renderer adds three quality-of-life touches not in prompt's literal examples: `target_weight_lbs: 0` treated as bodyweight (Pull-Ups in supersets — would otherwise show "@ 0 lbs"); `reps_note` (e.g., "per leg") appended inline to sets×reps; "1 round" singular instead of "1 rounds". | Direct readability fixes surfaced during manual trace against `program.json` | No spec change — minor presentation polish within the spirit of the prompt |
+| 2026-04-27 | Companion app card detail uses `·` separator throughout (e.g. "4×15 · 50 lbs") rather than the `@` shown in the prompt's example ("4×15 @ 50 lbs"). | Matches existing app-wide convention (strength card subtitle, dashboard prescribed renderer); single separator is easier to read on phone. | No spec change — presentation choice within scope |
+| 2026-04-27 | Companion app applies the same bodyweight (`target_weight_lbs > 0`) guard inside the Superset card that the dashboard renderer uses — keeps Pull-Ups inside Row+Press Superset from displaying "0 lbs". | Pull-Ups are no longer their own block in some weeks but still appear inside supersets with `target_weight_lbs: 0`. | No spec change — parity with dashboard |
 
 ### Discovered Conventions
 
@@ -319,6 +323,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-21 | Contents API returns base64 content field; download_url is never needed for reading file content via the API. | Session fetch CORS fix |
 | 2026-04-21 | Prior build note ("download_url values on individual files are public, no additional change needed") was incorrect — raw.githubusercontent.com fails CORS preflight without auth from GitHub Pages origin. | CORS unauthenticated fix |
 | 2026-04-21 | Directory listing from Contents API includes both download_url (raw link) and url (Contents API link). The url field is correct for unauthenticated cross-origin fetches. | CORS unauthenticated fix |
+| 2026-04-27 | program.json text fields (notes, calf_gate, reps_note) currently use literal Unicode (e.g. `→`, `×`) — no HTML entities present today. `decodeHtml(str)` added defensively per the Exercise Detail spec so future entity content (`&#10003;`, `&rarr;`) renders as Unicode rather than raw entity strings. Decode-then-`esc` order matters: `esc` escapes `&` first, which would otherwise mangle entities into literal `&amp;#10003;`. | Companion app card detail |
 
 ### Completed Tasks
 

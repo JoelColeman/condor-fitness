@@ -96,6 +96,21 @@
       margin-top: 2px;
     }
 
+    .card-note {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .card-sub-note {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 4px;
+      padding-left: 0;
+      line-height: 1.35;
+    }
+
     .card-meta {
       flex-shrink: 0;
     }
@@ -1286,6 +1301,16 @@
           .replace(/"/g, '&quot;');
       }
 
+      // ── Decode HTML entities (&#10003; &rarr; etc.) ────
+      // Used on program.json text fields before passing through esc()
+      // so entities render as Unicode, not literal "&#10003;" strings.
+      var __decodeEl = document.createElement('textarea');
+      function decodeHtml(str) {
+        if (str == null) return '';
+        __decodeEl.innerHTML = String(str);
+        return __decodeEl.value;
+      }
+
       // ── Elapsed timer ──────────────────────────────────
       function tickElapsed() {
         elapsedSec++;
@@ -1432,13 +1457,17 @@
         var sub = '';
         if (weight > 0) sub += weight + ' lbs' + weightNote + ' \u00b7 ';
         sub += sets + '\u00d7' + reps + repsNote;
-        if (ex.notes) sub += ' \u00b7 ' + ex.notes;
+
+        var noteHtml = ex.notes
+          ? '<div class="card-note">' + esc(decodeHtml(ex.notes)) + '</div>'
+          : '';
 
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
               (sub ? '<div class="card-subtitle">' + esc(sub) + '</div>' : '') +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1498,13 +1527,17 @@
 
         var sub = fmtDur(dur);
         if (weight > 0) sub += ' \u00b7 ' + weight + ' lbs' + weightNote;
-        if (ex.notes) sub += ' \u00b7 ' + ex.notes;
+
+        var noteHtml = ex.notes
+          ? '<div class="card-note">' + esc(decodeHtml(ex.notes)) + '</div>'
+          : '';
 
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
               '<div class="card-subtitle">' + esc(sub) + '</div>' +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1556,11 +1589,16 @@
         var walkSec   = ex.walk_sec || 180;
         var sub = fmtDur(runSec) + ' run / ' + fmtDur(walkSec) + ' walk \u00d7 ' + intervals + ' rounds';
 
+        var noteHtml = ex.notes
+          ? '<div class="card-note">' + esc(decodeHtml(ex.notes)) + '</div>'
+          : '';
+
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
               '<div class="card-subtitle">' + sub + '</div>' +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1618,16 +1656,26 @@
         var refHtml = '<div style="margin-bottom:12px;">';
         exList.forEach(function(e, ei) {
           var detail = '';
-          if (e.reps)         detail = e.reps + ' reps';
+          if (e.reps)              detail = e.reps + ' reps';
           else if (e.duration_sec) detail = fmtDur(e.duration_sec);
           else if (e.distance_m)   detail = e.distance_m + 'm';
-          if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs';
+          if (e.reps_note)         detail += (detail ? ' ' : '') + e.reps_note;
+          if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs' + (e.weight_note ? ' ' + e.weight_note : '');
+
+          // Complex sub-exercise: show movement sequence on its own line.
+          var isComplex = /complex/i.test(e.name);
+          var subNoteHtml = (isComplex && e.notes)
+            ? '<div class="card-sub-note">' + esc(decodeHtml(e.notes)) + '</div>'
+            : '';
+
           refHtml +=
-            '<div style="display:flex;justify-content:space-between;align-items:center;' +
-              'padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
+            '<div style="padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
               'font-size:var(--font-meta);">' +
-              '<span>' + esc(e.name) + '</span>' +
-              (detail ? '<span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
+              '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
+                '<span>' + esc(e.name) + '</span>' +
+                (detail ? '<span style="color:var(--text-secondary);text-align:right;">' + esc(detail) + '</span>' : '') +
+              '</div>' +
+              subNoteHtml +
             '</div>';
         });
         refHtml += '</div>';
@@ -1684,18 +1732,28 @@
           var detail = '';
           if (e.reps)              detail = e.reps + ' reps';
           else if (e.duration_sec) detail = fmtDur(e.duration_sec);
+          else if (e.distance_m)   detail = e.distance_m + 'm';
+          if (e.reps_note)         detail += (detail ? ' ' : '') + e.reps_note;
           if (e.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + e.target_weight_lbs + ' lbs' + (e.weight_note ? ' ' + e.weight_note : '');
+
+          var isComplex = /complex/i.test(e.name);
+          var subNoteHtml = (isComplex && e.notes)
+            ? '<div class="card-sub-note">' + esc(decodeHtml(e.notes)) + '</div>'
+            : '';
+
           refHtml +=
-            '<div style="display:flex;justify-content:space-between;align-items:center;' +
-              'padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
+            '<div style="padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
               'font-size:var(--font-meta);">' +
-              '<span>' + esc(e.name) + '</span>' +
-              (detail ? '<span style="color:var(--text-secondary)">' + esc(detail) + '</span>' : '') +
+              '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
+                '<span>' + esc(e.name) + '</span>' +
+                (detail ? '<span style="color:var(--text-secondary);text-align:right;">' + esc(detail) + '</span>' : '') +
+              '</div>' +
+              subNoteHtml +
             '</div>';
         });
         refHtml += '</div>';
         if (ex.note) {
-          refHtml += '<div style="font-size:var(--font-meta);color:var(--text-secondary);margin-bottom:12px;">' + esc(ex.note) + '</div>';
+          refHtml += '<div style="font-size:var(--font-meta);color:var(--text-secondary);margin-bottom:12px;">' + esc(decodeHtml(ex.note)) + '</div>';
         }
 
         card.innerHTML =
@@ -1826,11 +1884,21 @@
           var lbl = document.createElement('div');
           lbl.className = 'card-section-lbl';
           var seDetail = '';
-          if (se.target_weight_lbs) seDetail += se.target_weight_lbs + ' lbs \u00b7 ';
-          if (se.sets && se.reps) seDetail += se.sets + '\u00d7' + se.reps;
+          // target_weight_lbs of 0 means bodyweight \u2014 don't show "0 lbs".
+          if (se.target_weight_lbs && se.target_weight_lbs > 0) {
+            seDetail += se.target_weight_lbs + ' lbs' + (se.weight_note ? ' ' + se.weight_note : '') + ' \u00b7 ';
+          }
+          if (se.sets && se.reps) seDetail += se.sets + '\u00d7' + se.reps + (se.reps_note ? ' ' + se.reps_note : '');
           else if (se.sets && se.duration_sec) seDetail += se.sets + '\u00d7' + fmtDur(se.duration_sec);
           lbl.textContent = se.name + (seDetail ? ' \u2014 ' + seDetail : '');
           body.appendChild(lbl);
+
+          if (se.notes) {
+            var seNote = document.createElement('div');
+            seNote.className = 'card-sub-note';
+            seNote.textContent = decodeHtml(se.notes);
+            body.appendChild(seNote);
+          }
 
           var sets       = se.sets || 1;
           var hasDur     = !!se.duration_sec;
@@ -1890,13 +1958,17 @@
         var card = document.createElement('div');
         card.className = 'card';
         var dur  = ex.duration_min ? ex.duration_min + ' min' : '';
-        var sub  = [dur, ex.notes].filter(Boolean).join(' \u00b7 ');
+
+        var noteHtml = ex.notes
+          ? '<div class="card-note">' + esc(decodeHtml(ex.notes)) + '</div>'
+          : '';
 
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
-              (sub ? '<div class="card-subtitle">' + esc(sub) + '</div>' : '') +
+              (dur ? '<div class="card-subtitle">' + esc(dur) + '</div>' : '') +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1942,12 +2014,19 @@
           var lbl = document.createElement('div');
           lbl.className = 'card-section-lbl';
           var detail = '';
-          if (se.sets && se.reps) detail = se.sets + '\u00d7' + se.reps;
+          if (se.sets && se.reps) detail = se.sets + '\u00d7' + se.reps + (se.reps_note ? ' ' + se.reps_note : '');
           else if (se.duration_sec) detail = (se.sets ? se.sets + '\u00d7' : '') + fmtDur(se.duration_sec);
           else if (se.duration_min) detail = se.duration_min + ' min';
-          if (se.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + se.target_weight_lbs + ' lbs';
+          if (se.target_weight_lbs) detail += (detail ? ' \u00b7 ' : '') + se.target_weight_lbs + ' lbs' + (se.weight_note ? ' ' + se.weight_note : '');
           lbl.textContent = se.name + (detail ? ' \u2014 ' + detail : '');
           body.appendChild(lbl);
+
+          if (se.notes) {
+            var seNote = document.createElement('div');
+            seNote.className = 'card-sub-note';
+            seNote.textContent = decodeHtml(se.notes);
+            body.appendChild(seNote);
+          }
 
           var row = document.createElement('div');
           row.className = 'set-row'; row.style.gridTemplateColumns = '44px 1fr';
