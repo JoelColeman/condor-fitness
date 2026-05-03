@@ -1,0 +1,46 @@
+{
+  "date": "2026-05-03",
+  "week": 6,
+  "day": 4,
+  "day_type": "circuit",
+  "day_label": "Spartan Circuit — Barbell Complex",
+  "phase": "volume_build",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 54,
+  "exercises": [
+    {
+      "name": "Main Circuit",
+      "sets": [
+        {
+          "rounds_completed": 5,
+          "total_rounds": 5
+        }
+      ]
+    },
+    {
+      "name": "Barbell Complex",
+      "sets": [
+        {
+          "rounds_completed": 4,
+          "total_rounds": 4
+        }
+      ]
+    },
+    {
+      "name": "Grip Finisher",
+      "sets": [
+        {
+          "rounds_completed": 1,
+          "total_rounds": 3
+        }
+      ]
+    }
+  ],
+  "calf_rating": 1,
+  "overall_feel": 3,
+  "skills": {
+    "grip_endurance": 3
+  },
+  "note": ""
+}
