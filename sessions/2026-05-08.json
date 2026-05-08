@@ -1,0 +1,47 @@
+{
+  "date": "2026-05-08",
+  "week": 7,
+  "day": 3,
+  "day_type": "engine",
+  "day_label": "Engine — Longest Yet",
+  "phase": "volume_build",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 32,
+  "exercises": [
+    {
+      "name": "Stair Stepper",
+      "sets": [
+        {
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Circuit",
+      "sets": [
+        {
+          "rounds_completed": 3,
+          "total_rounds": 4
+        }
+      ]
+    },
+    {
+      "name": "Calf Rehab",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 3,
+  "skills": {},
+  "note": ""
+}
