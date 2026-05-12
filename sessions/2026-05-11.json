@@ -1,0 +1,155 @@
+{
+  "date": "2026-05-11",
+  "week": 8,
+  "day": 1,
+  "day_type": "strength",
+  "day_label": "Strength — Condensed",
+  "phase": "race_specific",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 53,
+  "exercises": [
+    {
+      "name": "Back Squat",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 320,
+          "actual_weight_lbs": 320,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 320,
+          "actual_weight_lbs": 320,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 320,
+          "actual_weight_lbs": 320,
+          "target_reps": 4,
+          "actual_reps": 4,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "RDL",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 260,
+          "actual_weight_lbs": 260,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 260,
+          "actual_weight_lbs": 260,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 260,
+          "actual_weight_lbs": 260,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Pull-Ups",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        },
+        {
+          "set_number": 4,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 6,
+          "actual_reps": 6,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Farmer Carry",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_duration_sec": 60,
+          "actual_duration_sec": 60,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_duration_sec": 60,
+          "actual_duration_sec": 60,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_duration_sec": 60,
+          "actual_duration_sec": 60,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Dead Hang",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_duration_sec": 42,
+          "actual_duration_sec": 25,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_duration_sec": 42,
+          "actual_duration_sec": 15,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 3,
+  "skills": {
+    "grip_endurance": 2,
+    "shoulder_stability": 3
+  },
+  "note": ""
+}
