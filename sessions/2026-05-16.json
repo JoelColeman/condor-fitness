@@ -1,0 +1,106 @@
+{
+  "date": "2026-05-16",
+  "week": 8,
+  "day": 2,
+  "day_type": "run",
+  "day_label": "Run + Obstacles Under Fatigue",
+  "phase": "race_specific",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 0,
+  "exercises": [
+    {
+      "name": "Scapular Pull-Ups",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 10,
+          "actual_reps": 10,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Continuous Run",
+      "sets": [
+        {
+          "interval": 1,
+          "completed": true
+        },
+        {
+          "interval": 2,
+          "completed": true
+        },
+        {
+          "interval": 3,
+          "completed": true
+        },
+        {
+          "interval": 4,
+          "completed": true
+        },
+        {
+          "interval": 5,
+          "completed": true
+        },
+        {
+          "interval": 6,
+          "completed": true
+        },
+        {
+          "interval": 7,
+          "completed": true
+        },
+        {
+          "interval": 8,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Obstacle Block",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": null,
+          "actual_reps": null,
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 4,
+  "skills": {
+    "shoulder_stability": 3
+  },
+  "note": ""
+}
