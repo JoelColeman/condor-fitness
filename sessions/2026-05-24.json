@@ -1,0 +1,26 @@
+{
+  "date": "2026-05-24",
+  "week": 9,
+  "day": 4,
+  "day_type": "circuit",
+  "day_label": "Final Race Simulation — 5 Rounds",
+  "phase": "race_specific",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 66,
+  "exercises": [
+    {
+      "name": "Race Sim Circuit",
+      "sets": [
+        {
+          "rounds_completed": 5,
+          "total_rounds": 5
+        }
+      ]
+    }
+  ],
+  "calf_rating": 2,
+  "overall_feel": 4,
+  "skills": {},
+  "note": ""
+}
