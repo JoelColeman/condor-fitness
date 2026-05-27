@@ -1,106 +1,68 @@
 {
   "date": "2026-05-27",
   "week": 10,
-  "day": 1,
-  "day_type": "strength",
-  "day_label": "Strength — Taper",
+  "day": 2,
+  "day_type": "run",
+  "day_label": "Run — Easy",
   "phase": "taper",
   "bonus": false,
   "alternate_used": null,
-  "duration_min": 0,
+  "duration_min": 8,
   "exercises": [
     {
-      "name": "Back Squat",
+      "name": "Continuous Run",
       "sets": [
         {
-          "set_number": 1,
-          "target_weight_lbs": 310,
-          "actual_weight_lbs": 310,
-          "target_reps": 3,
-          "actual_reps": 3,
+          "interval": 1,
           "completed": true
         },
         {
-          "set_number": 2,
-          "target_weight_lbs": 310,
-          "actual_weight_lbs": 310,
-          "target_reps": 3,
-          "actual_reps": 3,
+          "interval": 2,
           "completed": true
         },
         {
-          "set_number": 3,
-          "target_weight_lbs": 310,
-          "actual_weight_lbs": 310,
-          "target_reps": 3,
-          "actual_reps": 3,
+          "interval": 3,
+          "completed": true
+        },
+        {
+          "interval": 4,
+          "completed": true
+        },
+        {
+          "interval": 5,
+          "completed": true
+        },
+        {
+          "interval": 6,
+          "completed": true
+        },
+        {
+          "interval": 7,
+          "completed": true
+        },
+        {
+          "interval": 8,
           "completed": true
         }
       ]
     },
     {
-      "name": "RDL",
-      "sets": [
-        {
-          "set_number": 1,
-          "target_weight_lbs": 245,
-          "actual_weight_lbs": 245,
-          "target_reps": 5,
-          "actual_reps": 5,
-          "completed": true
-        },
-        {
-          "set_number": 2,
-          "target_weight_lbs": 245,
-          "actual_weight_lbs": 245,
-          "target_reps": 5,
-          "actual_reps": 5,
-          "completed": true
-        }
-      ]
-    },
-    {
-      "name": "Pull-Ups",
+      "name": "Monkey Bars",
       "sets": [
         {
           "set_number": 1,
           "target_weight_lbs": null,
           "actual_weight_lbs": null,
-          "target_reps": 5,
-          "actual_reps": 5,
+          "target_reps": null,
+          "actual_reps": null,
           "completed": true
         },
         {
           "set_number": 2,
           "target_weight_lbs": null,
           "actual_weight_lbs": null,
-          "target_reps": 5,
-          "actual_reps": 5,
-          "completed": true
-        },
-        {
-          "set_number": 3,
-          "target_weight_lbs": null,
-          "actual_weight_lbs": null,
-          "target_reps": 5,
-          "actual_reps": 5,
-          "completed": true
-        }
-      ]
-    },
-    {
-      "name": "Farmer Carry",
-      "sets": [
-        {
-          "set_number": 1,
-          "target_duration_sec": 60,
-          "actual_duration_sec": 60,
-          "completed": true
-        },
-        {
-          "set_number": 2,
-          "target_duration_sec": 60,
-          "actual_duration_sec": 60,
+          "target_reps": null,
+          "actual_reps": null,
           "completed": true
         }
       ]
@@ -110,24 +72,23 @@
       "sets": [
         {
           "set_number": 1,
-          "target_duration_sec": 30,
-          "actual_duration_sec": 30,
+          "target_duration_sec": 25,
+          "actual_duration_sec": 25,
           "completed": true
         },
         {
           "set_number": 2,
-          "target_duration_sec": 30,
-          "actual_duration_sec": 30,
+          "target_duration_sec": 25,
+          "actual_duration_sec": 25,
           "completed": true
         }
       ]
     }
   ],
   "calf_rating": 2,
-  "overall_feel": 3,
+  "overall_feel": 5,
   "skills": {
-    "grip_endurance": 3,
-    "shoulder_stability": 3
+    "monkey_bars": 4
   },
   "note": ""
 }
