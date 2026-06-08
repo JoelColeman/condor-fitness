@@ -283,6 +283,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Summer Program Rollout — Task 2 (Program-aware matching) | Shared `inCurrentProgram(session, prog)` helper (in index.html init scope and dashboard.html). Filters cross-device sync (`resolveLastCompleted` now takes `prog`) and the Training Log `sessionMap` to sessions whose `phase` is in the current program. Old Spartan sessions no longer bleed into summer weeks. Skill Trends left cross-block. | ✅ Complete |
 | Summer Program Rollout — Task 3 (Phase-timeline gate) | Timeline expand mini-phase pills now gated on `item.show_phase_timeline` (data-driven) instead of `item.id === 'operation_spartan'`. | ✅ Complete |
 | Summer Program Rollout — Task 4 (Training Log entity bug) | Session set values in the Training Log expand panel now run through `decodeHtml()` before `esc()` (`esc(decodeHtml(sets))`), so bodyweight `&#10003;` renders as ✓ instead of raw entity text. | ✅ Complete |
+| Dashboard — Anchor/week from meta | dashboard.html week/phase math is now data-driven. New `getAnchorDate()` reads `prog.meta.anchor_date` (fallback to the `ANCHOR_DATE` const). `getCurrentWeekNum()` derives the week from that anchor + `prog.meta.start_week` (fallback 3) instead of the hardcoded `3 + floor(days/7)`. `getActivePhase()` fallback now uses `getAnchorDate()`. `prog` promoted to a module-level `var` (assigned in `init()`) so the top-level helpers can read it. Operation Recomp (anchor 2026-06-08, start_week 1) now resolves week 1 / Rebuild on race-block start instead of falling back to the last phase. | ✅ Complete |
 
 ### Spec Deviations
 
@@ -318,6 +319,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-06-08 | New `programKey` localStorage key + program-change reset in index.html `init()`. On a new program, `lastCompleted` resets to `{week: start_week, day: 0}` and caches are dropped. | Operation Recomp v1 replaced Spartan v3; devices carried Spartan pointers (e.g. week 7) that pointed into wrong summer weeks. | Spec update needed: Section A "App State" should document the new `programKey` key and the program-change reset behavior |
 | 2026-06-08 | Session→program-day matching is now program-aware via `inCurrentProgram(session, prog)` (phase id ∈ `meta.phases`). Applied to `resolveLastCompleted` (both files) and Training Log `sessionMap`. Skill Trends intentionally left cross-block. | Spartan and Recomp both use weeks numbered with overlap (Recomp 1–8); without filtering, old week-7 Spartan sessions appeared on summer week-7 rows. | Spec update needed: "Cross-Device Sync" and "Session Count Logic" should note in-program filtering |
 | 2026-06-08 | Training Log expand `&#10003;` entity bug fixed: set values are decoded before `esc()`. | Bodyweight sets stored/emitted a `&#10003;` entity that `esc()` then double-escaped to literal text. | No spec change — bug fix |
+| 2026-06-08 | dashboard.html week/phase math made data-driven: `getAnchorDate()` + `getCurrentWeekNum()` now derive from `prog.meta.anchor_date` and `prog.meta.start_week`; `getActivePhase()` fallback uses `getAnchorDate()`. `ANCHOR_DATE` kept as fallback default. `prog` promoted to a module-level `var`. | `ANCHOR_DATE` (2026-03-22) + `3 + floor(days/7)` were Spartan-anchored; under Operation Recomp `getCurrentWeekNum()` returned ~14, so `getActivePhase()` fell through to the last phase (Consolidate) while the athlete was in week 1 (Rebuild). | No spec change — restores intended behavior under a data-driven anchor; closes the logged Open Task |
 
 ### Discovered Conventions
 
@@ -344,7 +346,6 @@ See Build Status table above for the complete task list.
 - [ ] Scapular pull-ups reorder: position immediately before pull-ups/monkey bars as movement-specific warmup (program.json change, Chat-owned)
 - [ ] Dashboard training log: better session summary with more detail on collapsed rows
 - [ ] Confirm GitHub PAT has contents:write scope on first Code session on any new device
-- [ ] dashboard.html date math is Spartan-anchored: `ANCHOR_DATE` (2026-03-22) and `getCurrentWeekNum()`'s `3 + floor(days/7)` base assume a week-3 start. For Operation Recomp (week 1, anchor 2026-06-08) the active-phase highlight and week-pill classification are wrong. Should derive week/anchor from `prog.meta.anchor_date` + `meta.start_week` instead of hardcoded constants.
 
 ### Deferred
 
