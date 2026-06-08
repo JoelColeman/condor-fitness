@@ -1275,6 +1275,7 @@
 
       // ── Expose init to global scope ────────────────────
       window.initPreworkout = initPreworkout;
+      window.getProgram = getProgram;
 
     })();
 
@@ -2612,14 +2613,47 @@
     // ═══════════════════════════════════════════════════════
     // Init — route to Screen 1 or Screen 2
     // ═══════════════════════════════════════════════════════
+
+    // True when a session belongs to the currently loaded program
+    // (its phase id is one of the current program's phases). Old programs'
+    // session files must not bleed into the new program's state.
+    function inCurrentProgram(session, prog) {
+      if (!session || !prog || !prog.meta || !prog.meta.phases) return false;
+      return prog.meta.phases.some(function(p) { return p.id === session.phase; });
+    }
+
     async function init() {
       var token = localStorage.getItem('githubToken');
       if (!token) {
         showScreen('setup');
         return;
       }
+
+      // Load program first — needed for the program-change reset (Task 1) and
+      // the program-aware cross-device sync filter (Task 2) below.
+      var prog = null;
+      try { prog = await window.getProgram(); } catch (e) { /* initPreworkout will surface fetch errors */ }
+
+      // ── Program-change reset ───────────────────────────
+      // A device may carry a lastCompleted pointer from a previous program.
+      // Detect a program change by comparing a programKey and, on change,
+      // reset the pointer and drop caches so old state can't carry over.
+      // Must run BEFORE the cross-device sync so the reset isn't immediately
+      // overwritten by stale session history.
+      if (prog && prog.meta) {
+        var programKey = prog.meta.program + ' v' + prog.meta.version;
+        if (localStorage.getItem('programKey') !== programKey) {
+          localStorage.setItem('lastCompleted', JSON.stringify({ week: prog.meta.start_week, day: 0 }));
+          localStorage.removeItem('programCache');
+          localStorage.removeItem('sessionsCache');
+          localStorage.removeItem('workoutProgress');
+          localStorage.setItem('programKey', programKey);
+        }
+      }
+
       // Cross-device sync — resolve lastCompleted from session files before Screen 2.
       // Mirrors dashboard.html's resolveLastCompleted; inlined to avoid global naming collision.
+      // Only in-program, non-bonus sessions are considered (Task 2).
       try {
         var repo = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
         var headers = { 'Authorization': 'token ' + token };
@@ -2636,7 +2670,8 @@
             } catch(e) { return null; }
           }));
           var sessionLc = null;
-          sessions.filter(Boolean).filter(function(s) { return !s.bonus && s.week && s.day; })
+          sessions.filter(Boolean)
+            .filter(function(s) { return !s.bonus && s.week && s.day && inCurrentProgram(s, prog); })
             .forEach(function(s) {
               if (!sessionLc ||
                   s.week > sessionLc.week ||

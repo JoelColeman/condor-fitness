@@ -844,7 +844,7 @@
 
     function showDetail(item) {
       if (!item) { detailEl.className = 'hidden'; detailEl.innerHTML = ''; return; }
-      var miniTimeline = (item.id === 'operation_spartan') ? buildMiniPhaseTimeline() : '';
+      var miniTimeline = item.show_phase_timeline ? buildMiniPhaseTimeline() : '';
       var hlItems = (item.highlights || []).map(function(h){ return '<li>' + esc(h) + '</li>'; }).join('');
       var resultHtml = item.result ? '<div class="tl-detail-result">Result: <strong>' + esc(item.result) + '</strong></div>' : '';
       var dateHtml   = (item.type === 'milestone' && item.date) ? '<div class="tl-detail-meta">' + esc(item.date) + '</div>' : '';
@@ -918,16 +918,26 @@
     return s;
   }
 
+  // ---- Program membership ----
+  // True when a session belongs to the currently loaded program (its phase id
+  // is one of the program's phases). Keeps old programs' session files from
+  // bleeding into the current program's week/day state.
+  function inCurrentProgram(session, prog) {
+    if (!session || !prog || !prog.meta || !prog.meta.phases) return false;
+    return prog.meta.phases.some(function(p) { return p.id === session.phase; });
+  }
+
   // ---- Cross-device lastCompleted resolver ----
   // Returns the lastCompleted value that reflects the most progress,
   // comparing localStorage (current device) against session files (all devices).
-  function resolveLastCompleted(sessions) {
+  // Only in-program, non-bonus sessions are considered.
+  function resolveLastCompleted(sessions, prog) {
     var localLc = null;
     try { localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
 
-    // Find the furthest non-bonus session by week/day from session files
+    // Find the furthest in-program non-bonus session by week/day from session files
     var sessionLc = null;
-    (sessions || []).filter(function(s) { return !s.bonus && s.week && s.day; })
+    (sessions || []).filter(function(s) { return !s.bonus && s.week && s.day && inCurrentProgram(s, prog); })
       .forEach(function(s) {
         if (!sessionLc ||
             s.week > sessionLc.week ||
@@ -974,12 +984,14 @@
       if (nextUpcomingWeek !== null) break;
     }
 
-    // Session map: "week-day" → session (non-bonus only)
+    // Session map: "week-day" → session (in-program, non-bonus only)
     // Built unconditionally — sessions are fetched from the public GitHub API
     // even on devices without a token, so cross-device logged rows render correctly.
+    // Filtered to the current program so old programs' sessions (e.g. Spartan
+    // week 7) don't appear on a same-numbered week of the new program.
     var sessionMap = {};
     sessions.forEach(function(s) {
-      if (!s.bonus) sessionMap[s.week + '-' + s.day] = s;
+      if (!s.bonus && inCurrentProgram(s, prog)) sessionMap[s.week + '-' + s.day] = s;
     });
 
     // Phase pill class
@@ -1017,7 +1029,7 @@
           return st.completed ? '&#10003;' : '&#9675;';
         }).join(', ');
         return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(ex.name || '') + '</span>' +
-          (sets ? ': ' + esc(sets) : '') + '</div>';
+          (sets ? ': ' + esc(decodeHtml(sets)) : '') + '</div>';
       }).join('');
       var sk = s.skills || {};
       var skillParts = [];
@@ -1382,7 +1394,7 @@
     var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
     // Cross-device sync: resolve lastCompleted from localStorage + session files
-    var resolvedLc = resolveLastCompleted(sessions);
+    var resolvedLc = resolveLastCompleted(sessions, prog);
     // Fix 3: if session files show more progress than this device's localStorage,
     // update localStorage now so the next page load is correct even if sessionsCache
     // hasn't expired yet (stale cache won't mask the furthest completed day).
