@@ -517,7 +517,8 @@
   'use strict';
 
   const RAW_BASE = 'https://raw.githubusercontent.com/JoelColeman/condor-fitness/main';
-  const ANCHOR_DATE = new Date('2026-03-22T00:00:00');
+  const ANCHOR_DATE = new Date('2026-03-22T00:00:00');  // fallback default; real anchor comes from prog.meta.anchor_date
+  var prog = null;  // module-level: loaded in init(), read by getAnchorDate/getCurrentWeekNum/getActivePhase
   const TTL_24H = 24 * 3600 * 1000;
   const TTL_1H  = 3600 * 1000;
 
@@ -582,18 +583,26 @@
   }
 
   // ---- Phase / week helpers ----
+  function getAnchorDate() {
+    return (prog && prog.meta && prog.meta.anchor_date)
+      ? new Date(prog.meta.anchor_date + 'T00:00:00')
+      : ANCHOR_DATE;
+  }
   function getCurrentWeekNum() {
     var today = new Date();
     today.setHours(0,0,0,0);
-    var days = Math.floor((today.getTime() - ANCHOR_DATE.getTime()) / 86400000);
-    return 3 + Math.floor(days / 7);
+    var anchor = getAnchorDate();
+    var startWeek = (prog && prog.meta && typeof prog.meta.start_week === 'number')
+      ? prog.meta.start_week : 3;
+    var days = Math.floor((today.getTime() - anchor.getTime()) / 86400000);
+    return startWeek + Math.floor(days / 7);
   }
   function getActivePhase(phases) {
     var wk = getCurrentWeekNum();
     var found = phases.find(function(p) { return p.weeks.indexOf(wk) !== -1; });
     if (!found) {
       var today = new Date();
-      return today < ANCHOR_DATE ? phases[0] : phases[phases.length - 1];
+      return today < getAnchorDate() ? phases[0] : phases[phases.length - 1];
     }
     return found;
   }
@@ -1391,7 +1400,7 @@
       fetchSessions(token, repo)  // Always attempt — public repo readable without auth
     ]);
     var athlete  = results[0].status === 'fulfilled' ? results[0].value : null;
-    var prog     = results[1].status === 'fulfilled' ? results[1].value : null;
+    prog         = results[1].status === 'fulfilled' ? results[1].value : null;
     var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
     // Cross-device sync: resolve lastCompleted from localStorage + session files
     var resolvedLc = resolveLastCompleted(sessions, prog);
