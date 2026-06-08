@@ -2,8 +2,8 @@
   "meta": {
     "athlete": "Joel Coleman",
     "height_in": 77,
-    "last_updated": "2026-03-22",
-    "version": "1.0"
+    "last_updated": "2026-06-08",
+    "version": "1.1"
   },
 
   "body_weight": [
@@ -11,12 +11,13 @@
     { "date": "2025-04-28", "weight_lbs": 243, "note": "End of Legends of Mass Block A — ~6-7 lbs lean mass gained" },
     { "date": "2025-09-14", "weight_lbs": 260, "note": "Samson Challenge race day" },
     { "date": "2025-12-15", "weight_lbs": 262, "note": "End of Mass Ascension" },
-    { "date": "2026-03-22", "weight_lbs": 265, "note": "Start of Operation Spartan — current" }
+    { "date": "2026-03-22", "weight_lbs": 265, "note": "Start of Operation Spartan" },
+    { "date": "2026-06-08", "weight_lbs": 260, "note": "Start of Operation Recomp — post-Spartan, approx" }
   ],
 
   "body_weight_goals": [
-    { "target_lbs": 250, "by": "2026-05-31", "note": "Race day target — Spartan Super 10K" },
-    { "target_lbs": 255, "by": "2026-12-31", "note": "End of year — lean and conditioned" }
+    { "target_lbs": 250, "by": "2026-08-02", "note": "Sub-250 — summer recomp active goal" },
+    { "target_lbs": 255, "by": "2026-12-31", "note": "End of year — lean and conditioned after fall block" }
   ],
 
   "prs": [
@@ -86,6 +87,15 @@
       "note": "3x8/leg confirmed 3/22/2026."
     },
     {
+      "lift": "Incline DB Press",
+      "type": "working_set",
+      "weight_lbs": 67,
+      "weight_note": "per dumbbell",
+      "date_approx": "2026-05-04",
+      "block": "Operation Spartan",
+      "note": "67x10 logged. Summer's primary press — dumbbell-only block, no barbell bench until fall."
+    },
+    {
       "lift": "Pull-Ups",
       "type": "weighted",
       "weight_lbs": 33,
@@ -124,13 +134,15 @@
 
   "skill_status": {
     "calf_health": {
-      "current": "stable",
-      "notes": "Right calf strain. Triggered by load stacking (run + heavy calf raises + explosive work same day). Not triggered by running alone. Currently at 1:3 walk/run ratio as of Week 3.",
+      "current": "mostly_good",
+      "notes": "Right calf strain, managed through the Spartan block and the race itself without re-injury. Post-race it is mostly good — no longer the primary constraint. Summer block ramps explosive/impact work (jumps, running) gradually, gated on the calf reading; conditioning stays calf-safe first.",
       "history": [
         { "date": "2025-07", "status": "aggravated", "note": "Burpees and explosive work caused flare. Stopped running." },
         { "date": "2025-09-14", "status": "managed", "note": "Samson Challenge completed." },
         { "date": "2025-12", "status": "rehab", "note": "The Pit — full calf rehab protocol, no running." },
-        { "date": "2026-03", "status": "stable", "note": "Run reintroduction started. 1:4 walk/run wks 1-2, 1:3 wk 3." }
+        { "date": "2026-03", "status": "stable", "note": "Run reintroduction started. 1:4 walk/run wks 1-2, 1:3 wk 3." },
+        { "date": "2026-05-31", "status": "held", "note": "Spartan Super 10K raced and finished healthy — no re-injury." },
+        { "date": "2026-06-08", "status": "mostly_good", "note": "Summer recomp start. Impact/explosive work ramps gradually." }
       ]
     },
     "shoulder_stability": {
@@ -277,9 +289,9 @@
       ],
       "prs_set": [],
       "start_weight_lbs": 265,
-      "end_weight_lbs": null,
+      "end_weight_lbs": 260,
       "target_end_weight_lbs": 250,
-      "status": "active"
+      "status": "complete"
     },
     {
       "id": "spartan_super_10k",
@@ -289,28 +301,33 @@
       "date": "2026-05-31",
       "color": "gold",
       "summary": "Spartan Super obstacle race. ~10K distance, 20+ obstacles. Elevation: ~6,000 ft. Obstacles include rope climbs, monkey bars, sandbag carries, barbed wire crawls, spear throw, and more.",
-      "result": "upcoming",
+      "result": "Finished healthy",
       "weight_lbs": null,
       "target_weight_lbs": 250
     },
     {
-      "id": "summer_2026",
+      "id": "operation_recomp",
       "type": "block",
-      "label": "Ritchson Phase",
-      "subtitle": "Sarcoplasmic Hypertrophy",
-      "start": "2026-06-01",
-      "end": "2026-09-30",
+      "label": "Operation Recomp",
+      "subtitle": "Summer Recomp — Strength + Lean",
+      "start": "2026-06-08",
+      "end": "2026-08-02",
       "color": "green",
-      "summary": "Use the strength base built over the past year to produce visible muscle development. Higher reps (8-15), more volume, shorter rest, full-body days. Inspired by Alan Ritchson's training approach. Keep aerobic base from Spartan — running as a weekly habit.",
+      "summary": "8-week performance-preserving recomposition. Full-body 4x/week, undulating. Barbell squat + heavy RDL are the protected overload anchors; all pressing is dumbbell (no barbell bench until fall — loose shoulders). 3 of 4 days carry a real anaerobic conditioning block (fat-loss engine first). Explosive/impact work ramps gradually as the calf confirms. Goal: under 250 lbs while holding strength and building density.",
       "highlights": [
-        "Leverage 365 lb squat base for high-rep work",
-        "Target: visible definition from existing muscle",
-        "Full-body sessions, multiple compound movements",
-        "Maintain running 1-2x per week for conditioning",
-        "Sarcoplasmic focus — muscle fullness and size"
+        "Full-body 4x/week: squat-heavy, heavy-hinge, squat-volume, unilateral/athletic",
+        "Barbell squat + heavy RDL anchors; dumbbell-only pressing",
+        "Loads locked to logged actuals (squat 335, RDL 275, BSS 135, Incline DB Press 67)",
+        "Fat-loss engine conditioning, Orange-Theory HR-up feel",
+        "Calf mostly good post-race — impact work ramps gradually",
+        "Not a PR block — fat loss, muscle density, athleticism"
       ],
       "prs_set": [],
-      "status": "planned"
+      "start_weight_lbs": 260,
+      "end_weight_lbs": null,
+      "target_end_weight_lbs": 250,
+      "status": "active",
+      "show_phase_timeline": true
     },
     {
       "id": "fall_2026",
