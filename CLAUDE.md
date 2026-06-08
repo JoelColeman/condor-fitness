@@ -279,6 +279,10 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | Restructure complexes (program.json) | Barbell + Landmine complexes pulled out of Main Circuits into standalone circuit blocks with own rounds/rest | ✅ Complete |
 | Dashboard — Training Log: Full Exercise Detail | Recursive renderer for all exercise types in expand panel (simple, timed, cardio, run, circuit, finisher, superset, rehab, block, complex). Logged rows show prescribed work below session summary. | ✅ Complete |
 | Companion App — Exercise Detail on Cards | Notes line below title on Strength/Timed/Run/Cardio cards. Sub-exercise reps/weight/duration enriched (incl. `reps_note`/`weight_note`) on Circuit/Finisher Circuit reference lists. Complex sub-exercises render movement sequence (`notes`) inline. Superset and Rehab sub-exercises render their `notes` below the label. `decodeHtml` helper added for entity safety. | ✅ Complete |
+| Summer Program Rollout — Task 1 (Program-change reset) | `init()` (index.html) loads program first, computes `programKey = meta.program + ' v' + meta.version`, and on mismatch with stored `programKey` resets `lastCompleted` to `{week: start_week, day: 0}`, drops `programCache`/`sessionsCache`/`workoutProgress`, stores new key. Runs before cross-device sync. `getProgram` exposed via `window.getProgram`. | ✅ Complete |
+| Summer Program Rollout — Task 2 (Program-aware matching) | Shared `inCurrentProgram(session, prog)` helper (in index.html init scope and dashboard.html). Filters cross-device sync (`resolveLastCompleted` now takes `prog`) and the Training Log `sessionMap` to sessions whose `phase` is in the current program. Old Spartan sessions no longer bleed into summer weeks. Skill Trends left cross-block. | ✅ Complete |
+| Summer Program Rollout — Task 3 (Phase-timeline gate) | Timeline expand mini-phase pills now gated on `item.show_phase_timeline` (data-driven) instead of `item.id === 'operation_spartan'`. | ✅ Complete |
+| Summer Program Rollout — Task 4 (Training Log entity bug) | Session set values in the Training Log expand panel now run through `decodeHtml()` before `esc()` (`esc(decodeHtml(sets))`), so bodyweight `&#10003;` renders as ✓ instead of raw entity text. | ✅ Complete |
 
 ### Spec Deviations
 
@@ -311,6 +315,9 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-27 | Renderer adds three quality-of-life touches not in prompt's literal examples: `target_weight_lbs: 0` treated as bodyweight (Pull-Ups in supersets — would otherwise show "@ 0 lbs"); `reps_note` (e.g., "per leg") appended inline to sets×reps; "1 round" singular instead of "1 rounds". | Direct readability fixes surfaced during manual trace against `program.json` | No spec change — minor presentation polish within the spirit of the prompt |
 | 2026-04-27 | Companion app card detail uses `·` separator throughout (e.g. "4×15 · 50 lbs") rather than the `@` shown in the prompt's example ("4×15 @ 50 lbs"). | Matches existing app-wide convention (strength card subtitle, dashboard prescribed renderer); single separator is easier to read on phone. | No spec change — presentation choice within scope |
 | 2026-04-27 | Companion app applies the same bodyweight (`target_weight_lbs > 0`) guard inside the Superset card that the dashboard renderer uses — keeps Pull-Ups inside Row+Press Superset from displaying "0 lbs". | Pull-Ups are no longer their own block in some weeks but still appear inside supersets with `target_weight_lbs: 0`. | No spec change — parity with dashboard |
+| 2026-06-08 | New `programKey` localStorage key + program-change reset in index.html `init()`. On a new program, `lastCompleted` resets to `{week: start_week, day: 0}` and caches are dropped. | Operation Recomp v1 replaced Spartan v3; devices carried Spartan pointers (e.g. week 7) that pointed into wrong summer weeks. | Spec update needed: Section A "App State" should document the new `programKey` key and the program-change reset behavior |
+| 2026-06-08 | Session→program-day matching is now program-aware via `inCurrentProgram(session, prog)` (phase id ∈ `meta.phases`). Applied to `resolveLastCompleted` (both files) and Training Log `sessionMap`. Skill Trends intentionally left cross-block. | Spartan and Recomp both use weeks numbered with overlap (Recomp 1–8); without filtering, old week-7 Spartan sessions appeared on summer week-7 rows. | Spec update needed: "Cross-Device Sync" and "Session Count Logic" should note in-program filtering |
+| 2026-06-08 | Training Log expand `&#10003;` entity bug fixed: set values are decoded before `esc()`. | Bodyweight sets stored/emitted a `&#10003;` entity that `esc()` then double-escaped to literal text. | No spec change — bug fix |
 
 ### Discovered Conventions
 
@@ -324,6 +331,7 @@ Dashboard only: Editing data, nutrition tracking, adding sessions manually, push
 | 2026-04-21 | Prior build note ("download_url values on individual files are public, no additional change needed") was incorrect — raw.githubusercontent.com fails CORS preflight without auth from GitHub Pages origin. | CORS unauthenticated fix |
 | 2026-04-21 | Directory listing from Contents API includes both download_url (raw link) and url (Contents API link). The url field is correct for unauthenticated cross-origin fetches. | CORS unauthenticated fix |
 | 2026-04-27 | program.json text fields (notes, calf_gate, reps_note) currently use literal Unicode (e.g. `→`, `×`) — no HTML entities present today. `decodeHtml(str)` added defensively per the Exercise Detail spec so future entity content (`&#10003;`, `&rarr;`) renders as Unicode rather than raw entity strings. Decode-then-`esc` order matters: `esc` escapes `&` first, which would otherwise mangle entities into literal `&amp;#10003;`. | Companion app card detail |
+| 2026-06-08 | dashboard.html `ANCHOR_DATE` (2026-03-22) and `getCurrentWeekNum()` (`return 3 + floor(days/7)`) are hardcoded to Spartan's start (week 3, Mar 22). For Operation Recomp (starts week 1, 2026-06-08) these are stale: `getCurrentWeekNum()` returns >8 and `getActivePhase()` falls back to the last phase, so the mini-phase timeline highlights the wrong active phase and Training Log week pills mis-class. Out of scope for the summer-rollout tasks (not in the 4-task prompt) — pills still render, so deferred and flagged below. | Summer program rollout |
 
 ### Completed Tasks
 
@@ -336,6 +344,7 @@ See Build Status table above for the complete task list.
 - [ ] Scapular pull-ups reorder: position immediately before pull-ups/monkey bars as movement-specific warmup (program.json change, Chat-owned)
 - [ ] Dashboard training log: better session summary with more detail on collapsed rows
 - [ ] Confirm GitHub PAT has contents:write scope on first Code session on any new device
+- [ ] dashboard.html date math is Spartan-anchored: `ANCHOR_DATE` (2026-03-22) and `getCurrentWeekNum()`'s `3 + floor(days/7)` base assume a week-3 start. For Operation Recomp (week 1, anchor 2026-06-08) the active-phase highlight and week-pill classification are wrong. Should derive week/anchor from `prog.meta.anchor_date` + `meta.start_week` instead of hardcoded constants.
 
 ### Deferred
 
