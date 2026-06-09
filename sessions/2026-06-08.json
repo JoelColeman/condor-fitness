@@ -1,0 +1,205 @@
+{
+  "date": "2026-06-08",
+  "week": 1,
+  "day": 1,
+  "day_type": "strength",
+  "day_label": "Squat — Full Body",
+  "phase": "rebuild",
+  "bonus": false,
+  "alternate_used": null,
+  "duration_min": 40,
+  "exercises": [
+    {
+      "name": "Scapular Pull-Ups",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": null,
+          "actual_weight_lbs": null,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Back Squat",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 275,
+          "actual_weight_lbs": 275,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 275,
+          "actual_weight_lbs": 275,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 275,
+          "actual_weight_lbs": 275,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        },
+        {
+          "set_number": 4,
+          "target_weight_lbs": 275,
+          "actual_weight_lbs": 275,
+          "target_reps": 5,
+          "actual_reps": 5,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "DB Bench Press",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 70,
+          "actual_weight_lbs": 70,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 70,
+          "actual_weight_lbs": 70,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 70,
+          "actual_weight_lbs": 70,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        },
+        {
+          "set_number": 4,
+          "target_weight_lbs": 70,
+          "actual_weight_lbs": 70,
+          "target_reps": 8,
+          "actual_reps": 8,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "RDL + Pull-Ups Superset",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true,
+          "actual_weight_lbs": 205,
+          "actual_reps": 8
+        },
+        {
+          "set_number": 2,
+          "completed": true,
+          "actual_weight_lbs": 205,
+          "actual_reps": 8
+        },
+        {
+          "set_number": 3,
+          "completed": true,
+          "actual_weight_lbs": 205,
+          "actual_reps": 8
+        },
+        {
+          "set_number": 4,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 5,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        },
+        {
+          "set_number": 6,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 5
+        }
+      ]
+    },
+    {
+      "name": "DB Shoulder Press + Row Superset",
+      "sets": [
+        {
+          "set_number": 1,
+          "completed": true,
+          "actual_weight_lbs": 45,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 2,
+          "completed": true,
+          "actual_weight_lbs": 45,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 3,
+          "completed": true,
+          "actual_weight_lbs": 45,
+          "actual_reps": 10
+        },
+        {
+          "set_number": 4,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 12
+        },
+        {
+          "set_number": 5,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 12
+        },
+        {
+          "set_number": 6,
+          "completed": true,
+          "actual_weight_lbs": 60,
+          "actual_reps": 12
+        }
+      ]
+    },
+    {
+      "name": "Conditioning Engine",
+      "sets": [
+        {
+          "rounds_completed": 3,
+          "total_rounds": 3
+        }
+      ]
+    }
+  ],
+  "calf_rating": 1,
+  "overall_feel": 4,
+  "skills": {
+    "shoulder_stability": 4
+  },
+  "note": ""
+}
