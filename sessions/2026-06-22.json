@@ -1,13 +1,13 @@
 {
   "date": "2026-06-22",
   "week": 2,
-  "day": 2,
+  "day": 3,
   "day_type": "strength",
-  "day_label": "Heavy Hinge — Full Body",
+  "day_label": "Squat Volume — Full Body",
   "phase": "rebuild",
   "bonus": false,
   "alternate_used": null,
-  "duration_min": 1,
+  "duration_min": 51,
   "exercises": [
     {
       "name": "Scapular Pull-Ups",
@@ -31,73 +31,28 @@
       ]
     },
     {
-      "name": "Romanian Deadlift",
+      "name": "Front Squat",
       "sets": [
         {
           "set_number": 1,
-          "target_weight_lbs": 255,
-          "actual_weight_lbs": 255,
-          "target_reps": 6,
-          "actual_reps": 6,
-          "completed": true
-        },
-        {
-          "set_number": 2,
-          "target_weight_lbs": 255,
-          "actual_weight_lbs": 255,
-          "target_reps": 6,
-          "actual_reps": 6,
-          "completed": true
-        },
-        {
-          "set_number": 3,
-          "target_weight_lbs": 255,
-          "actual_weight_lbs": 255,
-          "target_reps": 6,
-          "actual_reps": 6,
-          "completed": true
-        },
-        {
-          "set_number": 4,
-          "target_weight_lbs": 255,
-          "actual_weight_lbs": 255,
-          "target_reps": 6,
-          "actual_reps": 6,
-          "completed": true
-        }
-      ]
-    },
-    {
-      "name": "DB Incline Press",
-      "sets": [
-        {
-          "set_number": 1,
-          "target_weight_lbs": 67.5,
-          "actual_weight_lbs": 70,
+          "target_weight_lbs": 165,
+          "actual_weight_lbs": 165,
           "target_reps": 8,
           "actual_reps": 8,
           "completed": true
         },
         {
           "set_number": 2,
-          "target_weight_lbs": 67.5,
-          "actual_weight_lbs": 70,
+          "target_weight_lbs": 165,
+          "actual_weight_lbs": 165,
           "target_reps": 8,
           "actual_reps": 8,
           "completed": true
         },
         {
           "set_number": 3,
-          "target_weight_lbs": 67.5,
-          "actual_weight_lbs": 70,
-          "target_reps": 8,
-          "actual_reps": 8,
-          "completed": true
-        },
-        {
-          "set_number": 4,
-          "target_weight_lbs": 67.5,
-          "actual_weight_lbs": 70,
+          "target_weight_lbs": 165,
+          "actual_weight_lbs": 165,
           "target_reps": 8,
           "actual_reps": 8,
           "completed": true
@@ -105,98 +60,126 @@
       ]
     },
     {
-      "name": "DB Shoulder Press + Pulldown Superset",
+      "name": "DB Flat Press",
+      "sets": [
+        {
+          "set_number": 1,
+          "target_weight_lbs": 57.5,
+          "actual_weight_lbs": 60,
+          "target_reps": 12,
+          "actual_reps": 12,
+          "completed": true
+        },
+        {
+          "set_number": 2,
+          "target_weight_lbs": 57.5,
+          "actual_weight_lbs": 65,
+          "target_reps": 12,
+          "actual_reps": 12,
+          "completed": true
+        },
+        {
+          "set_number": 3,
+          "target_weight_lbs": 57.5,
+          "actual_weight_lbs": 65,
+          "target_reps": 12,
+          "actual_reps": 12,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "name": "Arnold Press + Pull-Ups Superset",
       "sets": [
         {
           "set_number": 1,
           "completed": true,
-          "actual_weight_lbs": 45,
-          "actual_reps": 10
-        },
-        {
-          "set_number": 2,
-          "completed": true,
-          "actual_weight_lbs": 45,
-          "actual_reps": 10
-        },
-        {
-          "set_number": 3,
-          "completed": true,
-          "actual_weight_lbs": 45,
-          "actual_reps": 10
-        },
-        {
-          "set_number": 4,
-          "completed": true,
-          "actual_weight_lbs": 120,
+          "actual_weight_lbs": 35,
           "actual_reps": 12
+        },
+        {
+          "set_number": 2,
+          "completed": true,
+          "actual_weight_lbs": 35,
+          "actual_reps": 12
+        },
+        {
+          "set_number": 3,
+          "completed": true,
+          "actual_weight_lbs": 35,
+          "actual_reps": 12
+        },
+        {
+          "set_number": 4,
+          "completed": true,
+          "actual_weight_lbs": null,
+          "actual_reps": 6
         },
         {
           "set_number": 5,
           "completed": true,
-          "actual_weight_lbs": 128,
-          "actual_reps": 12
+          "actual_weight_lbs": null,
+          "actual_reps": 6
         },
         {
           "set_number": 6,
           "completed": true,
-          "actual_weight_lbs": 120,
-          "actual_reps": 12
+          "actual_weight_lbs": null,
+          "actual_reps": 6
         }
       ]
     },
     {
-      "name": "Lunge + Row Superset",
+      "name": "DB RDL + Lateral Raise Superset",
       "sets": [
         {
           "set_number": 1,
-          "completed": false,
-          "actual_weight_lbs": 42.5,
-          "actual_reps": 10
+          "completed": true,
+          "actual_weight_lbs": 70,
+          "actual_reps": 12
         },
         {
           "set_number": 2,
-          "completed": false,
-          "actual_weight_lbs": 42.5,
-          "actual_reps": 10
+          "completed": true,
+          "actual_weight_lbs": 70,
+          "actual_reps": 12
         },
         {
           "set_number": 3,
-          "completed": false,
-          "actual_weight_lbs": 42.5,
-          "actual_reps": 10
+          "completed": true,
+          "actual_weight_lbs": 70,
+          "actual_reps": 12
         },
         {
           "set_number": 4,
-          "completed": false,
-          "actual_weight_lbs": 62.5,
-          "actual_reps": 12
+          "completed": true,
+          "actual_weight_lbs": 15,
+          "actual_reps": 15
         },
         {
           "set_number": 5,
-          "completed": false,
-          "actual_weight_lbs": 62.5,
-          "actual_reps": 12
+          "completed": true,
+          "actual_weight_lbs": 15,
+          "actual_reps": 15
         },
         {
           "set_number": 6,
-          "completed": false,
-          "actual_weight_lbs": 62.5,
-          "actual_reps": 12
+          "completed": true,
+          "actual_weight_lbs": 15,
+          "actual_reps": 15
         }
       ]
     },
     {
-      "name": "Conditioning Engine",
+      "name": "Steady Engine",
       "sets": [
         {
-          "rounds_completed": 2,
-          "total_rounds": 3
+          "completed": true
         }
       ]
     }
   ],
-  "calf_rating": 1,
+  "calf_rating": 2,
   "overall_feel": 4,
   "skills": {
     "shoulder_stability": 4
