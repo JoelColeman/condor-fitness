@@ -87,53 +87,6 @@
     .section-error { color: #e63946; font-size: 13px; padding: 4px 0; }
     .hidden { display: none !important; }
 
-    /* Section 1: Race Countdown */
-    .countdown-banner {
-      text-align: center;
-      padding: 14px 16px 12px;
-    }
-    .countdown-grid {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .countdown-cell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 52px;
-    }
-    .countdown-num {
-      font-size: 52px;
-      font-weight: 900;
-      line-height: 1;
-      color: var(--accent);
-      font-variant-numeric: tabular-nums;
-    }
-    .countdown-lbl {
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-top: 3px;
-    }
-    .countdown-phase {
-      margin-top: 8px;
-      font-size: 14px;
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-    .countdown-phase-dates {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-    .countdown-complete {
-      font-size: 36px;
-      text-align: center;
-      padding: 30px 16px;
-    }
 
     /* Section 2: Phase Progress */
     .phase-pills {
@@ -470,12 +423,7 @@
 
 <main class="dash-main hidden" id="dash-main">
 
-  <!-- 1: Race Countdown -->
-  <div class="dash-section" id="sec-countdown">
-    <div id="countdown-content"></div>
-  </div>
-
-  <!-- 2: Training Timeline -->
+  <!-- 1: Training Timeline -->
   <div class="dash-section">
     <h2 class="section-heading">Training Timeline</h2>
     <div class="section-body">
@@ -512,146 +460,61 @@
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="app-shared.js"></script>
 <script>
 (function() {
   'use strict';
 
-  const RAW_BASE = 'https://raw.githubusercontent.com/JoelColeman/condor-fitness/main';
-  const ANCHOR_DATE = new Date('2026-03-22T00:00:00');  // fallback default; real anchor comes from prog.meta.anchor_date
-  var prog = null;  // module-level: loaded in init(), read by getAnchorDate/getCurrentWeekNum/getActivePhase
-  const TTL_24H = 24 * 3600 * 1000;
-  const TTL_1H  = 3600 * 1000;
+  // Module-level: loaded in init(), read by getAnchorDate/getCurrentWeekNum/getActivePhase
+  var prog = null;
 
-  // ---- Utilities ----
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function decodeHtml(str) {
-    if (!str) return '';
-    var el = document.createElement('textarea');
-    el.innerHTML = str;
-    return el.value;
-  }
+  // ---- Utilities (shared implementations in app-shared.js) ----
+  var esc        = Condor.esc;
+  var decodeHtml = Condor.decodeHtml;
+
   function sectionError(el, msg) {
     el.innerHTML = '<div class="section-error">&#9888; ' + esc(msg) + '</div>';
   }
-  function noTokenHtml() {
-    return '<div class="section-notice">Open the workout companion app first to connect your GitHub account.</div>';
-  }
 
-  // ---- Cache helpers ----
-  function readCache(key) {
-    try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; }
-  }
-  function writeCache(key, data) {
-    try { localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data: data })); } catch(e) {}
-  }
-  async function fetchWithCache(key, url, ttl) {
-    var cached = readCache(key);
-    if (cached && Date.now() - cached.timestamp < ttl) return cached.data;
-    var resp = await fetch(url);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status + ': ' + url);
-    var data = await resp.json();
-    writeCache(key, data);
-    return data;
-  }
-  async function fetchSessions(token, repo) {
-    var cached = readCache('sessionsCache');
-    if (cached && Date.now() - cached.timestamp < TTL_1H) return cached.data;
-    var headers = token ? { 'Authorization': 'token ' + token } : {};
-    var listUrl = 'https://api.github.com/repos/' + repo + '/contents/sessions/';
-    var listResp = await fetch(listUrl, { headers: headers });
-    if (listResp.status === 404) { writeCache('sessionsCache', []); return []; }
-    if (!listResp.ok) throw new Error('Sessions list HTTP ' + listResp.status);
-    var files = await listResp.json();
-    var jsonFiles = files.filter(function(f) { return f.name.endsWith('.json'); });
-    var sessions = await Promise.all(jsonFiles.map(async function(f) {
-      try {
-        var r = await fetch(f.url, { headers: headers });
-        if (!r.ok) return null;
-        var meta = await r.json();
-        return JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
-      } catch(e) { return null; }
-    }));
-    var data = sessions.filter(Boolean).sort(function(a,b) {
-      return (a.date||'').localeCompare(b.date||'');
-    });
-    writeCache('sessionsCache', data);
-    return data;
-  }
+  // No cache layer: every section is fed by a single Supabase query per table,
+  // fired in parallel on load. The old localStorage TTL caches (athleteCache /
+  // programCache / sessionsCache) existed to dodge GitHub's rate limits and the
+  // list-then-fetch-each-file round trips; neither problem exists now, and the
+  // caches were a recurring source of stale cross-device state.
 
   // ---- Phase / week helpers ----
+  // Anchor comes from the program data. There is no hardcoded fallback — a
+  // missing anchor_date should surface as a visible problem, not silently
+  // resolve to a previous program's start date.
   function getAnchorDate() {
     return (prog && prog.meta && prog.meta.anchor_date)
       ? new Date(prog.meta.anchor_date + 'T00:00:00')
-      : ANCHOR_DATE;
+      : null;
   }
   function getCurrentWeekNum() {
+    var anchor = getAnchorDate();
+    if (!anchor) return null;
     var today = new Date();
     today.setHours(0,0,0,0);
-    var anchor = getAnchorDate();
     var startWeek = (prog && prog.meta && typeof prog.meta.start_week === 'number')
-      ? prog.meta.start_week : 3;
+      ? prog.meta.start_week : 1;
     var days = Math.floor((today.getTime() - anchor.getTime()) / 86400000);
     return startWeek + Math.floor(days / 7);
   }
   function getActivePhase(phases) {
+    if (!phases || !phases.length) return null;
     var wk = getCurrentWeekNum();
+    if (wk == null) return phases[0];
     var found = phases.find(function(p) { return p.weeks.indexOf(wk) !== -1; });
     if (!found) {
-      var today = new Date();
-      return today < getAnchorDate() ? phases[0] : phases[phases.length - 1];
+      var anchor = getAnchorDate();
+      return (anchor && new Date() < anchor) ? phases[0] : phases[phases.length - 1];
     }
     return found;
   }
 
-  // ---- Section 1: Race Countdown ----
-  var countdownInterval = null;
-  function renderCountdown(prog, athlete) {
-    var el = document.getElementById('countdown-content');
-    var RACE = new Date('2026-05-31T00:00:00').getTime();
-    function pad(n) { return n < 10 ? '0' + n : '' + n; }
-    var phaseHtml = '';
-    if (athlete && athlete.timeline) {
-      var upcoming = athlete.timeline.find(function(item) {
-        return item.type === 'milestone' && item.result === 'upcoming';
-      });
-      if (upcoming) {
-        var d = new Date(upcoming.date + 'T00:00:00');
-        var dateStr = (d.getMonth() + 1) + '.' + pad(d.getDate()) + '.' + String(d.getFullYear()).slice(2);
-        phaseHtml = '<div class="countdown-phase-dates">' +
-          esc(upcoming.label) + ' \u2014 ' + esc(upcoming.subtitle) + ' \u2014 ' + esc(dateStr) +
-          '</div>';
-      }
-    }
-    function updateCountdown() {
-      var remaining = RACE - Date.now();
-      if (remaining <= 0) {
-        clearInterval(countdownInterval);
-        el.innerHTML = '<div class="countdown-complete">Race Complete &#127942;</div>';
-        return;
-      }
-      var totalSec = Math.floor(remaining / 1000);
-      var days = Math.floor(totalSec / 86400);
-      var hrs  = Math.floor((totalSec % 86400) / 3600);
-      var min  = Math.floor((totalSec % 3600) / 60);
-      var sec  = totalSec % 60;
-      el.innerHTML = '<div class="countdown-banner">' +
-        '<div class="countdown-grid">' +
-          '<div class="countdown-cell"><div class="countdown-num">' + days + '</div><div class="countdown-lbl">Days</div></div>' +
-          '<div class="countdown-cell"><div class="countdown-num">' + pad(hrs) + '</div><div class="countdown-lbl">Hrs</div></div>' +
-          '<div class="countdown-cell"><div class="countdown-num">' + pad(min) + '</div><div class="countdown-lbl">Min</div></div>' +
-          '<div class="countdown-cell"><div class="countdown-num">' + pad(sec) + '</div><div class="countdown-lbl">Sec</div></div>' +
-        '</div>' +
-        phaseHtml + '</div>';
-    }
-    updateCountdown();
-    countdownInterval = setInterval(updateCountdown, 1000);
-  }
-
-  // ---- Section 3: Body Weight SVG ----
+  // ---- Section 2: Body Weight SVG ----
   function renderBodyWeight(athlete) {
     var el = document.getElementById('sec-bw-chart');
     if (!athlete || !athlete.body_weight || !athlete.body_weight.length) {
@@ -665,15 +528,25 @@
     var weights = data.map(function(d){return d.weight_lbs;});
     var minW = Math.min.apply(null, weights.concat([250])) - 12;
     var maxW = Math.max.apply(null, weights.concat([250])) + 12;
-    var xMin = new Date('2025-04-01').getTime();
-    var xMax = new Date('2026-07-01').getTime();
+
+    // X range derives from the data, padded to whole months on each end, so the
+    // chart follows the athlete's history instead of a hardcoded race window.
+    var times = data.map(function(d){ return new Date(d.date + 'T00:00:00').getTime(); });
+    var firstD = new Date(Math.min.apply(null, times));
+    var lastD  = new Date(Math.max.apply(null, times));
+    var xStart = new Date(firstD.getFullYear(), firstD.getMonth(), 1);
+    var xEnd   = new Date(lastD.getFullYear(), lastD.getMonth() + 1, 1);
+    var xMin = xStart.getTime();
+    var xMax = xEnd.getTime();
+    // Single data point (or all points in one month) would divide by zero.
+    if (xMax <= xMin) xMax = xMin + 86400000 * 30;
+
     function xS(t) { return ML + (t - xMin) / (xMax - xMin) * PW; }
     function yS(w) { return MT + PH - (w - minW) / (maxW - minW) * PH; }
-    var raceX = xS(new Date('2026-05-31').getTime());
     var targetY = yS(250);
     // Month grid
     var monthTicks = '';
-    var d = new Date('2025-04-01');
+    var d = new Date(xStart.getTime());
     while (d.getTime() <= xMax) {
       var x = xS(d.getTime()).toFixed(1);
       var lbl = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
@@ -703,8 +576,6 @@
     return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;min-width:480px;display:block;" xmlns="http://www.w3.org/2000/svg">' +
       '<rect x="' + ML + '" y="' + MT + '" width="' + PW + '" height="' + PH + '" fill="#111" rx="2"/>' +
       monthTicks + yGrid +
-      '<line x1="' + raceX.toFixed(1) + '" y1="' + MT + '" x2="' + raceX.toFixed(1) + '" y2="' + (MT+PH) + '" stroke="#e63946" stroke-dasharray="6,4" stroke-width="1.5"/>' +
-      '<text x="' + (raceX+4).toFixed(1) + '" y="' + (MT+14) + '" font-size="10" fill="#e63946">Race Day</text>' +
       '<line x1="' + ML + '" y1="' + targetY.toFixed(1) + '" x2="' + (ML+PW) + '" y2="' + targetY.toFixed(1) + '" stroke="#2a9d5c" stroke-dasharray="6,4" stroke-width="1.5"/>' +
       '<text x="' + (ML+PW-4) + '" y="' + (targetY-5).toFixed(1) + '" text-anchor="end" font-size="10" fill="#2a9d5c">250 lbs target</text>' +
       '<polyline points="' + linePts + '" fill="none" stroke="#2E5FA3" stroke-width="2" stroke-linejoin="round"/>' +
@@ -767,11 +638,8 @@
     if (diff > 0) return invertedGood ? { arrow: '&#9650;', cls: 'trend-up-bad' } : { arrow: '&#9650;', cls: 'trend-up-good' };
     return invertedGood ? { arrow: '&#9660;', cls: 'trend-down-good' } : { arrow: '&#9660;', cls: 'trend-down-bad' };
   }
-  function renderSkillTrends(sessions, hasToken) {
+  function renderSkillTrends(sessions) {
     var el = document.getElementById('sec-skills-body');
-    // Show no-token notice only when we have neither a local token nor fetched sessions.
-    // A token on another device can still produce session files we can read publicly.
-    if (!hasToken && !sessions.length) { el.innerHTML = noTokenHtml(); return; }
     var calfVals     = sessions.filter(function(s){ return s.calf_rating != null; }).map(function(s){ return s.calf_rating; });
     var gripVals     = sessions.filter(function(s){ return s.skills && s.skills.grip_endurance != null; }).map(function(s){ return s.skills.grip_endurance; });
     var shoulderVals = sessions.filter(function(s){ return s.skills && s.skills.shoulder_stability != null; }).map(function(s){ return s.skills.shoulder_stability; });
@@ -801,7 +669,7 @@
     return offset;
   }
 
-  function renderTimeline(athlete, prog, sessions, hasToken, resolvedLc) {
+  function renderTimeline(athlete, prog, sessions, resolvedLc) {
     var scrollEl  = document.getElementById('sec-timeline-scroll');
     var detailEl  = document.getElementById('sec-timeline-detail');
     if (!athlete || !athlete.timeline) { sectionError(scrollEl, 'Timeline data unavailable.'); return; }
@@ -927,45 +795,14 @@
     return s;
   }
 
-  // ---- Program membership ----
+  // ---- Program membership (shared — see app-shared.js) ----
   // True when a session belongs to the currently loaded program (its phase id
-  // is one of the program's phases). Keeps old programs' session files from
+  // is one of the program's phases). Keeps an old program's sessions from
   // bleeding into the current program's week/day state.
-  function inCurrentProgram(session, prog) {
-    if (!session || !prog || !prog.meta || !prog.meta.phases) return false;
-    return prog.meta.phases.some(function(p) { return p.id === session.phase; });
-  }
-
-  // ---- Cross-device lastCompleted resolver ----
-  // Returns the lastCompleted value that reflects the most progress,
-  // comparing localStorage (current device) against session files (all devices).
-  // Only in-program, non-bonus sessions are considered.
-  function resolveLastCompleted(sessions, prog) {
-    var localLc = null;
-    try { localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
-
-    // Find the furthest in-program non-bonus session by week/day from session files
-    var sessionLc = null;
-    (sessions || []).filter(function(s) { return !s.bonus && s.week && s.day && inCurrentProgram(s, prog); })
-      .forEach(function(s) {
-        if (!sessionLc ||
-            s.week > sessionLc.week ||
-            (s.week === sessionLc.week && s.day > sessionLc.day)) {
-          sessionLc = { week: s.week, day: s.day };
-        }
-      });
-
-    // Return whichever source indicates more progress
-    if (!localLc && !sessionLc) return null;
-    if (!localLc) return sessionLc;
-    if (!sessionLc) return localLc;
-    if (sessionLc.week > localLc.week) return sessionLc;
-    if (sessionLc.week === localLc.week && sessionLc.day > localLc.day) return sessionLc;
-    return localLc;
-  }
+  var inCurrentProgram = Condor.inCurrentProgram;
 
   // ---- Section 6: Training Log ----
-  function renderTrainingLog(prog, sessions, hasToken, resolvedLc) {
+  function renderTrainingLog(prog, sessions, resolvedLc) {
     var el = document.getElementById('sec-sessions-body');
     if (!prog || !prog.weeks) { sectionError(el, 'Program data unavailable.'); return; }
 
@@ -1035,9 +872,16 @@
           if (st.actual_weight_lbs != null && st.actual_reps != null) return st.actual_weight_lbs + 'x' + st.actual_reps;
           if (st.actual_duration_sec != null) return st.actual_duration_sec + 's';
           if (st.rounds_completed != null) return st.rounds_completed + '/' + (st.total_rounds || '?') + ' rounds';
-          return st.completed ? '&#10003;' : '&#9675;';
+          // Literal Unicode, not '&#10003;'. Building an HTML entity here meant
+          // the value had to survive a decode-then-escape round trip to render;
+          // get the order wrong anywhere downstream and the user sees the raw
+          // entity text. Emitting the character directly removes the hazard.
+          return st.completed ? '✓' : '○';
         }).join(', ');
-        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(ex.name || '') + '</span>' +
+        // decodeHtml BEFORE esc: session values may still carry entities from
+        // older rows, and esc() escapes '&' first, which would otherwise turn
+        // '&#10003;' into the literal string '&amp;#10003;'.
+        return '<div class="sess-ex-row"><span class="sess-ex-name">' + esc(decodeHtml(ex.name || '')) + '</span>' +
           (sets ? ': ' + esc(decodeHtml(sets)) : '') + '</div>';
       }).join('');
       var sk = s.skills || {};
@@ -1293,9 +1137,6 @@
     var html = '';
     var nextRowId = null, lastRowId = null, rowIdx = 0;
 
-    if (!hasToken && !sessions.length) {
-      html += '<div class="section-notice" style="margin-bottom:10px;">Connect the workout companion app to see logged sessions.</div>';
-    }
 
     weeks.forEach(function(w) {
       html += '<div class="tl-week-header">' +
@@ -1391,38 +1232,62 @@
 
   // ---- Main Init ----
   async function init() {
-    var token   = localStorage.getItem('githubToken');
-    var repo    = localStorage.getItem('githubRepo') || 'JoelColeman/condor-fitness';
-    var hasToken = !!token;
-    var results = await Promise.allSettled([
-      fetchWithCache('athleteCache', RAW_BASE + '/athlete.json', TTL_24H),
-      fetchWithCache('programCache', RAW_BASE + '/program.json', TTL_24H),
-      fetchSessions(token, repo)  // Always attempt — public repo readable without auth
-    ]);
-    var athlete  = results[0].status === 'fulfilled' ? results[0].value : null;
-    prog         = results[1].status === 'fulfilled' ? results[1].value : null;
-    var sessions = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
-    // Cross-device sync: resolve lastCompleted from localStorage + session files
-    var resolvedLc = resolveLastCompleted(sessions, prog);
-    // Fix 3: if session files show more progress than this device's localStorage,
-    // update localStorage now so the next page load is correct even if sessionsCache
-    // hasn't expired yet (stale cache won't mask the furthest completed day).
-    if (resolvedLc) {
-      var _localLc = null;
-      try { _localLc = JSON.parse(localStorage.getItem('lastCompleted')); } catch(e) {}
-      var _needsUpdate = !_localLc ||
-        resolvedLc.week > _localLc.week ||
-        (resolvedLc.week === _localLc.week && resolvedLc.day > _localLc.day);
-      if (_needsUpdate) {
-        localStorage.setItem('lastCompleted', JSON.stringify(resolvedLc));
-      }
+    // ---- Auth guard ----
+    // supabase-js consumes the OAuth fragment on load, so a returning redirect
+    // already has a session by the time this resolves.
+    var session = null;
+    try { session = await Condor.getSession(); } catch(e) {}
+
+    if (!session) {
+      document.getElementById('dash-loading').innerHTML =
+        '<div class="section-notice">Sign in to view your dashboard. ' +
+        '<button id="dash-signin" style="background:none;border:none;color:#e63946;font:inherit;cursor:pointer;text-decoration:underline;padding:0;">Sign in with Google</button>' +
+        '</div>';
+      document.getElementById('dash-signin').addEventListener('click', function() {
+        Condor.signInWithGoogle();
+      });
+      return;
     }
-    renderCountdown(prog, athlete);
-    renderTimeline(athlete, prog, sessions, hasToken, resolvedLc);
+
+    // One query per table, all in parallel. Failures stay isolated so a single
+    // bad table doesn't blank the whole page.
+    var results = await Promise.allSettled([
+      Condor.fetchAthleteProfile(),
+      Condor.fetchActiveProgram(),
+      Condor.fetchSessions(),
+      Condor.fetchBodyWeight(),
+      Condor.fetchPRs()
+    ]);
+    var athlete    = results[0].status === 'fulfilled' ? results[0].value : null;
+    prog           = results[1].status === 'fulfilled' ? results[1].value : null;
+    var sessions   = results[2].status === 'fulfilled' ? (results[2].value || []) : [];
+    var bodyWeight = results[3].status === 'fulfilled' ? (results[3].value || []) : [];
+    var prs        = results[4].status === 'fulfilled' ? (results[4].value || []) : [];
+
+    results.forEach(function(r, i) {
+      if (r.status === 'rejected') console.error('Dashboard fetch ' + i + ' failed:', r.reason);
+    });
+
+    // body_weight and prs have their own tables now; athlete_profile.data still
+    // carries the full athlete.json (timeline, pr_goals, skill_status). Prefer
+    // the dedicated tables where they exist and fall back to the jsonb copy.
+    if (athlete) {
+      if (bodyWeight.length) athlete.body_weight = bodyWeight;
+      if (prs.length)        athlete.prs         = prs;
+    }
+
+    // Every device reads the same rows now, so this is just reconciling the
+    // local pointer mirror against the authoritative session history.
+    var resolvedLc = Condor.resolveLastCompleted(sessions, prog);
+    if (resolvedLc) {
+      localStorage.setItem('lastCompleted', JSON.stringify(resolvedLc));
+    }
+
+    renderTimeline(athlete, prog, sessions, resolvedLc);
     renderBodyWeight(athlete);
     renderPRBoard(athlete);
-    renderSkillTrends(sessions, hasToken);
-    var nextEl = renderTrainingLog(prog, sessions, hasToken, resolvedLc);
+    renderSkillTrends(sessions);
+    var nextEl = renderTrainingLog(prog, sessions, resolvedLc);
     document.getElementById('dash-loading').style.display = 'none';
     if (nextEl) {
       setTimeout(function() {

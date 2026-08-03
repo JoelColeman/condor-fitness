@@ -5,8 +5,7 @@
   "description": "Local-only tooling for the Condor Fitness Supabase migration. The app itself is vanilla HTML/CSS/JS and has no build step.",
   "type": "module",
   "scripts": {
-    "backfill": "tsx scripts/backfill-supabase.ts",
-    "backfill:apply": "tsx scripts/backfill-supabase.ts --apply"
+    "backfill": "tsx scripts/backfill-supabase.ts"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.45.0",

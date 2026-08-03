@@ -1,15 +1,22 @@
 /**
  * Backfill Supabase from the JSON files in the working tree.
  *
+ * ⚠️  OBSOLETE AND DESTRUCTIVE AS OF THE PHASE 2a CUTOVER (2026-08-03).
+ *
+ * Supabase is now the source of truth. The app writes sessions straight to
+ * Postgres; `sessions/` in this repo is a frozen historical snapshot that stops
+ * at the cutover and is never appended to again.
+ *
+ * This script still does a full wipe-and-replace of every target table from
+ * those frozen files. Running it now DESTROYS every session logged since the
+ * cutover, because those rows exist in no file. It is kept only as a record of
+ * how the original migration was performed.
+ *
  *   npx tsx scripts/backfill-supabase.ts            # dry run — prints planned counts
- *   npx tsx scripts/backfill-supabase.ts --apply    # writes to Supabase
+ *   npx tsx scripts/backfill-supabase.ts --apply --i-understand-this-wipes-supabase
  *
- * Requires supabase/migrations/001_initial_schema.sql to have been run first.
- * Reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from .env.local.
- *
- * --apply deletes every row in the target tables before inserting. In Phase 1
- * these tables are owned entirely by this backfill, so a full replace is what
- * makes the script idempotent.
+ * Reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from .env.local. The service
+ * role key bypasses RLS, so this ignores the owner-only policies in 002.
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
@@ -20,6 +27,7 @@ import dotenv from 'dotenv';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const APPLY = process.argv.includes('--apply');
+const ACK = process.argv.includes('--i-understand-this-wipes-supabase');
 const CHUNK = 500;
 
 dotenv.config({ path: join(REPO_ROOT, '.env.local') });
@@ -221,9 +229,27 @@ async function main() {
   }
 
   if (!APPLY) {
-    console.log('\nDry run — nothing written. Re-run with --apply to write.\n');
+    console.log('\nDry run — nothing written.\n');
+    console.log('This script is obsolete post-cutover: Supabase is the source of truth');
+    console.log('and sessions/ is frozen. Applying would DELETE every session logged');
+    console.log('since the cutover. If that is genuinely what you want, re-run with:');
+    console.log('  --apply --i-understand-this-wipes-supabase\n');
     return;
   }
+
+  if (!ACK) {
+    console.error('\n⚠️  REFUSING TO RUN.\n');
+    console.error('--apply performs a full wipe-and-replace of all six tables from the');
+    console.error('frozen sessions/ files. Supabase has been the source of truth since');
+    console.error('the Phase 2a cutover, so any session logged by the app since then');
+    console.error('exists ONLY in the database and would be permanently destroyed.\n');
+    console.error('If you have confirmed that is what you want, add:');
+    console.error('  --i-understand-this-wipes-supabase\n');
+    process.exit(1);
+  }
+
+  console.warn('\n⚠️  Wiping and replacing all Supabase tables from frozen sessions/ files.');
+  console.warn('   Any session logged since the cutover is about to be destroyed.\n');
 
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
