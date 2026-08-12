@@ -502,16 +502,38 @@
     var days = Math.floor((today.getTime() - anchor.getTime()) / 86400000);
     return startWeek + Math.floor(days / 7);
   }
-  function getActivePhase(phases) {
+  // Week the athlete is actually training in: the week of the next scheduled
+  // workout after the pointer, or the pointer's own week once the program is
+  // complete. Null when there is no pointer yet.
+  function getProgressWeekNum(lc) {
+    if (!lc || !prog || !prog.weeks) return null;
+    // A pointer outside this program's weeks is stale (e.g. a leftover Spartan
+    // week 10 in localStorage). Treat it as no pointer: nextWorkout() would
+    // otherwise read it as "week not found" and restart at week 1, making a
+    // finished program look like it was back in its first phase.
+    var known = prog.weeks.some(function(w) { return w.week === lc.week; });
+    if (!known) return null;
+    var nw = Condor.nextWorkout(prog, lc);
+    return nw ? nw.weekData.week : lc.week;
+  }
+
+  // Active phase follows PROGRESS, not the calendar. The block has no fixed end
+  // date and missed days push real training behind the anchor-derived week; when
+  // that week runs past the last phase, date math would report a phase the
+  // athlete has not reached and count zero sessions in it. Date math is only a
+  // fallback for when nothing has been logged yet.
+  function getActivePhase(phases, lc) {
     if (!phases || !phases.length) return null;
-    var wk = getCurrentWeekNum();
+    var wk = getProgressWeekNum(lc);
+    if (wk == null) wk = getCurrentWeekNum();
     if (wk == null) return phases[0];
     var found = phases.find(function(p) { return p.weeks.indexOf(wk) !== -1; });
-    if (!found) {
-      var anchor = getAnchorDate();
-      return (anchor && new Date() < anchor) ? phases[0] : phases[phases.length - 1];
-    }
-    return found;
+    if (found) return found;
+    // Week sits outside the program: clamp to the near end rather than
+    // defaulting to the last phase in both directions.
+    var first = phases[0];
+    var minWk = Math.min.apply(null, first.weeks);
+    return wk < minWk ? first : phases[phases.length - 1];
   }
 
   // ---- Section 2: Body Weight SVG ----
@@ -683,7 +705,8 @@
     function buildMiniPhaseTimeline() {
       if (!prog || !prog.meta || !prog.meta.phases) return '';
       var phases = prog.meta.phases;
-      var active = getActivePhase(phases);
+      var lc = resolvedLc !== undefined ? resolvedLc : null;
+      var active = getActivePhase(phases, lc);
       var activeIdx = active ? phases.indexOf(active) : -1;
       var pillsArr = phases.map(function(p, i) {
         var cls;
@@ -699,7 +722,6 @@
       var row = pillsArr.join('<span class="mini-phase-arrow">&rarr;</span>');
       var activeId = active ? active.id : '';
       var fileCount = (sessions || []).filter(function(s) { return s.phase === activeId && !s.bonus; }).length;
-      var lc = resolvedLc !== undefined ? resolvedLc : null;
       var pointerCount = 0;
       if (lc && active) {
         (prog.weeks || []).forEach(function(w) {
@@ -808,10 +830,14 @@
 
     var weeks  = prog.weeks;
     var phases = (prog.meta && prog.meta.phases) || [];
-    var currentWeek = getCurrentWeekNum();
 
     // Derive next upcoming day from resolvedLc (cross-device: max of localStorage + session files)
     var lc = resolvedLc !== undefined ? resolvedLc : null;
+
+    // Progress-derived, so phase pills agree with the rows below them rather
+    // than with the calendar.
+    var currentWeek = getProgressWeekNum(lc);
+    if (currentWeek == null) currentWeek = getCurrentWeekNum();
 
     var nextUpcomingWeek = null, nextUpcomingDay = null;
     for (var wi = 0; wi < weeks.length; wi++) {
@@ -842,7 +868,7 @@
 
     // Phase pill class
     function pillCls(phaseId) {
-      var activePhase = getActivePhase(phases);
+      var activePhase = getActivePhase(phases, lc);
       if (activePhase && phaseId === activePhase.id) return 'tl-phase-pill-sm active';
       var phObj = phases.find(function(p) { return p.id === phaseId; });
       if (!phObj) return 'tl-phase-pill-sm future';
