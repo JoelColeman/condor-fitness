@@ -718,8 +718,14 @@
       <div class="card">
         <div class="card-title">Program Complete</div>
         <p style="margin-top:8px; color: var(--text-secondary); font-size: var(--font-meta);">
-          Race week — rest up and get ready.
+          This training block is finished. A new program will appear here when it&rsquo;s loaded.
         </p>
+      </div>
+      <button class="btn btn-secondary btn-icon" id="btn-bonus-session-complete" style="margin-top:16px;">+ Bonus session</button>
+      <div style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:8px;align-items:center;">
+        <button id="btn-sign-out-complete" type="button" style="background:none;border:none;color:var(--text-secondary);font-size:var(--font-meta);padding:12px 16px;cursor:pointer;font-family:inherit;">Sign out</button>
+        <span style="color:var(--text-secondary);font-size:var(--font-meta);">&middot;</span>
+        <a href="dashboard.html" style="color:var(--text-secondary);font-size:var(--font-meta);text-decoration:none;padding:12px 16px;">Dashboard &#8594;</a>
       </div>
     </div>
 
@@ -997,20 +1003,29 @@
       }
 
       // ── Bonus alt lookup ──────────────────────────────
-      // Returns a random alternate of `type` from any day in the current phase.
+      // Returns a random session of `type` to run as a bonus. A null phaseId
+      // widens the search to the whole program, which is what the completed
+      // program needs — there is no "current" phase once the pointer runs out.
+      //
+      // Alternates are preferred, but a program may define none (Recomp and
+      // Afterburner both do). Rather than dead-end, fall back to a scheduled
+      // day of that type and repeat it — `alt: null` is the same shape "Start
+      // this workout" already passes, so the rest of the flow is unchanged.
 
       function getRandomBonusAlt(prog, phaseId, type) {
-        var pool = [];
+        var alts = [];
+        var days = [];
         prog.weeks.forEach(function(wk) {
-          if (wk.phase !== phaseId) return;
+          if (phaseId && wk.phase !== phaseId) return;
           wk.days.forEach(function(day) {
             if (day.type !== type) return;
-            if (!day.alternates || !day.alternates.length) return;
-            day.alternates.forEach(function(alt) {
-              pool.push({ weekData: wk, dayData: day, alt: alt });
+            days.push({ weekData: wk, dayData: day, alt: null });
+            (day.alternates || []).forEach(function(alt) {
+              alts.push({ weekData: wk, dayData: day, alt: alt });
             });
           });
         });
+        var pool = alts.length ? alts : days;
         if (!pool.length) return null;
         return pool[Math.floor(Math.random() * pool.length)];
       }
@@ -1018,6 +1033,10 @@
       // ── Render main prompt ────────────────────────────
 
       function renderMain() {
+        // The program can be complete — "Back" from the bonus selector has to
+        // land somewhere, and there is no next workout to describe.
+        if (!nextWkout) { showPanel('pw-panel-complete'); return; }
+
         var titleEl = document.getElementById('pw-title');
         var metaEl  = document.getElementById('pw-meta');
 
@@ -1118,9 +1137,11 @@
 
       // ── Button: Bonus session ─────────────────────────
 
-      document.getElementById('btn-bonus-session').addEventListener('click', function() {
-        document.getElementById('pw-bonus-error').classList.add('hidden');
-        showPanel('pw-panel-bonus');
+      ['btn-bonus-session', 'btn-bonus-session-complete'].forEach(function(id) {
+        document.getElementById(id).addEventListener('click', function() {
+          document.getElementById('pw-bonus-error').classList.add('hidden');
+          showPanel('pw-panel-bonus');
+        });
       });
 
       document.getElementById('btn-bonus-back').addEventListener('click', renderMain);
@@ -1128,12 +1149,14 @@
       document.querySelectorAll('[data-bonus-type]').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var type      = this.getAttribute('data-bonus-type');
-          var phaseId   = nextWkout.weekData.phase;
+          // No next workout means the program is complete — search all phases.
+          var phaseId   = nextWkout ? nextWkout.weekData.phase : null;
           var result    = getRandomBonusAlt(program, phaseId, type);
           var errEl     = document.getElementById('pw-bonus-error');
 
           if (!result) {
-            errEl.textContent = 'No ' + type + ' alternates found in the current phase.';
+            errEl.textContent = 'No ' + type + ' sessions found in ' +
+              (phaseId ? 'the current phase.' : 'this program.');
             errEl.classList.remove('hidden');
             return;
           }
@@ -1143,7 +1166,7 @@
             weekData: result.weekData,
             dayData:  result.dayData,
             alt:      result.alt,
-            altUsed:  result.alt.id,
+            altUsed:  result.alt ? result.alt.id : null,
             isBonus:  true
           };
           showScreen('workout');
@@ -1160,10 +1183,12 @@
 
       // ── Sign out link ──────────────────────────────────
 
-      document.getElementById('btn-sign-out').addEventListener('click', async function() {
-        try { await Condor.signOut(); } catch (e) {}
-        window.__program = null;
-        showScreen('setup');
+      ['btn-sign-out', 'btn-sign-out-complete'].forEach(function(id) {
+        document.getElementById(id).addEventListener('click', async function() {
+          try { await Condor.signOut(); } catch (e) {}
+          window.__program = null;
+          showScreen('setup');
+        });
       });
 
       // ── Expose init to global scope ────────────────────
@@ -1532,6 +1557,10 @@
         var rounds   = ex.rounds || 3;
         var exList   = ex.exercises_in_circuit || [];
         var sub      = rounds + ' rounds \u00b7 ' + exList.length + ' exercises';
+        var cktNote  = ex.notes || ex.note;
+        var noteHtml = cktNote
+          ? '<div class="card-note">' + esc(decodeHtml(cktNote)) + '</div>'
+          : '';
 
         // build reference HTML
         var refHtml = '<div style="margin-bottom:12px;">';
@@ -1566,6 +1595,7 @@
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
               '<div class="card-subtitle">' + esc(sub) + '</div>' +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +

@@ -1,55 +1,56 @@
 {
   "meta": {
-    "program": "Operation Recomp",
+    "program": "Operation Afterburner",
     "version": "1",
     "athlete": "Joel Coleman",
-    "race": "Summer Recomp Block — Jun–Aug 2026 (Spartan Super 10K complete, May 31 2026)",
+    "race": "Fall Athletic Cut — Aug 31 – Oct 25, 2026. Athleticism and fat loss (260 → sub-250). Not a strength block.",
     "start_week": 1,
-    "anchor_date": "2026-06-08",
+    "anchor_date": "2026-08-31",
     "phases": [
       {
-        "id": "rebuild",
-        "label": "Rebuild",
+        "id": "ab_foundation",
+        "label": "Foundation",
         "weeks": [
           1,
-          2,
-          3
+          2
         ],
-        "dates": "Jun 8 – Jun 28"
+        "dates": "Aug 31 – Sep 13"
       },
       {
-        "id": "deload",
-        "label": "Deload",
-        "weeks": [
-          4
-        ],
-        "dates": "Jun 29 – Jul 5"
-      },
-      {
-        "id": "build",
+        "id": "ab_build",
         "label": "Build",
         "weeks": [
-          5,
-          6,
-          7
+          3,
+          4,
+          5
         ],
-        "dates": "Jul 6 – Jul 26"
+        "dates": "Sep 14 – Oct 4"
       },
       {
-        "id": "consolidate",
-        "label": "Consolidate",
+        "id": "ab_deload",
+        "label": "Deload",
         "weeks": [
+          6
+        ],
+        "dates": "Oct 5 – Oct 11"
+      },
+      {
+        "id": "ab_peak",
+        "label": "Peak",
+        "weeks": [
+          7,
           8
         ],
-        "dates": "Jul 27 – Aug 2"
+        "dates": "Oct 12 – Oct 25"
       }
     ]
   },
   "calf_rules": [
-    "Calf is mostly good post-race — explosive/impact work ramps gradually, gated on the calf reading.",
-    "No running or jumping in the early weeks. Conditioning stays calf-safe first (row, bike, swings, carries, sled).",
-    "Pain above 2/10 — back off immediately. Soreness lasting >24h after a new stimulus — repeat, don't advance.",
-    "Day 4 impact element (box step-off → run intervals) returns only if calf was ≤1/10 through the prior week. Any flare → pull it back out."
+    "The calf gate governs ALL impact — running, jumping, and change-of-direction. Log a calf rating after every run or jump session.",
+    "Anything above 2/10 freezes the impact ramp at its current stage — repeat, do not advance.",
+    "A flare steps the ramp back one stage.",
+    "Weeks 1–2 are the running test protocol: zero impact elsewhere, engine on the ergs. Both tests clean → Stage 2 unlocks in Week 3.",
+    "Running ramp: Stage 1 (W1–2) walk/jog intervals · Stage 2 (W3–4) continuous easy jog then 2:1 intervals · Stage 3 (W5–6) push/base tread intervals · Stage 4 (W7–8) sprint intervals and the continuous benchmark."
   ],
   "rest_timer_defaults_sec": {
     "strength": 120,
@@ -61,107 +62,87 @@
   "weeks": [
     {
       "week": 1,
-      "phase": "rebuild",
-      "label": "Rebuild — Week 1",
-      "dates": "Jun 8–14",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_foundation",
+      "label": "Foundation — Week 1",
+      "dates": "Aug 31–Sep 6",
+      "run_protocol": "Stage 1 — run test 1: 15 min, 1 min jog / 1 min walk, easy",
+      "calf_gate": "Log a calf rating after every run. Above 2/10 → hold Stage 1, do not advance.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 275,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 315,
+              "rest_sec": 180,
+              "notes": "Strength floor — heavy but never maxed, 2–3 reps in reserve. First while fresh."
             },
             {
               "name": "DB Bench Press",
-              "sets": 4,
+              "sets": 3,
               "reps": 8,
-              "target_weight_lbs": 70,
+              "target_weight_lbs": 80,
+              "weight_note": "each hand",
               "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "notes": "All pressing stays dumbbell this block. Barbell bench returns with the fall strength block."
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 205,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "rest_sec": 90,
+              "notes": "Scap pull-up on the first rep. Lat pulldown if the shoulder limits range."
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 45
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 60
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
+              "name": "Engine — 40/20 Intervals",
               "type": "circuit",
-              "rounds": 3,
+              "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
+              "notes": "14 min. Last 8 rounds in orange (orange = 155–168 bpm). Target ~8 splat min. Week 1 splat target: ~20 min at 155+. Note your actual peak HR — zones assume max 185.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
                   "duration_sec": 40
                 }
               ]
@@ -171,105 +152,97 @@
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Med Ball Slam",
+              "sets": 4,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 60,
+              "notes": "Max intent, full extension. No jumping this phase."
             },
             {
-              "name": "Romanian Deadlift",
+              "name": "MB Rotational Throw",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "reps_note": "per side",
+              "rest_sec": 60
+            },
+            {
+              "name": "Box Step-Downs",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "reps_note": "per side",
+              "rest_sec": 60,
+              "notes": "Step down under control — no jumping yet. Calf-safe eccentric intro."
+            },
+            {
+              "name": "Farmer Carry",
               "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 245,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "reps": 40,
+              "target_weight_lbs": 70,
+              "reps_note": "yd",
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "DB Incline Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 65,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
-            },
-            {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 45
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 120,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 40,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 60
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run Test 1",
+              "type": "run",
+              "intervals": 7,
+              "run_sec": 60,
+              "walk_sec": 60,
+              "notes": "15 min on the tread, easy pace. Diagnostic — note your peak HR. Log a calf rating in the summary."
             }
           ],
           "alternates": []
@@ -277,174 +250,192 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
-            },
-            {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 155,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 55,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
                 {
-                  "name": "DB Arnold Press",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 35
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
                 },
                 {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
                 }
               ]
             },
             {
-              "name": "DB RDL + Lateral Raise Superset",
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 255,
+              "rest_sec": 150,
+              "notes": "Strength floor hinge. Controlled tempo, never maxed."
+            },
+            {
+              "name": "DB Shoulder Press + Row Superset",
               "superset": true,
               "rounds": 3,
-              "notes": "Rest ~45s after each round.",
+              "notes": "Alternate the pair, rest ~60s after each round.",
               "exercises_in_superset": [
                 {
-                  "name": "DB Romanian Deadlift",
+                  "name": "DB Shoulder Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 60,
+                  "reps": 10,
+                  "target_weight_lbs": 55,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Chest-Supported DB Row",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 15
+                  "reps": 12,
+                  "target_weight_lbs": 70,
+                  "weight_note": "each hand"
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Hanging Knee Raise",
+              "sets": 3,
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "rest_sec": 60
+            },
+            {
+              "name": "Incline Walk",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 10,
+              "notes": "Green zone (green = 131–154 bpm). Lightest day of the week — do not chase orange."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — 2G Classic",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
             },
             {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 105,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
+              "name": "Tread Block",
+              "type": "run",
+              "intervals": 4,
+              "run_sec": 60,
+              "walk_sec": 120,
+              "notes": "12 min. Base = incline walk at 8–10%, push = 1 min jog every 3rd minute. Log a calf rating."
             },
             {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 45,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
+              "name": "Row Block",
+              "type": "circuit",
+              "rounds": 4,
+              "rest_between_rounds_sec": 0,
+              "notes": "10 min. Push the 250s into orange (orange = 155–168 bpm).",
+              "exercises_in_circuit": [
+                {
+                  "name": "Row (push)",
+                  "distance_m": 250
+                },
+                {
+                  "name": "Base Row",
+                  "duration_sec": 60
+                }
+              ]
             },
             {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
+              "name": "Floor AMRAP",
+              "type": "circuit",
               "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 60
-                }
-              ]
-            },
-            {
-              "name": "Loaded Carries",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "rest_between_rounds_sec": 0,
+              "notes": "12 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
-            },
-            {
-              "name": "Conditioning + Explosive Ramp",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×4. Calf-safe only — no jumping/running yet.",
-              "exercises_in_circuit": [
-                {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
+                  "name": "Push-Ups",
+                  "reps": 12
                 },
                 {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
+                  "name": "Goblet Reverse Lunge",
+                  "reps": 8,
+                  "reps_note": "per side",
+                  "target_weight_lbs": 55
                 },
                 {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Battle Ropes",
+                  "duration_sec": 30
                 }
               ]
             }
@@ -455,108 +446,95 @@
     },
     {
       "week": 2,
-      "phase": "rebuild",
-      "label": "Rebuild — Week 2",
-      "dates": "Jun 15–21",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_foundation",
+      "label": "Foundation — Week 2",
+      "dates": "Sep 7–13",
+      "run_protocol": "Stage 1 — run test 2: 16 min, 90s jog / 60s walk",
+      "calf_gate": "Both tests clean (≤2/10) → Stage 2 unlocks in Week 3. Any flare → repeat Stage 1.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 285,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 315,
+              "rest_sec": 180,
+              "notes": "Same load as Week 1. Maintenance, not progression."
             },
             {
               "name": "DB Bench Press",
-              "sets": 4,
+              "sets": 3,
               "reps": 8,
-              "target_weight_lbs": 72.5,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "target_weight_lbs": 80,
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 215,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 6,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 47.5
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 62.5
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
+              "name": "Engine — EMOM 12",
               "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
+              "rounds": 4,
+              "rest_between_rounds_sec": 0,
+              "notes": "EMOM 12 — one movement per minute, 4 rounds through. Orange (orange = 155–168 bpm), ~8 splat min. Week 2 splat target: ~22 min at 155+.",
               "exercises_in_circuit": [
                 {
-                  "name": "Row or Bike (hard)",
+                  "name": "Bike Cals (hard)",
                   "duration_sec": 40
                 },
                 {
                   "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
+                  "reps": 15,
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Battle Ropes",
+                  "duration_sec": 30
                 }
               ]
             }
@@ -565,105 +543,95 @@
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Med Ball Slam",
+              "sets": 4,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 60
             },
             {
-              "name": "Romanian Deadlift",
+              "name": "MB Chest Pass",
               "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 255,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "rest_sec": 60
             },
             {
-              "name": "DB Incline Press",
+              "name": "Sled Push",
               "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 67.5,
+              "reps": 20,
+              "target_weight_lbs": 0,
+              "reps_note": "yd",
               "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
+              "notes": "Heavy. Calf-safe power — no impact."
             },
             {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 47.5
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 125,
-                  "weight_note": "or ring rows"
-                }
-              ]
+              "name": "Suitcase Carry",
+              "sets": 3,
+              "reps": 40,
+              "target_weight_lbs": 70,
+              "reps_note": "yd per side",
+              "weight_note": "one hand",
+              "rest_sec": 90
             },
             {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 42.5,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 62.5
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run Test 2",
+              "type": "run",
+              "intervals": 6,
+              "run_sec": 90,
+              "walk_sec": 60,
+              "notes": "16 min. Log a calf rating. Both tests clean → Stage 2 unlocks in Week 3."
             }
           ],
           "alternates": []
@@ -671,35 +639,53 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 255,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 165,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 57.5,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "Arnold Press + Pulldown Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
@@ -707,138 +693,132 @@
                 {
                   "name": "DB Arnold Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 37.5
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 62.5,
+                  "reps": 10,
+                  "target_weight_lbs": 50,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Lat Pulldown",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 17.5
+                  "reps": 12,
+                  "target_weight_lbs": 120
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Ab Wheel",
+              "sets": 3,
+              "reps": 8,
+              "target_weight_lbs": 0,
+              "rest_sec": 60
+            },
+            {
+              "name": "Easy Bike",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 12,
+              "notes": "Green zone (green = 131–154 bpm)."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Row Priority",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
             },
             {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 115,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
+              "name": "Row Block",
+              "type": "circuit",
+              "rounds": 5,
+              "rest_between_rounds_sec": 0,
+              "notes": "14 min. The main course today — push the 300s to orange (orange = 155–168 bpm).",
+              "exercises_in_circuit": [
+                {
+                  "name": "Row (push)",
+                  "distance_m": 300
+                },
+                {
+                  "name": "Base Row",
+                  "duration_sec": 45
+                }
+              ]
             },
             {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 47.5,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
+              "name": "Tread Block",
+              "type": "run",
+              "intervals": 3,
+              "run_sec": 60,
+              "walk_sec": 120,
+              "notes": "10 min. Incline-walk base, 1 min jog every 3rd minute. Log a calf rating."
             },
             {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
+              "name": "Floor Block",
+              "type": "circuit",
               "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 75
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 62.5
-                }
-              ]
-            },
-            {
-              "name": "Loaded Carries",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "rest_between_rounds_sec": 0,
+              "notes": "10 min, 3 rounds.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
+                },
+                {
+                  "name": "DB Push Press",
+                  "reps": 10,
+                  "target_weight_lbs": 45,
                   "weight_note": "each hand"
-                }
-              ]
-            },
-            {
-              "name": "Conditioning + Explosive Ramp",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×4. Calf-safe only — no jumping/running yet.",
-              "exercises_in_circuit": [
-                {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Plank Pull-Through",
+                  "reps": 10
                 }
               ]
             }
@@ -849,215 +829,176 @@
     },
     {
       "week": 3,
-      "phase": "rebuild",
-      "label": "Rebuild — Week 3",
-      "dates": "Jun 22–28",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_build",
+      "label": "Build — Week 3",
+      "dates": "Sep 14–20",
+      "run_protocol": "Stage 2 — 15 min continuous easy jog",
+      "calf_gate": "Jumps and change-of-direction enter this week. Calf above 2/10 → pull the jumps, keep the run.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 295,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 320,
+              "rest_sec": 180
             },
             {
               "name": "DB Bench Press",
               "sets": 4,
               "reps": 8,
-              "target_weight_lbs": 75,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "target_weight_lbs": 80,
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 225,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 6,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 50
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
-                  "duration_sec": 40
-                }
-              ]
+              "name": "Engine — Tread Intervals",
+              "type": "run",
+              "intervals": 6,
+              "run_sec": 60,
+              "walk_sec": 60,
+              "notes": "12 min on the tread. Push = jog, base = brisk walk. Orange (orange = 155–168 bpm), ~8 splat min. Week 3 splat target: ~26 min at 155+. Log a calf rating."
             }
           ],
           "alternates": []
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Low Box Jump",
+              "sets": 4,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90,
+              "notes": "Step down — never jump down. First jumps of the block; stop if the calf complains."
+            },
+            {
+              "name": "Med Ball Slam",
+              "sets": 4,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 60
             },
             {
-              "name": "Romanian Deadlift",
+              "name": "Lateral Shuffle",
               "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 265,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "reps_note": "yd per side",
+              "rest_sec": 60,
+              "notes": "Easy intro to change-of-direction. Controlled, not maximal."
             },
             {
-              "name": "DB Incline Press",
+              "name": "Farmer Carry",
               "sets": 4,
-              "reps": 8,
+              "reps": 40,
               "target_weight_lbs": 70,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
+              "reps_note": "yd",
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 50
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 130,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 45,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run — Continuous Easy",
+              "type": "cardio",
+              "duration_min": 15,
+              "notes": "15 min continuous easy jog — first unbroken run of the block. Log a calf rating."
             }
           ],
           "alternates": []
@@ -1065,174 +1006,191 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 260,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 175,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 60,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "DB Shoulder Press + Row Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
               "exercises_in_superset": [
                 {
-                  "name": "DB Arnold Press",
+                  "name": "DB Shoulder Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 40
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65,
+                  "reps": 10,
+                  "target_weight_lbs": 55,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Chest-Supported DB Row",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 20
+                  "reps": 12,
+                  "target_weight_lbs": 70,
+                  "weight_note": "each hand"
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Pallof Press",
+              "sets": 3,
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "reps_note": "per side",
+              "rest_sec": 45
+            },
+            {
+              "name": "Ski Erg or Incline Walk",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 10,
+              "notes": "Green zone (green = 131–154 bpm)."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Tread Priority",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
             },
             {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 125,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
+              "name": "Tread Block",
+              "type": "run",
+              "intervals": 4,
+              "run_sec": 60,
+              "walk_sec": 120,
+              "notes": "14 min: base 2 min / push 1 min × 4, then finish with 1 min all-out. Log a calf rating."
             },
             {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 50,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
-            },
-            {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
+              "name": "Row Block",
+              "type": "circuit",
               "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "rest_between_rounds_sec": 0,
+              "notes": "8 min.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Row (push)",
+                  "distance_m": 250
+                },
+                {
+                  "name": "Base Row",
+                  "duration_sec": 45
+                }
+              ]
+            },
+            {
+              "name": "Floor AMRAP",
+              "type": "circuit",
+              "rounds": 3,
+              "rest_between_rounds_sec": 0,
+              "notes": "12 min AMRAP — log rounds completed.",
+              "exercises_in_circuit": [
+                {
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
+                },
+                {
+                  "name": "Burpee",
+                  "reps": 8
+                },
                 {
                   "name": "Goblet Squat",
-                  "sets": 3,
                   "reps": 12,
-                  "target_weight_lbs": 80
+                  "target_weight_lbs": 55
                 },
                 {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
-                }
-              ]
-            },
-            {
-              "name": "Loaded Carries",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
-            },
-            {
-              "name": "Conditioning + Explosive Ramp",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×4. Calf-safe only — no jumping/running yet.",
-              "exercises_in_circuit": [
-                {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
-                },
-                {
-                  "name": "Sled Push",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Battle Ropes",
+                  "duration_sec": 30
                 }
               ]
             }
@@ -1243,108 +1201,101 @@
     },
     {
       "week": 4,
-      "phase": "deload",
-      "label": "Deload — Week 4",
-      "dates": "Jun 29–Jul 5",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_build",
+      "label": "Build — Week 4",
+      "dates": "Sep 21–27",
+      "run_protocol": "Stage 2 — 18 min, 2 min jog / 1 min walk × 6, moderate",
+      "calf_gate": "Box height and broad jumps step up only if last week read ≤1/10. A flare steps the ramp back one stage.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 245,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 320,
+              "rest_sec": 180
             },
             {
               "name": "DB Bench Press",
               "sets": 4,
               "reps": 8,
-              "target_weight_lbs": 60,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "target_weight_lbs": 80,
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 185,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 7,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 40
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 55
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
+              "name": "Engine — Row Ladder",
               "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
+              "rounds": 1,
+              "rest_between_rounds_sec": 0,
+              "notes": "Ladder: 250-500-750-500-250m. Rest = half the work time between rungs. Orange (orange = 155–168 bpm) by the 500s. Week 4 splat target: ~28 min at 155+.",
               "exercises_in_circuit": [
                 {
-                  "name": "Row or Bike (hard)",
-                  "duration_sec": 40
+                  "name": "Row",
+                  "distance_m": 250
                 },
                 {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
+                  "name": "Row",
+                  "distance_m": 500
                 },
                 {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
+                  "name": "Row",
+                  "distance_m": 750
                 },
                 {
-                  "name": "Battle Ropes or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Row",
+                  "distance_m": 500
+                },
+                {
+                  "name": "Row",
+                  "distance_m": 250
                 }
               ]
             }
@@ -1353,105 +1304,95 @@
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Box Jump",
+              "sets": 4,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90,
+              "notes": "Higher box than Week 3. Step down every rep."
+            },
+            {
+              "name": "Broad Jump",
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90,
+              "notes": "Stick the landing — absorb, do not collapse."
+            },
+            {
+              "name": "MB Rotational Throw",
+              "sets": 3,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "reps_note": "per side",
+              "rest_sec": 60
             },
             {
-              "name": "Romanian Deadlift",
+              "name": "Sled Push",
               "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 225,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "reps": 20,
+              "target_weight_lbs": 0,
+              "reps_note": "yd",
+              "rest_sec": 90
             },
             {
-              "name": "DB Incline Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 57.5,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
-            },
-            {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 40
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 110,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 35,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 55
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run — 2:1 Intervals",
+              "type": "run",
+              "intervals": 6,
+              "run_sec": 120,
+              "walk_sec": 60,
+              "notes": "18 min at a moderate pace. Log a calf rating."
             }
           ],
           "alternates": []
@@ -1459,35 +1400,53 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 260,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 135,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 50,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "Arnold Press + Pulldown Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
@@ -1495,138 +1454,131 @@
                 {
                   "name": "DB Arnold Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 30
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 55,
+                  "reps": 10,
+                  "target_weight_lbs": 50,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Lat Pulldown",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 12.5
+                  "reps": 12,
+                  "target_weight_lbs": 120
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Hanging Knee Raise",
+              "sets": 3,
+              "reps": 12,
+              "target_weight_lbs": 0,
+              "rest_sec": 60
+            },
+            {
+              "name": "Bike",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 12,
+              "notes": "Green zone (green = 131–154 bpm)."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Floor Ladder",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
-            },
-            {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 95,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
-            },
-            {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 40,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
-            },
-            {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
                 {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 60
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
                 },
                 {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 55
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
                 }
               ]
             },
             {
-              "name": "Loaded Carries",
+              "name": "Tread Block",
               "type": "circuit",
               "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "rest_between_rounds_sec": 0,
+              "notes": "12 min: 90-60-30 × 4. The all-out touches red (168+ bpm). Log a calf rating.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
+                  "name": "Base (incline walk)",
+                  "duration_sec": 90
+                },
+                {
+                  "name": "Push (jog)",
+                  "duration_sec": 60
+                },
+                {
+                  "name": "All-Out",
+                  "duration_sec": 30
                 }
               ]
             },
             {
-              "name": "Conditioning + Explosive Ramp",
+              "name": "Floor Ladder",
               "type": "circuit",
-              "rounds": 3,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×3. Calf-safe only — no jumping/running yet.",
+              "rounds": 5,
+              "rest_between_rounds_sec": 0,
+              "notes": "20 min. Each round is one rung of the ladder: 21, 15, 9, 15, 21.",
               "exercises_in_circuit": [
                 {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
+                  "name": "KB Swing",
+                  "reps_note": "21-15-9-15-21 across the rungs",
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
+                  "name": "Push-Ups",
+                  "reps_note": "21-15-9-15-21 across the rungs"
                 },
                 {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
+                  "name": "Goblet Lunge",
+                  "reps_note": "21-15-9-15-21 total, alternating",
+                  "target_weight_lbs": 55
                 },
                 {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Row (between rungs)",
+                  "distance_m": 200
                 }
               ]
             }
@@ -1637,215 +1589,193 @@
     },
     {
       "week": 5,
-      "phase": "build",
+      "phase": "ab_build",
       "label": "Build — Week 5",
-      "dates": "Jul 6–12",
-      "run_protocol": "",
-      "calf_gate": "",
+      "dates": "Sep 28–Oct 4",
+      "run_protocol": "Stage 3 — 20 min, 2 min push / 2 min base × 5",
+      "calf_gate": "Peak impact week before the deload. Anything above 2/10 → hold the ramp here through Week 6.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 305,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 325,
+              "rest_sec": 180
             },
             {
               "name": "DB Bench Press",
               "sets": 4,
               "reps": 8,
-              "target_weight_lbs": 75,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "target_weight_lbs": 80,
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 225,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 6,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 50
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
-                  "duration_sec": 40
-                }
-              ]
+              "name": "Engine — Tread Intervals",
+              "type": "run",
+              "intervals": 7,
+              "run_sec": 60,
+              "walk_sec": 60,
+              "notes": "15 min. Push = jog at +2% incline, base = walk. Last round all-out. Orange (orange = 155–168 bpm). Week 5 splat target: ~32 min at 155+. Log a calf rating."
             }
           ],
           "alternates": []
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Box Jump",
+              "sets": 4,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90,
+              "notes": "Max intent. Step down every rep."
+            },
+            {
+              "name": "Broad Jump",
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
+            },
+            {
+              "name": "Med Ball Slam",
+              "sets": 4,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 60
             },
             {
-              "name": "Romanian Deadlift",
+              "name": "MB Rotational Throw",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "reps_note": "per side",
+              "rest_sec": 60
+            },
+            {
+              "name": "Lateral Shuffle → Sprint",
+              "sets": 6,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "reps_note": "yd shuffle, then sprint out",
+              "rest_sec": 60,
+              "notes": "Full change-of-direction. Plant and go."
+            },
+            {
+              "name": "Farmer Carry",
               "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 270,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "reps": 40,
+              "target_weight_lbs": 80,
+              "reps_note": "yd",
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "DB Incline Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 70,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
-            },
-            {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 50
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 130,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 45,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run — Push/Base",
+              "type": "run",
+              "intervals": 5,
+              "run_sec": 120,
+              "walk_sec": 120,
+              "notes": "20 min: 2 min push / 2 min base × 5. Push into orange (orange = 155–168 bpm). Log a calf rating."
             }
           ],
           "alternates": []
@@ -1853,173 +1783,203 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 265,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 185,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 60,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "DB Shoulder Press + Row Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
               "exercises_in_superset": [
                 {
-                  "name": "DB Arnold Press",
+                  "name": "DB Shoulder Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 40
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65,
+                  "reps": 10,
+                  "target_weight_lbs": 60,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Chest-Supported DB Row",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 20
+                  "reps": 12,
+                  "target_weight_lbs": 75,
+                  "weight_note": "each hand"
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Ab Wheel or Weighted Plank",
+              "sets": 3,
+              "reps": 8,
+              "target_weight_lbs": 0,
+              "rest_sec": 60
+            },
+            {
+              "name": "Bike",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 12,
+              "notes": "Green zone (green = 131–154 bpm)."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — 3-Block Classic",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
-            },
-            {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 125,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
-            },
-            {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 50,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
-            },
-            {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
                 {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 80
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
                 },
                 {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 65
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
                 }
               ]
             },
             {
-              "name": "Loaded Carries",
+              "name": "Tread Block",
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "notes": "14 min: 90-60-30 × 4, walk 60s between rounds. Log a calf rating.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
+                  "name": "Base (incline walk)",
+                  "duration_sec": 90
+                },
+                {
+                  "name": "Push (jog)",
+                  "duration_sec": 60
+                },
+                {
+                  "name": "All-Out",
+                  "duration_sec": 30
                 }
               ]
             },
             {
-              "name": "Conditioning + Explosive Ramp",
+              "name": "Row Block",
               "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×5. Weeks 5+: optional low box step-off / short run intervals ONLY if calf ≤1/10 all of last week.",
+              "rounds": 4,
+              "rest_between_rounds_sec": 0,
+              "notes": "10 min.",
               "exercises_in_circuit": [
                 {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
+                  "name": "Row (push)",
+                  "distance_m": 300
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
+                  "name": "Base Row",
+                  "duration_sec": 45
+                }
+              ]
+            },
+            {
+              "name": "Floor AMRAP",
+              "type": "circuit",
+              "rounds": 3,
+              "rest_between_rounds_sec": 0,
+              "notes": "14 min AMRAP — log rounds completed.",
+              "exercises_in_circuit": [
+                {
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
+                  "name": "Burpee",
+                  "reps": 8
                 },
                 {
-                  "name": "Slam Ball or Push-Ups",
+                  "name": "Alt DB Snatch",
+                  "reps": 6,
+                  "reps_note": "per side",
+                  "target_weight_lbs": 50
+                },
+                {
+                  "name": "Jump Rope or Battle Ropes",
                   "duration_sec": 40
                 }
               ]
@@ -2031,107 +1991,85 @@
     },
     {
       "week": 6,
-      "phase": "build",
-      "label": "Build — Week 6",
-      "dates": "Jul 13–19",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_deload",
+      "label": "Deload — Week 6",
+      "dates": "Oct 5–11",
+      "run_protocol": "Deload — 15 min continuous easy jog only",
+      "calf_gate": "Deload week. Use it to let any accumulated calf irritation settle before the peak block.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
-              "target_weight_lbs": 315,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 285,
+              "rest_sec": 180,
+              "notes": "Deload — bar drops ~10%. Crisp and easy."
             },
             {
               "name": "DB Bench Press",
-              "sets": 4,
+              "sets": 3,
               "reps": 8,
-              "target_weight_lbs": 77.5,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "target_weight_lbs": 70,
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 235,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 52.5
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 67.5
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
+              "name": "Engine — 40/20 Intervals",
               "type": "circuit",
-              "rounds": 4,
+              "rounds": 12,
               "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
+              "notes": "12 min. Green–orange border — do not chase splats. Week 6 splat target: ~18 min at 155+.",
               "exercises_in_circuit": [
                 {
-                  "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
+                  "name": "Bike (moderate)",
                   "duration_sec": 40
                 }
               ]
@@ -2141,105 +2079,87 @@
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Box Step-Downs",
+              "sets": 3,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "reps_note": "per side",
+              "rest_sec": 60,
+              "notes": "Impact drops this week — step-downs only, no jumping."
             },
             {
-              "name": "Romanian Deadlift",
-              "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 280,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "name": "Med Ball Slam",
+              "sets": 3,
+              "reps": 5,
+              "target_weight_lbs": 0,
+              "rest_sec": 60,
+              "notes": "Light to moderate."
             },
             {
-              "name": "DB Incline Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 72.5,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
+              "name": "Suitcase Carry",
+              "sets": 3,
+              "reps": 40,
+              "target_weight_lbs": 70,
+              "reps_note": "yd per side",
+              "weight_note": "one hand",
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 52.5
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 135,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 47.5,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 67.5
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run — Continuous Easy",
+              "type": "cardio",
+              "duration_min": 15,
+              "notes": "Easy jog only — no intervals this week. Log a calf rating."
             }
           ],
           "alternates": []
@@ -2247,174 +2167,181 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 225,
+              "rest_sec": 150,
+              "notes": "Deload load."
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 195,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 62.5,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "DB Shoulder Press + Row Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
               "exercises_in_superset": [
                 {
-                  "name": "DB Arnold Press",
+                  "name": "DB Shoulder Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 42.5
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 67.5,
+                  "reps": 10,
+                  "target_weight_lbs": 50,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Chest-Supported DB Row",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 22.5
+                  "reps": 12,
+                  "target_weight_lbs": 65,
+                  "weight_note": "each hand"
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Core — Your Choice",
+              "sets": 3,
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "rest_sec": 45,
+              "notes": "Pick one: ab wheel, hanging knee raise, or Pallof press."
+            },
+            {
+              "name": "Incline Walk",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 10,
+              "notes": "Green zone (green = 131–154 bpm)."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Endurance",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
             },
             {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 135,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
+              "name": "Tread — Incline Walk",
+              "type": "cardio",
+              "duration_min": 8,
+              "notes": "Green zone (green = 131–154 bpm). The continuous rotation starts here."
             },
             {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 52.5,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
+              "name": "Row — Steady",
+              "type": "cardio",
+              "duration_min": 8,
+              "notes": "Green zone. Steady state, no pushes."
             },
             {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "name": "Bike",
+              "type": "cardio",
+              "duration_min": 8,
+              "notes": "Green zone."
+            },
+            {
+              "name": "Light Floor Circuit",
+              "type": "circuit",
+              "rounds": 2,
+              "rest_between_rounds_sec": 0,
+              "notes": "6 min, light. 30 min continuous green-zone session overall — orange only by drift, do not chase it.",
+              "exercises_in_circuit": [
+                {
+                  "name": "KB Swing",
+                  "reps": 10,
+                  "target_weight_lbs": 44
+                },
+                {
+                  "name": "Push-Ups",
+                  "reps": 8
+                },
                 {
                   "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 85
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 67.5
-                }
-              ]
-            },
-            {
-              "name": "Loaded Carries",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
-            },
-            {
-              "name": "Conditioning + Explosive Ramp",
-              "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×5. Weeks 5+: optional low box step-off / short run intervals ONLY if calf ≤1/10 all of last week.",
-              "exercises_in_circuit": [
-                {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
-                },
-                {
-                  "name": "Sled Push",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "reps": 10,
+                  "target_weight_lbs": 55
                 }
               ]
             }
@@ -2425,215 +2352,184 @@
     },
     {
       "week": 7,
-      "phase": "build",
-      "label": "Build — Week 7",
-      "dates": "Jul 20–26",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_peak",
+      "label": "Peak — Week 7",
+      "dates": "Oct 12–18",
+      "run_protocol": "Stage 4 — 20 min, 2 min push / 90s base × 6",
+      "calf_gate": "Biggest output week. Sprints and shuttles only if the calf came through the deload clean.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
+              "sets": 3,
+              "reps": 3,
               "target_weight_lbs": 325,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "rest_sec": 180
             },
             {
               "name": "DB Bench Press",
               "sets": 4,
               "reps": 8,
               "target_weight_lbs": 80,
-              "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 245,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
+              "name": "Pull-Ups",
+              "sets": 3,
+              "reps": 7,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 55
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
-                  "duration_sec": 40
-                }
-              ]
+              "name": "Engine — Tread Sprints",
+              "type": "run",
+              "intervals": 8,
+              "run_sec": 30,
+              "walk_sec": 60,
+              "notes": "30s hard / 60s walk × 8. Red touches (168+ bpm), recover back to green between. Week 7 splat target: ~36 min at 155+ — the biggest week. Log a calf rating."
             }
           ],
           "alternates": []
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Box Jump",
+              "sets": 4,
+              "reps": 3,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 90
             },
             {
-              "name": "Romanian Deadlift",
-              "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 285,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
+              "name": "Broad Jump",
+              "sets": 3,
+              "reps": 3,
+              "target_weight_lbs": 0,
+              "rest_sec": 90
             },
             {
-              "name": "DB Incline Press",
+              "name": "5-10-5 Pro-Agility Shuttle",
               "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 75,
+              "reps": 1,
+              "target_weight_lbs": 0,
+              "reps_note": "full-effort rep",
               "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
+              "notes": "Full effort. Plant hard, change direction, go."
             },
             {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 55
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 140,
-                  "weight_note": "or ring rows"
-                }
-              ]
+              "name": "Hill or Incline Sprint",
+              "sets": 4,
+              "duration_sec": 10,
+              "rest_sec": 90,
+              "notes": "Walk-down recovery between reps."
             },
             {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 50,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                }
-              ]
+              "name": "Farmer Carry",
+              "sets": 4,
+              "reps": 40,
+              "target_weight_lbs": 80,
+              "reps_note": "yd",
+              "weight_note": "each hand",
+              "rest_sec": 90
             },
             {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run — Push/Base",
+              "type": "run",
+              "intervals": 6,
+              "run_sec": 120,
+              "walk_sec": 90,
+              "notes": "20 min: 2 min push / 90s base × 6. Log a calf rating."
             }
           ],
           "alternates": []
@@ -2641,35 +2537,53 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 265,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 205,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 65,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "Arnold Press + Pulldown Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
@@ -2677,137 +2591,142 @@
                 {
                   "name": "DB Arnold Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 45
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70,
+                  "reps": 10,
+                  "target_weight_lbs": 55,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Lat Pulldown",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 25
+                  "reps": 12,
+                  "target_weight_lbs": 120
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Pallof Press",
+              "sets": 3,
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "reps_note": "per side",
+              "rest_sec": 45
+            },
+            {
+              "name": "Ski Erg or Bike",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 12,
+              "notes": "Green zone (green = 131–154 bpm). Recovery between the two biggest days."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Everest",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
-            },
-            {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 135,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
-            },
-            {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 55,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
-            },
-            {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
                 {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 90
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
                 },
                 {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
                 }
               ]
             },
             {
-              "name": "Loaded Carries",
+              "name": "Tread — Everest Climbs",
               "type": "circuit",
-              "rounds": 4,
+              "rounds": 2,
               "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "notes": "16 min: two climbs. Log a calf rating.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
+                  "name": "Incline Climb",
+                  "duration_sec": 480,
+                  "reps_note": "+1% incline each minute to max sustainable, then drop"
                 }
               ]
             },
             {
-              "name": "Conditioning + Explosive Ramp",
+              "name": "Row Block",
               "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×5. Weeks 5+: optional low box step-off / short run intervals ONLY if calf ≤1/10 all of last week.",
+              "rounds": 3,
+              "rest_between_rounds_sec": 0,
+              "notes": "8 min. Sprint the 250s — red is fine here.",
               "exercises_in_circuit": [
                 {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
+                  "name": "Row (sprint)",
+                  "distance_m": 250
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
+                  "name": "Base Row",
+                  "duration_sec": 60
+                }
+              ]
+            },
+            {
+              "name": "Floor Block",
+              "type": "circuit",
+              "rounds": 3,
+              "rest_between_rounds_sec": 0,
+              "notes": "12 min, 3 rounds.",
+              "exercises_in_circuit": [
+                {
+                  "name": "DB Snatch",
+                  "reps": 6,
+                  "reps_note": "per side",
+                  "target_weight_lbs": 50
                 },
                 {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Slam Ball or Push-Ups",
+                  "name": "Burpee",
+                  "reps": 10
+                },
+                {
+                  "name": "Battle Ropes",
                   "duration_sec": 40
                 }
               ]
@@ -2819,107 +2738,86 @@
     },
     {
       "week": 8,
-      "phase": "consolidate",
-      "label": "Consolidate — Week 8",
-      "dates": "Jul 27–Aug 2",
-      "run_protocol": "",
-      "calf_gate": "",
+      "phase": "ab_peak",
+      "label": "Peak — Week 8 (Benchmarks)",
+      "dates": "Oct 19–25",
+      "run_protocol": "Benchmark — 20 min continuous, log distance and average HR",
+      "calf_gate": "Final calf reading of the block — it informs how much impact the fall strength block can carry.",
       "days": [
         {
           "day": 1,
           "type": "strength",
-          "label": "Squat — Full Body",
+          "label": "Squat Floor + Engine",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
             },
             {
               "name": "Back Squat",
-              "sets": 4,
-              "reps": 5,
+              "sets": 3,
+              "reps": 3,
               "target_weight_lbs": 325,
-              "rest_sec": 120,
-              "notes": "Heavy anchor, first while fresh. RPE ~7 (2–3 in reserve). Brace, crisp bar speed."
+              "rest_sec": 180
             },
             {
               "name": "DB Bench Press",
               "sets": 4,
               "reps": 8,
               "target_weight_lbs": 80,
+              "weight_note": "each hand",
+              "rest_sec": 90
+            },
+            {
+              "name": "Pull-Ups",
+              "sets": 1,
+              "reps": 8,
+              "target_weight_lbs": 0,
+              "reps_note": "AMRAP — log the actual number",
               "rest_sec": 90,
-              "notes": "Control the descent. Shoulder-friendly path — no barbell bench this block."
+              "notes": "Benchmark. One max set to failure — the rep target is a placeholder, log what you get."
             },
             {
-              "name": "RDL + Pull-Ups Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Alternate the pair, rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 8,
-                  "target_weight_lbs": 245,
-                  "notes": "Moderate, controlled hinge."
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 5,
-                  "target_weight_lbs": 0,
-                  "notes": "Scap pull-up first rep. Lat pulldown if shoulder limits range."
-                }
-              ]
-            },
-            {
-              "name": "DB Shoulder Press + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round. Full squeeze.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 55
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
+              "name": "Engine Retest — 40/20 Intervals",
               "type": "circuit",
-              "rounds": 4,
+              "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, continuous. Calf-safe — no running/jumping. Push the pace.",
+              "notes": "Benchmark: identical to Week 1 Day 1. Compare average output and splat minutes. Week 8 splat target: ~34 min at 155+.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Sled Push or Farmer Carry",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Battle Ropes or Push-Ups",
                   "duration_sec": 40
                 }
               ]
@@ -2929,105 +2827,84 @@
         },
         {
           "day": 2,
-          "type": "strength",
-          "label": "Heavy Hinge — Full Body",
+          "type": "run",
+          "label": "Athletic Benchmarks",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
+            },
+            {
+              "name": "Box Jump — Max Height",
+              "sets": 6,
+              "reps": 1,
+              "target_weight_lbs": 0,
+              "rest_sec": 120,
+              "notes": "Benchmark. Work up to a solid max, 5–6 total jumps. Log the height."
+            },
+            {
+              "name": "Broad Jump",
+              "sets": 3,
+              "reps": 2,
+              "target_weight_lbs": 0,
+              "rest_sec": 120,
+              "notes": "Benchmark. Log the best distance."
+            },
+            {
+              "name": "Med Ball Slam",
+              "sets": 3,
               "reps": 5,
               "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "rest_sec": 60
             },
             {
-              "name": "Romanian Deadlift",
-              "sets": 4,
-              "reps": 6,
-              "target_weight_lbs": 285,
-              "rest_sec": 150,
-              "notes": "Heavy hinge anchor. Controlled tempo, straps ok on last set. RPE ~7."
-            },
-            {
-              "name": "DB Incline Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 75,
-              "rest_sec": 90,
-              "notes": "Your logged pressing movement — calibrated to 67×10."
-            },
-            {
-              "name": "DB Shoulder Press + Pulldown Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~75s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Shoulder Press",
-                  "sets": 3,
-                  "reps": 10,
-                  "target_weight_lbs": 55
-                },
-                {
-                  "name": "Lat Pulldown",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 140,
-                  "weight_note": "or ring rows"
-                }
-              ]
-            },
-            {
-              "name": "Lunge + Row Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Walking DB Lunge",
-                  "sets": 3,
-                  "reps": 10,
-                  "reps_note": "per leg",
-                  "target_weight_lbs": 50,
-                  "weight_note": "each hand"
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                }
-              ]
-            },
-            {
-              "name": "Conditioning Engine",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 15,
-              "note": "45s work / 15s rest, continuous. Keep HR up. Calf-safe.",
-              "exercises_in_circuit": [
-                {
-                  "name": "Bike (hard)",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "KB Swing",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 53,
-                  "weight_note": "explosive hip snap"
-                },
-                {
-                  "name": "Row Erg",
-                  "duration_sec": 45
-                },
-                {
-                  "name": "Farmer Carry",
-                  "duration_sec": 45,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
+              "name": "Run Benchmark",
+              "type": "cardio",
+              "duration_min": 20,
+              "notes": "Benchmark: 20 min continuous. Log distance and average HR, and compare against the Week 1 test. Log a calf rating."
             }
           ],
           "alternates": []
@@ -3035,174 +2912,181 @@
         {
           "day": 3,
           "type": "strength",
-          "label": "Squat Volume — Full Body",
+          "label": "Hinge Floor + Upper Volume",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                }
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
               "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "target_weight_lbs": 265,
+              "rest_sec": 150
             },
             {
-              "name": "Front Squat",
-              "sets": 3,
-              "reps": 8,
-              "target_weight_lbs": 205,
-              "rest_sec": 120,
-              "notes": "Or tempo back squat (3-1-0). No logged baseline — calibrate week 1 to RPE 7."
-            },
-            {
-              "name": "DB Flat Press",
-              "sets": 3,
-              "reps": 12,
-              "target_weight_lbs": 65,
-              "rest_sec": 75,
-              "notes": "Higher-rep pressing volume."
-            },
-            {
-              "name": "Arnold Press + Pull-Ups Superset",
+              "name": "DB Shoulder Press + Row Superset",
               "superset": true,
               "rounds": 3,
               "notes": "Rest ~60s after each round.",
               "exercises_in_superset": [
                 {
-                  "name": "DB Arnold Press",
+                  "name": "DB Shoulder Press",
                   "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 45
-                },
-                {
-                  "name": "Pull-Ups",
-                  "sets": 3,
-                  "reps": 6,
-                  "target_weight_lbs": 0,
-                  "notes": "Lat pulldown if needed."
-                }
-              ]
-            },
-            {
-              "name": "DB RDL + Lateral Raise Superset",
-              "superset": true,
-              "rounds": 3,
-              "notes": "Rest ~45s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "DB Romanian Deadlift",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70,
+                  "reps": 10,
+                  "target_weight_lbs": 60,
                   "weight_note": "each hand"
                 },
                 {
-                  "name": "DB Lateral Raise",
+                  "name": "Chest-Supported DB Row",
                   "sets": 3,
-                  "reps": 15,
-                  "target_weight_lbs": 25
+                  "reps": 12,
+                  "target_weight_lbs": 75,
+                  "weight_note": "each hand"
                 }
               ]
             },
             {
-              "name": "Steady Engine",
+              "name": "Core — Your Choice",
+              "sets": 3,
+              "reps": 10,
+              "target_weight_lbs": 0,
+              "rest_sec": 45
+            },
+            {
+              "name": "Incline Walk or Bike",
               "type": "cardio",
-              "duration_min": 7,
-              "notes": "Easy–moderate row or bike. Recovery-leaning day — lightest conditioning."
+              "duration_min": 10,
+              "notes": "Green zone (green = 131–154 bpm). Stay fresh for the Day 4 benchmarks."
             }
           ],
           "alternates": []
         },
         {
           "day": 4,
-          "type": "strength",
-          "label": "Unilateral / Athletic",
+          "type": "engine",
+          "label": "OTF — Benchmark Day",
           "status": "upcoming",
           "completed_date": null,
           "exercises": [
             {
-              "name": "Scapular Pull-Ups",
-              "sets": 2,
-              "reps": 5,
-              "target_weight_lbs": 0,
-              "notes": "Shoulder prep — every session. Slow, controlled."
+              "name": "Warm-Up",
+              "type": "rehab",
+              "notes": "Every session. Move through it, do not rush it.",
+              "exercises_in_rehab": [
+                {
+                  "name": "Bike or Row (easy)",
+                  "duration_min": 3
+                },
+                {
+                  "name": "Leg Swings",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each direction"
+                },
+                {
+                  "name": "Hip Openers",
+                  "sets": 1,
+                  "reps": 10,
+                  "reps_note": "each side"
+                },
+                {
+                  "name": "Band Pull-Aparts",
+                  "sets": 1,
+                  "reps": 20
+                },
+                {
+                  "name": "Scapular Pull-Ups",
+                  "sets": 2,
+                  "reps": 5,
+                  "notes": "Slow and controlled."
+                },
+                {
+                  "name": "Brisk Incline Walk",
+                  "duration_min": 2,
+                  "notes": "Extra pre-run prep."
+                },
+                {
+                  "name": "Calf Raises",
+                  "sets": 1,
+                  "reps": 15,
+                  "notes": "Extra pre-run prep."
+                }
+              ]
             },
             {
-              "name": "Bulgarian Split Squat",
-              "sets": 3,
-              "reps": 8,
-              "reps_note": "per leg",
-              "target_weight_lbs": 135,
-              "rest_sec": 120,
-              "notes": "Controlled, no bounce. Unilateral strength + balance."
+              "name": "Tread — 12 Min for Distance",
+              "type": "cardio",
+              "duration_min": 12,
+              "notes": "Benchmark. Any speed/incline strategy. Log the distance and a calf rating."
             },
             {
-              "name": "DB Shoulder Press",
-              "sets": 4,
-              "reps": 8,
-              "target_weight_lbs": 55,
-              "rest_sec": 90,
-              "notes": "Press anchor for the day."
+              "name": "Row — 2000m for Time",
+              "type": "circuit",
+              "rounds": 1,
+              "rest_between_rounds_sec": 0,
+              "notes": "Benchmark. Log the time.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Row",
+                  "distance_m": 2000
+                }
+              ]
             },
             {
-              "name": "Goblet Squat + Row Superset",
-              "superset": true,
+              "name": "Floor AMRAP",
+              "type": "circuit",
               "rounds": 3,
-              "notes": "Rest ~60s after each round.",
-              "exercises_in_superset": [
-                {
-                  "name": "Goblet Squat",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 90
-                },
-                {
-                  "name": "Chest-Supported DB Row",
-                  "sets": 3,
-                  "reps": 12,
-                  "target_weight_lbs": 70
-                }
-              ]
-            },
-            {
-              "name": "Loaded Carries",
-              "type": "circuit",
-              "rounds": 4,
-              "rest_between_rounds_sec": 60,
-              "note": "4 rounds of a 40-yard heavy carry. Tall posture, braced.",
+              "rest_between_rounds_sec": 0,
+              "notes": "10 min AMRAP — log rounds completed. End-of-block check-ins: body weight (target ≤251), benchmark deltas vs Week 1, calf status — these inform the fall strength block.",
               "exercises_in_circuit": [
                 {
-                  "name": "Farmer Carry",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 80,
-                  "weight_note": "each hand"
-                }
-              ]
-            },
-            {
-              "name": "Conditioning + Explosive Ramp",
-              "type": "circuit",
-              "rounds": 5,
-              "rest_between_rounds_sec": 20,
-              "note": "40s work / 20s rest, ×5. Weeks 5+: optional low box step-off / short run intervals ONLY if calf ≤1/10 all of last week.",
-              "exercises_in_circuit": [
-                {
-                  "name": "KB Swing (explosive)",
-                  "duration_sec": 40,
-                  "target_weight_lbs": 53,
-                  "weight_note": "snap the hips"
+                  "name": "KB Swing",
+                  "reps": 15,
+                  "target_weight_lbs": 53
                 },
                 {
-                  "name": "Sled Push",
-                  "duration_sec": 40
+                  "name": "Push-Ups",
+                  "reps": 12
                 },
                 {
-                  "name": "Row or Bike",
-                  "duration_sec": 40
-                },
-                {
-                  "name": "Slam Ball or Push-Ups",
-                  "duration_sec": 40
+                  "name": "Goblet Lunge",
+                  "reps": 8,
+                  "reps_note": "per side",
+                  "target_weight_lbs": 55
                 }
               ]
             }
