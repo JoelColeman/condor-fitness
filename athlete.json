@@ -311,7 +311,7 @@
       "label": "Operation Recomp",
       "subtitle": "Summer Recomp — Strength + Lean",
       "start": "2026-06-08",
-      "end": "2026-08-02",
+      "end": "2026-08-22",
       "color": "green",
       "summary": "8-week performance-preserving recomposition. Full-body 4x/week, undulating. Barbell squat + heavy RDL are the protected overload anchors; all pressing is dumbbell (no barbell bench until fall — loose shoulders). 3 of 4 days carry a real anaerobic conditioning block (fat-loss engine first). Explosive/impact work ramps gradually as the calf confirms. Goal: under 250 lbs while holding strength and building density.",
       "highlights": [
@@ -320,7 +320,32 @@
         "Loads locked to logged actuals (squat 335, RDL 275, BSS 135, Incline DB Press 67)",
         "Fat-loss engine conditioning, Orange-Theory HR-up feel",
         "Calf mostly good post-race — impact work ramps gradually",
-        "Not a PR block — fat loss, muscle density, athleticism"
+        "Not a PR block — fat loss, muscle density, athleticism",
+        "Completed all 32 sessions — ran ~3 weeks past the scheduled window and finished every week"
+      ],
+      "prs_set": [],
+      "start_weight_lbs": 260,
+      "end_weight_lbs": 260,
+      "target_end_weight_lbs": 250,
+      "status": "complete",
+      "show_phase_timeline": false
+    },
+    {
+      "id": "operation_afterburner",
+      "type": "block",
+      "label": "Operation Afterburner",
+      "subtitle": "Fall Athletic Cut",
+      "start": "2026-08-31",
+      "end": "2026-10-25",
+      "color": "red",
+      "summary": "8-week athletic cut. 4-day hybrid: minimal strength floor (back squat 3x3 + RDL 3x5 weekly, never maxed), all pressing dumbbell, HR-zone conditioning targeting 12+ orange-zone minutes on key days. Running earned back via 2-week test protocol then 4-stage ramp with a hard calf gate; jumps and change-of-direction ramp in from week 3. Week 8 = benchmark retests vs week 1. Goal: sub-250 and athleticism restored before the fall strength block.",
+      "highlights": [
+        "Strength floor: squat 315-325 x3, RDL 255-265 x5 — maintenance, not progression",
+        "Orange zone 155-168 bpm (est. max 185, calibrating weeks 1-2)",
+        "Weekly splat targets ramp 20 -> 36 minutes",
+        "Running 2x/week: walk/jog tests -> continuous -> push/base -> sprint intervals",
+        "Rotating engines, athletic menus, and OTF-style templates every week",
+        "Week 8 benchmarks: engine retest, jump maxes, 20-min run, 2k row"
       ],
       "prs_set": [],
       "start_weight_lbs": 260,
@@ -334,10 +359,10 @@
       "type": "block",
       "label": "Strength Conversion",
       "subtitle": "Myofibrillar Strength",
-      "start": "2026-10-01",
+      "start": "2026-10-26",
       "end": "2026-12-31",
       "color": "darkblue",
-      "summary": "Convert summer hypertrophy gains into dense, functional strength. Return to lower reps (3-6), heavier loads, longer rest. Primary goals: squat 405 single, bench 315 single.",
+      "summary": "Follows Operation Afterburner. Convert the leaner, more athletic base into dense, functional strength. Return to lower reps (3-6), heavier loads, longer rest. Primary goals: squat 405 single, bench 315 single.",
       "highlights": [
         "Chase squat 405 lb single",
         "Chase bench 315 lb single",
