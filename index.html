@@ -658,6 +658,51 @@
       opacity: 0.7;
     }
 
+    /* === INTERVAL CLOCK (auto-cycling timed circuits) === */
+    .clock-panel {
+      text-align: center;
+      padding: 12px 0 4px;
+      border-top: 1px solid var(--border);
+    }
+    .clock-phase {
+      font-size: var(--font-meta);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .clock-phase.work { color: var(--accent); }
+    .clock-phase.rest { color: var(--secondary); }
+    .clock-phase.done { color: var(--success); }
+    .clock-time {
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .clock-round {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+    .clock-ex { font-size: 16px; font-weight: 700; min-height: 22px; }
+    .clock-next {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      min-height: 18px;
+      margin-bottom: 10px;
+    }
+    .clock-end {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: var(--font-meta);
+      text-decoration: underline;
+      cursor: pointer;
+      min-height: var(--touch-min);
+      width: 100%;
+    }
+
     /* === CARD BODY SECTION LABEL === */
     .card-section-lbl {
       font-size: var(--font-meta);
@@ -1551,7 +1596,235 @@
       }
 
       // ── Card builder: Circuit ──────────────────────────
+      // ── Interval clock (auto-cycling timed circuits) ──
+      // Re-acquire the wake lock when the page becomes visible again while a
+      // clock is running (locking the phone releases it silently).
+      var activeClockWake = null;
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && activeClockWake) activeClockWake();
+      });
+
+      function buildIntervalClockCard(ex, cardIdx, restSec) {
+        var card   = document.createElement('div');
+        card.className = 'card';
+        var rounds = ex.rounds || 3;
+        var exList = ex.exercises_in_circuit || [];
+        var cktNote  = ex.notes || ex.note;
+        var noteHtml = cktNote
+          ? '<div class="card-note">' + esc(decodeHtml(cktNote)) + '</div>'
+          : '';
+
+        var workStr = exList.map(function(e) { return e.duration_sec + 's'; }).join(' / ');
+        var sub = rounds + ' rounds · ' + workStr + ' work' +
+                  (restSec > 0 ? ' / ' + restSec + 's rest' : ' · continuous');
+
+        // Flat phase sequence: every station of every round, with a rest
+        // phase between rounds when the circuit prescribes one.
+        var phases = [];
+        for (var r = 0; r < rounds; r++) {
+          exList.forEach(function(e, si) {
+            phases.push({ kind: 'work', dur: e.duration_sec, name: e.name, round: r + 1, lastStation: si === exList.length - 1 });
+          });
+          if (restSec > 0 && r < rounds - 1) {
+            phases.push({ kind: 'rest', dur: restSec, round: r + 1 });
+          }
+        }
+
+        var refHtml = '<div style="margin-bottom:12px;">';
+        exList.forEach(function(e, ei) {
+          var detail = fmtDur(e.duration_sec);
+          if (e.reps)              detail += ' · ' + e.reps + ' reps';
+          if (e.reps_note)         detail += ' ' + e.reps_note;
+          if (e.target_weight_lbs) detail += ' · ' + e.target_weight_lbs + ' lbs' + (e.weight_note ? ' ' + e.weight_note : '');
+          refHtml +=
+            '<div style="padding:6px 0;' + (ei > 0 ? 'border-top:1px solid var(--border);' : '') +
+              'font-size:var(--font-meta);">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">' +
+                '<span>' + esc(e.name) + '</span>' +
+                '<span style="color:var(--text-secondary);text-align:right;">' + esc(detail) + '</span>' +
+              '</div>' +
+            '</div>';
+        });
+        refHtml += '</div>';
+
+        card.innerHTML =
+          '<div class="card-header">' +
+            '<div style="min-width:0;">' +
+              '<div class="card-title">' + esc(ex.name) + '</div>' +
+              '<div class="card-subtitle">' + esc(sub) + '</div>' +
+              noteHtml +
+            '</div>' +
+            '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
+          '</div>' +
+          '<div class="card-body hidden">' +
+            refHtml +
+            '<div class="clock-panel">' +
+              '<div class="clock-phase"></div>' +
+              '<div class="clock-time">' + esc(fmtDur(exList[0].duration_sec)) + '</div>' +
+              '<div class="clock-round"></div>' +
+              '<div class="clock-ex"></div>' +
+              '<div class="clock-next"></div>' +
+              '<button class="btn btn-primary clock-main">Start clock</button>' +
+              '<button class="clock-end hidden">End early</button>' +
+            '</div>' +
+          '</div>';
+
+        var body     = card.querySelector('.card-body');
+        var phaseEl  = card.querySelector('.clock-phase');
+        var timeEl   = card.querySelector('.clock-time');
+        var roundEl  = card.querySelector('.clock-round');
+        var exEl     = card.querySelector('.clock-ex');
+        var nextEl   = card.querySelector('.clock-next');
+        var mainBtn  = card.querySelector('.clock-main');
+        var endBtn   = card.querySelector('.clock-end');
+
+        var phaseIdx    = -1;
+        var endAt       = 0;      // wall-clock ms when the current phase ends
+        var remainingMs = 0;      // frozen remainder while paused
+        var tickInt     = null;
+        var state       = 'idle'; // idle | running | paused | done
+        var roundsDone  = 0;
+        var wakeLock    = null;
+
+        function acquireWake() {
+          try {
+            if (navigator.wakeLock && navigator.wakeLock.request) {
+              navigator.wakeLock.request('screen').then(function(l) { wakeLock = l; }).catch(function() {});
+            }
+          } catch (e) {}
+        }
+        function releaseWake() {
+          try { if (wakeLock) { wakeLock.release().catch(function() {}); wakeLock = null; } } catch (e) {}
+          activeClockWake = null;
+        }
+        function buzz(pattern) {
+          try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+        }
+
+        function nextWorkName(fromIdx) {
+          for (var i = fromIdx + 1; i < phases.length; i++) {
+            if (phases[i].kind === 'work') return phases[i].name;
+          }
+          return null;
+        }
+
+        function renderClock() {
+          var p = phases[phaseIdx];
+          var secs = Math.max(0, Math.ceil((state === 'paused' ? remainingMs : endAt - Date.now()) / 1000));
+          timeEl.textContent  = fmtDur(secs);
+          phaseEl.className   = 'clock-phase ' + p.kind;
+          phaseEl.textContent = (p.kind === 'work' ? 'WORK' : 'REST') + (state === 'paused' ? ' · PAUSED' : '');
+          roundEl.textContent = 'Round ' + p.round + ' / ' + rounds;
+          exEl.textContent    = p.kind === 'work' ? p.name : 'Rest';
+          var nxt = nextWorkName(phaseIdx);
+          nextEl.textContent  = nxt ? 'Next: ' + nxt : 'Last one — finish strong';
+        }
+
+        function recordRounds(n) {
+          roundsDone = n;
+          card.setAttribute('data-rounds-done', String(n));
+          saveProgressToStorage();
+        }
+
+        function stopTicking() {
+          if (tickInt) { clearInterval(tickInt); tickInt = null; }
+          releaseWake();
+        }
+
+        function finishClock(early) {
+          stopTicking();
+          state = 'done';
+          buzz([200, 100, 200]);
+          phaseEl.className   = 'clock-phase done';
+          phaseEl.textContent = early ? 'ENDED EARLY' : 'COMPLETE';
+          timeEl.textContent  = '✓';
+          roundEl.textContent = roundsDone + ' / ' + rounds + ' rounds';
+          exEl.textContent    = '';
+          nextEl.textContent  = '';
+          mainBtn.classList.add('hidden');
+          endBtn.classList.add('hidden');
+          if (!cardStates[cardIdx].completed) {
+            markCardComplete(cardIdx);
+            advanceCard();
+          }
+          saveProgressToStorage();
+        }
+
+        // Advance to the next phase. Returns false when the sequence is over.
+        function advancePhase() {
+          var p = phases[phaseIdx];
+          if (p && p.kind === 'work' && p.lastStation) recordRounds(p.round);
+          phaseIdx++;
+          if (phaseIdx >= phases.length) { finishClock(false); return false; }
+          buzz(phases[phaseIdx].kind === 'work' ? [100, 60, 100] : 200);
+          return true;
+        }
+
+        function tick() {
+          if (state !== 'running') return;
+          var now = Date.now();
+          // A background/locked phone throttles timers; walk forward through
+          // however many phases elapsed instead of assuming one tick per phase.
+          while (now >= endAt) {
+            var overshoot = now - endAt;
+            if (!advancePhase()) return;
+            endAt = now + phases[phaseIdx].dur * 1000 - overshoot;
+          }
+          renderClock();
+        }
+
+        mainBtn.addEventListener('click', function() {
+          if (state === 'idle') {
+            state = 'running';
+            phaseIdx = 0;
+            endAt = Date.now() + phases[0].dur * 1000;
+            recordRounds(0);
+            onSetChecked(cardIdx, 0);   // reveals Finish button + autosave; no overlay
+            acquireWake();
+            activeClockWake = acquireWake;
+            tickInt = setInterval(tick, 250);
+            mainBtn.textContent = 'Pause';
+            mainBtn.className = 'btn btn-secondary clock-main';
+            endBtn.classList.remove('hidden');
+            buzz([100, 60, 100]);
+            renderClock();
+          } else if (state === 'running') {
+            state = 'paused';
+            remainingMs = Math.max(0, endAt - Date.now());
+            stopTicking();
+            mainBtn.textContent = 'Resume';
+            renderClock();
+          } else if (state === 'paused') {
+            state = 'running';
+            endAt = Date.now() + remainingMs;
+            acquireWake();
+            activeClockWake = acquireWake;
+            tickInt = setInterval(tick, 250);
+            mainBtn.textContent = 'Pause';
+            renderClock();
+          }
+        });
+
+        endBtn.addEventListener('click', function() {
+          if (state !== 'running' && state !== 'paused') return;
+          if (confirm('End the clock early? ' + roundsDone + ' of ' + rounds + ' rounds will be recorded.')) {
+            finishClock(true);
+          }
+        });
+
+        addHeaderToggle(card, body, cardIdx);
+        return card;
+      }
+
       function buildCircuitCard(ex, cardIdx, restSec) {
+        // Circuits whose stations are all timed get the auto-cycling clock
+        // instead of tap-per-round buttons.
+        var allTimed = (ex.exercises_in_circuit || []).length > 0 &&
+          ex.exercises_in_circuit.every(function(e) {
+            return Number.isFinite(e.duration_sec) && e.duration_sec > 0;
+          });
+        if (allTimed) return buildIntervalClockCard(ex, cardIdx, restSec);
+
         var card = document.createElement('div');
         card.className = 'card';
         var rounds   = ex.rounds || 3;
@@ -1630,7 +1903,7 @@
       }
 
       // ── Card builder: Finisher Circuit (round-based) ──
-      function buildFinisherCircuitCard(ex, cardIdx) {
+      function buildFinisherCircuitCard(ex, cardIdx, restSec) {
         var card = document.createElement('div');
         card.className = 'card';
         var rounds  = ex.rounds || 3;
@@ -1693,7 +1966,7 @@
               btnEl.className = 'btn btn-round-done';
               btnEl.textContent = 'Round ' + (rIdx + 1) + ' \u2713';
               roundsDone++;
-              onSetChecked(aidx, 0);
+              onSetChecked(aidx, restSec);
               if (roundsDone >= rounds) {
                 markCardComplete(aidx); advanceCard();
               }
@@ -1979,20 +2252,27 @@
           container.appendChild(noteEl);
         }
 
+        // Per-exercise rest wins over the global default. 0 is a real value
+        // ("no rest timer") and must not fall through to the default.
+        function restOr(val, dflt) {
+          return Number.isFinite(val) ? val : dflt;
+        }
+
         exercises.forEach(function(ex) {
           var cardIdx = cardStates.length;
           var strRest = restDefaults.strength       || 120;
           var cktRest = restDefaults.circuit_round  || 90;
+          var finRest = restOr(restDefaults.grip_finisher, 0);
           var card;
 
           if (ex.superset) {
-            card = buildSupersetCard(ex, cardIdx, strRest);
+            card = buildSupersetCard(ex, cardIdx, restOr(ex.rest_sec, strRest));
           } else if (ex.type === 'finisher_circuit') {
-            card = buildFinisherCircuitCard(ex, cardIdx);
+            card = buildFinisherCircuitCard(ex, cardIdx, restOr(ex.rest_between_rounds_sec, finRest));
           } else if (ex.finisher || ex.type === 'finisher') {
             card = buildFinisherCard(ex, cardIdx);
           } else if (ex.type === 'circuit') {
-            card = buildCircuitCard(ex, cardIdx, cktRest);
+            card = buildCircuitCard(ex, cardIdx, restOr(ex.rest_between_rounds_sec, cktRest));
           } else if (ex.type === 'run') {
             card = buildRunCard(ex, cardIdx);
           } else if (ex.type === 'cardio') {
@@ -2000,9 +2280,9 @@
           } else if (ex.type === 'rehab') {
             card = buildRehabCard(ex, cardIdx);
           } else if (ex.duration_sec) {
-            card = buildTimedCard(ex, cardIdx, strRest);
+            card = buildTimedCard(ex, cardIdx, restOr(ex.rest_sec, strRest));
           } else {
-            card = buildStrengthCard(ex, cardIdx, ex.rest_sec || strRest);
+            card = buildStrengthCard(ex, cardIdx, restOr(ex.rest_sec, strRest));
           }
 
           cardStates.push({ el: card, completed: false });
@@ -2256,7 +2536,11 @@
             });
 
           } else if (ex.type === 'circuit') {
-            var doneRounds = card.querySelectorAll('.card-body .btn-round-done').length;
+            // Interval-clock cards record rounds in data-rounds-done;
+            // tap-per-round cards are counted from their done buttons.
+            var doneRounds = card.hasAttribute('data-rounds-done')
+              ? (parseInt(card.getAttribute('data-rounds-done'), 10) || 0)
+              : card.querySelectorAll('.card-body .btn-round-done').length;
             exEntry.sets.push({ rounds_completed: doneRounds, total_rounds: ex.rounds || 3 });
 
           } else if (ex.type === 'run') {

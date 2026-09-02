@@ -139,7 +139,7 @@
               "type": "circuit",
               "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "notes": "14 min. Last 8 rounds in orange (orange = 155–168 bpm). Target ~8 splat min. Week 1 splat target: ~20 min at 155+. Note your actual peak HR — zones assume max 185.",
+              "notes": "40s hard / 20s easy, continuous ×14 — row or bike. 14 min. Last 8 rounds in orange (orange = 155–168 bpm). Target ~8 splat min. Week 1 splat target: ~20 min at 155+. Note your actual peak HR — zones assume max 185.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
@@ -399,7 +399,7 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min. Push the 250s into orange (orange = 155–168 bpm).",
+              "notes": "250m push → 60s base row, straight through ×4 — no rest between rounds. 10 min. Push the 250s into orange (orange = 155–168 bpm).",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -416,7 +416,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 12 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -521,20 +521,21 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "EMOM 12 — one movement per minute, 4 rounds through. Orange (orange = 155–168 bpm), ~8 splat min. Week 2 splat target: ~22 min at 155+.",
+              "notes": "Every minute on the minute ×12: min 1 — bike cals, 40s hard · min 2 — 15 KB swings · min 3 — 30s battle ropes; rest whatever is left of each minute. 4 rounds through. Orange (orange = 155–168 bpm), ~8 splat min. Week 2 splat target: ~22 min at 155+.",
               "exercises_in_circuit": [
                 {
-                  "name": "Bike Cals (hard)",
-                  "duration_sec": 40
+                  "name": "Bike Cals (40s hard)",
+                  "duration_sec": 60
                 },
                 {
                   "name": "KB Swing",
                   "reps": 15,
+                  "duration_sec": 60,
                   "target_weight_lbs": 53
                 },
                 {
-                  "name": "Battle Ropes",
-                  "duration_sec": 30
+                  "name": "Battle Ropes (30s hard)",
+                  "duration_sec": 60
                 }
               ]
             }
@@ -778,7 +779,7 @@
               "type": "circuit",
               "rounds": 5,
               "rest_between_rounds_sec": 0,
-              "notes": "14 min. The main course today — push the 300s to orange (orange = 155–168 bpm).",
+              "notes": "300m push → 45s base row, straight through ×5 — no rest between rounds. 14 min. The main course today — push the 300s to orange (orange = 155–168 bpm).",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -803,7 +804,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min, 3 rounds.",
+              "notes": "15 swings → 10 push presses → 10 pull-throughs, straight through ×3. 10 min.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1155,7 +1156,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "8 min.",
+              "notes": "250m push → 45s base row, straight through ×3 — no rest between rounds. 8 min.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -1172,7 +1173,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 12 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1275,7 +1276,7 @@
               "type": "circuit",
               "rounds": 1,
               "rest_between_rounds_sec": 0,
-              "notes": "Ladder: 250-500-750-500-250m. Rest = half the work time between rungs. Orange (orange = 155–168 bpm) by the 500s. Week 4 splat target: ~28 min at 155+.",
+              "notes": "Row ladder: 250 → 500 → 750 → 500 → 250m; after each rung rest half the time the rung took. Orange (orange = 155–168 bpm) by the 500s. Week 4 splat target: ~28 min at 155+.",
               "exercises_in_circuit": [
                 {
                   "name": "Row",
@@ -1539,7 +1540,7 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min: 90-60-30 × 4. The all-out touches red (168+ bpm). Log a calf rating.",
+              "notes": "90s base → 60s push → 30s all-out, straight into the next round — continuous ×4 (12 min). The all-out touches red (168+ bpm). Log a calf rating.",
               "exercises_in_circuit": [
                 {
                   "name": "Base (incline walk)",
@@ -1560,7 +1561,7 @@
               "type": "circuit",
               "rounds": 5,
               "rest_between_rounds_sec": 0,
-              "notes": "20 min. Each round is one rung of the ladder: 21, 15, 9, 15, 21.",
+              "notes": "Rep ladder 21-15-9-15-21 — each round is one rung: swings, push-ups, lunges at the rung count, then row 200m before the next rung. 20 min.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1923,7 +1924,7 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 60,
-              "notes": "14 min: 90-60-30 × 4, walk 60s between rounds. Log a calf rating.",
+              "notes": "90s base → 60s push → 30s all-out, then walk 60s — ×4 (14 min). Log a calf rating.",
               "exercises_in_circuit": [
                 {
                   "name": "Base (incline walk)",
@@ -1944,7 +1945,7 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min.",
+              "notes": "300m push → 45s base row, straight through ×4 — no rest between rounds. 10 min.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -1961,7 +1962,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "14 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 14 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -2066,7 +2067,7 @@
               "type": "circuit",
               "rounds": 12,
               "rest_between_rounds_sec": 20,
-              "notes": "12 min. Green–orange border — do not chase splats. Week 6 splat target: ~18 min at 155+.",
+              "notes": "40s moderate / 20s easy, continuous ×12 — bike. 12 min. Green–orange border — do not chase splats. Week 6 splat target: ~18 min at 155+.",
               "exercises_in_circuit": [
                 {
                   "name": "Bike (moderate)",
@@ -2327,7 +2328,7 @@
               "type": "circuit",
               "rounds": 2,
               "rest_between_rounds_sec": 0,
-              "notes": "6 min, light. 30 min continuous green-zone session overall — orange only by drift, do not chase it.",
+              "notes": "10 swings → 8 push-ups → 10 goblet squats, easy pace, straight through ×2. 6 min, light. 30 min continuous green-zone session overall — orange only by drift, do not chase it.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -2677,7 +2678,7 @@
               "type": "circuit",
               "rounds": 2,
               "rest_between_rounds_sec": 60,
-              "notes": "16 min: two climbs. Log a calf rating.",
+              "notes": "Two 8-min climbs, 60s walk between — +1% incline each minute to max sustainable, then drop and rebuild (16 min). Log a calf rating.",
               "exercises_in_circuit": [
                 {
                   "name": "Incline Climb",
@@ -2691,7 +2692,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "8 min. Sprint the 250s — red is fine here.",
+              "notes": "250m sprint → 60s base row, straight through ×3 — no rest between rounds. 8 min. Sprint the 250s — red is fine here.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (sprint)",
@@ -2708,7 +2709,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min, 3 rounds.",
+              "notes": "6/side snatches → 15 swings → 10 burpees → 40s ropes, straight through ×3. 12 min.",
               "exercises_in_circuit": [
                 {
                   "name": "DB Snatch",
@@ -2814,7 +2815,7 @@
               "type": "circuit",
               "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "notes": "Benchmark: identical to Week 1 Day 1. Compare average output and splat minutes. Week 8 splat target: ~34 min at 155+.",
+              "notes": "40s hard / 20s easy, continuous ×14 — row or bike. Benchmark: identical to Week 1 Day 1. Compare average output and splat minutes. Week 8 splat target: ~34 min at 155+.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
@@ -3058,7 +3059,7 @@
               "type": "circuit",
               "rounds": 1,
               "rest_between_rounds_sec": 0,
-              "notes": "Benchmark. Log the time.",
+              "notes": "One continuous 2000m effort. Benchmark. Log the time.",
               "exercises_in_circuit": [
                 {
                   "name": "Row",
@@ -3071,7 +3072,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min AMRAP — log rounds completed. End-of-block check-ins: body weight (target ≤251), benchmark deltas vs Week 1, calf status — these inform the fall strength block.",
+              "notes": "Cycle the three movements continuously — no rest between movements or rounds. 10 min AMRAP — log rounds completed. End-of-block check-ins: body weight (target ≤251), benchmark deltas vs Week 1, calf status — these inform the fall strength block.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
