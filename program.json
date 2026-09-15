@@ -1,11 +1,11 @@
 {
   "meta": {
     "program": "Operation Afterburner",
-    "version": "1",
+    "version": "1.1",
     "athlete": "Joel Coleman",
-    "race": "Fall Athletic Cut — Aug 31 – Oct 25, 2026. Athleticism and fat loss (260 → sub-250). Not a strength block.",
+    "race": "Fall Athletic Cut — Sep 14 – Nov 8, 2026. Athleticism and fat loss (260 → sub-250). Not a strength block.",
     "start_week": 1,
-    "anchor_date": "2026-08-31",
+    "anchor_date": "2026-09-14",
     "phases": [
       {
         "id": "ab_foundation",
@@ -14,7 +14,7 @@
           1,
           2
         ],
-        "dates": "Aug 31 – Sep 13"
+        "dates": "Sep 14 – Sep 27"
       },
       {
         "id": "ab_build",
@@ -24,7 +24,7 @@
           4,
           5
         ],
-        "dates": "Sep 14 – Oct 4"
+        "dates": "Sep 28 – Oct 18"
       },
       {
         "id": "ab_deload",
@@ -32,7 +32,7 @@
         "weeks": [
           6
         ],
-        "dates": "Oct 5 – Oct 11"
+        "dates": "Oct 19 – Oct 25"
       },
       {
         "id": "ab_peak",
@@ -41,7 +41,7 @@
           7,
           8
         ],
-        "dates": "Oct 12 – Oct 25"
+        "dates": "Oct 26 – Nov 8"
       }
     ]
   },
@@ -64,7 +64,7 @@
       "week": 1,
       "phase": "ab_foundation",
       "label": "Foundation — Week 1",
-      "dates": "Aug 31–Sep 6",
+      "dates": "Sep 14–20",
       "run_protocol": "Stage 1 — run test 1: 15 min, 1 min jog / 1 min walk, easy",
       "calf_gate": "Log a calf rating after every run. Above 2/10 → hold Stage 1, do not advance.",
       "days": [
@@ -139,7 +139,7 @@
               "type": "circuit",
               "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "notes": "14 min. Last 8 rounds in orange (orange = 155–168 bpm). Target ~8 splat min. Week 1 splat target: ~20 min at 155+. Note your actual peak HR — zones assume max 185.",
+              "notes": "40s hard / 20s easy, continuous ×14 — row or bike. 14 min. Last 8 rounds in orange (orange = 155–168 bpm). Target ~8 splat min. Week 1 splat target: ~20 min at 155+. Note your actual peak HR — zones assume max 185. RPE 8–9 — each work interval should end feeling like ≤20s was left.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
@@ -242,7 +242,7 @@
               "intervals": 7,
               "run_sec": 60,
               "walk_sec": 60,
-              "notes": "15 min on the tread, easy pace. Diagnostic — note your peak HR. Log a calf rating in the summary."
+              "notes": "15 min on the tread, easy pace. Diagnostic — note your peak HR. Ramp-stage pace only — never pushed for HR. Log a calf rating in the summary."
             }
           ],
           "alternates": []
@@ -387,19 +387,28 @@
               ]
             },
             {
-              "name": "Tread Block",
-              "type": "run",
-              "intervals": 4,
-              "run_sec": 60,
-              "walk_sec": 120,
-              "notes": "12 min. Base = incline walk at 8–10%, push = 1 min jog every 3rd minute. Log a calf rating."
+              "name": "Incline Power-Walk Block",
+              "type": "circuit",
+              "rounds": 4,
+              "rest_between_rounds_sec": 0,
+              "notes": "12 min: base 2 min @ 8–10% / push 1 min @ 14–15%, straight through ×4. Power-walk 3.5–4.0 mph — no jogging; the incline is the intensity. Log a calf rating.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Base (2 min @ 8–10%)",
+                  "duration_sec": 120
+                },
+                {
+                  "name": "Push (1 min @ 14–15%)",
+                  "duration_sec": 60
+                }
+              ]
             },
             {
               "name": "Row Block",
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min. Push the 250s into orange (orange = 155–168 bpm).",
+              "notes": "250m push → 60s base row, straight through ×4 — no rest between rounds. 10 min. Push the 250s into orange (orange = 155–168 bpm).",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -416,7 +425,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 12 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -448,7 +457,7 @@
       "week": 2,
       "phase": "ab_foundation",
       "label": "Foundation — Week 2",
-      "dates": "Sep 7–13",
+      "dates": "Sep 21–27",
       "run_protocol": "Stage 1 — run test 2: 16 min, 90s jog / 60s walk",
       "calf_gate": "Both tests clean (≤2/10) → Stage 2 unlocks in Week 3. Any flare → repeat Stage 1.",
       "days": [
@@ -521,20 +530,21 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "EMOM 12 — one movement per minute, 4 rounds through. Orange (orange = 155–168 bpm), ~8 splat min. Week 2 splat target: ~22 min at 155+.",
+              "notes": "Every minute on the minute ×12: min 1 — bike cals, 40s hard · min 2 — 15 KB swings · min 3 — 30s battle ropes; rest whatever is left of each minute. 4 rounds through. Orange (orange = 155–168 bpm), ~8 splat min. Week 2 splat target: ~22 min at 155+. Work bursts at RPE 8–9.",
               "exercises_in_circuit": [
                 {
-                  "name": "Bike Cals (hard)",
-                  "duration_sec": 40
+                  "name": "Bike Cals (40s hard)",
+                  "duration_sec": 60
                 },
                 {
                   "name": "KB Swing",
                   "reps": 15,
+                  "duration_sec": 60,
                   "target_weight_lbs": 53
                 },
                 {
-                  "name": "Battle Ropes",
-                  "duration_sec": 30
+                  "name": "Battle Ropes (30s hard)",
+                  "duration_sec": 60
                 }
               ]
             }
@@ -631,7 +641,7 @@
               "intervals": 6,
               "run_sec": 90,
               "walk_sec": 60,
-              "notes": "16 min. Log a calf rating. Both tests clean → Stage 2 unlocks in Week 3."
+              "notes": "16 min. Ramp-stage pace only — never pushed for HR. Log a calf rating. Both tests clean → Stage 2 unlocks in Week 3."
             }
           ],
           "alternates": []
@@ -778,7 +788,7 @@
               "type": "circuit",
               "rounds": 5,
               "rest_between_rounds_sec": 0,
-              "notes": "14 min. The main course today — push the 300s to orange (orange = 155–168 bpm).",
+              "notes": "300m push → 45s base row, straight through ×5 — no rest between rounds. 14 min. The main course today — push the 300s to orange (orange = 155–168 bpm).",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -791,19 +801,28 @@
               ]
             },
             {
-              "name": "Tread Block",
-              "type": "run",
-              "intervals": 3,
-              "run_sec": 60,
-              "walk_sec": 120,
-              "notes": "10 min. Incline-walk base, 1 min jog every 3rd minute. Log a calf rating."
+              "name": "Incline Power-Walk Block",
+              "type": "circuit",
+              "rounds": 3,
+              "rest_between_rounds_sec": 0,
+              "notes": "~10 min: base 2 min @ 8–10% / push 1 min @ 14–15%, straight through ×3, then easy base to the 10-min mark. Power-walk — no jogging. Log a calf rating.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Base (2 min @ 8–10%)",
+                  "duration_sec": 120
+                },
+                {
+                  "name": "Push (1 min @ 14–15%)",
+                  "duration_sec": 60
+                }
+              ]
             },
             {
               "name": "Floor Block",
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min, 3 rounds.",
+              "notes": "15 swings → 10 push presses → 10 pull-throughs, straight through ×3. 10 min.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -831,7 +850,7 @@
       "week": 3,
       "phase": "ab_build",
       "label": "Build — Week 3",
-      "dates": "Sep 14–20",
+      "dates": "Sep 28–Oct 4",
       "run_protocol": "Stage 2 — 15 min continuous easy jog",
       "calf_gate": "Jumps and change-of-direction enter this week. Calf above 2/10 → pull the jumps, keep the run.",
       "days": [
@@ -899,12 +918,21 @@
               "rest_sec": 90
             },
             {
-              "name": "Engine — Tread Intervals",
-              "type": "run",
-              "intervals": 6,
-              "run_sec": 60,
-              "walk_sec": 60,
-              "notes": "12 min on the tread. Push = jog, base = brisk walk. Orange (orange = 155–168 bpm), ~8 splat min. Week 3 splat target: ~26 min at 155+. Log a calf rating."
+              "name": "Engine — Row Erg 60/30",
+              "type": "circuit",
+              "rounds": 8,
+              "rest_between_rounds_sec": 0,
+              "notes": "ROW ERG, 12 min: 60s hard / 30s moderate, continuous ×8. RPE 8–9 from round one — each push ends feeling like ≤20s was left. FINAL hard interval: 40–60s genuine ALL-OUT — max-HR calibration, log peak HR. Orange (155–168 bpm), ~8 splat min. Week 3 splat target: ~26 min at 155+.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Row — Hard",
+                  "duration_sec": 60
+                },
+                {
+                  "name": "Row — Moderate",
+                  "duration_sec": 30
+                }
+              ]
             }
           ],
           "alternates": []
@@ -998,7 +1026,7 @@
               "name": "Run — Continuous Easy",
               "type": "cardio",
               "duration_min": 15,
-              "notes": "15 min continuous easy jog — first unbroken run of the block. Log a calf rating."
+              "notes": "15 min continuous easy jog — first unbroken run of the block. Stage 2 pace (~5.4 mph). Ramp-stage pace only — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -1143,19 +1171,34 @@
               ]
             },
             {
-              "name": "Tread Block",
-              "type": "run",
-              "intervals": 4,
-              "run_sec": 60,
-              "walk_sec": 120,
-              "notes": "14 min: base 2 min / push 1 min × 4, then finish with 1 min all-out. Log a calf rating."
+              "name": "Incline Power-Walk Block",
+              "type": "circuit",
+              "rounds": 4,
+              "rest_between_rounds_sec": 0,
+              "notes": "14 min block: base 2 min @ 10% / push 1 min @ 14–15%, straight through ×4, then the 1-min max-effort climb (next card). Power-walk 3.5–4.0 mph — the climb is the intensity, no tread running until Stage 3 clears. RPE 8–9 on pushes. Log a calf rating.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Base (2 min @ 10%)",
+                  "duration_sec": 120
+                },
+                {
+                  "name": "Push (1 min @ 14–15%)",
+                  "duration_sec": 60
+                }
+              ]
+            },
+            {
+              "name": "Finish — Max-Effort Climb",
+              "type": "cardio",
+              "duration_min": 1,
+              "notes": "1 min max-effort climb straight off the last push — power-walk, max sustainable incline. RPE 9."
             },
             {
               "name": "Row Block",
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "8 min.",
+              "notes": "250m push → 45s base row, straight through ×3 — no rest between rounds. 8 min.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -1172,7 +1215,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 12 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1203,7 +1246,7 @@
       "week": 4,
       "phase": "ab_build",
       "label": "Build — Week 4",
-      "dates": "Sep 21–27",
+      "dates": "Oct 5–11",
       "run_protocol": "Stage 2 — 18 min, 2 min jog / 1 min walk × 6, moderate",
       "calf_gate": "Box height and broad jumps step up only if last week read ≤1/10. A flare steps the ramp back one stage.",
       "days": [
@@ -1275,7 +1318,7 @@
               "type": "circuit",
               "rounds": 1,
               "rest_between_rounds_sec": 0,
-              "notes": "Ladder: 250-500-750-500-250m. Rest = half the work time between rungs. Orange (orange = 155–168 bpm) by the 500s. Week 4 splat target: ~28 min at 155+.",
+              "notes": "Row ladder: 250 → 500 → 750 → 500 → 250m; after each rung rest half the time the rung took. Orange (orange = 155–168 bpm) by the 500s. Week 4 splat target: ~28 min at 155+. RPE 8–9 on every rung.",
               "exercises_in_circuit": [
                 {
                   "name": "Row",
@@ -1392,7 +1435,7 @@
               "intervals": 6,
               "run_sec": 120,
               "walk_sec": 60,
-              "notes": "18 min at a moderate pace. Log a calf rating."
+              "notes": "18 min at a moderate pace (Stage 2). Ramp-stage pace only — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -1535,18 +1578,18 @@
               ]
             },
             {
-              "name": "Tread Block",
+              "name": "Stepper or Incline-Walk Block",
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min: 90-60-30 × 4. The all-out touches red (168+ bpm). Log a calf rating.",
+              "notes": "Converted per intensity sourcing — stepper or steep incline power-walk (12–15% @ 3.5–4.0 mph), no tread running until Stage 3 clears. 90s base → 60s push → 30s all-out, straight into the next round — continuous ×4 (12 min). RPE 8–9 on push; the all-out touches red (168+ bpm). Log a calf rating — the stepper loads the calf.",
               "exercises_in_circuit": [
                 {
-                  "name": "Base (incline walk)",
+                  "name": "Base (stepper or incline walk)",
                   "duration_sec": 90
                 },
                 {
-                  "name": "Push (jog)",
+                  "name": "Push",
                   "duration_sec": 60
                 },
                 {
@@ -1560,7 +1603,7 @@
               "type": "circuit",
               "rounds": 5,
               "rest_between_rounds_sec": 0,
-              "notes": "20 min. Each round is one rung of the ladder: 21, 15, 9, 15, 21.",
+              "notes": "Rep ladder 21-15-9-15-21 — each round is one rung: swings, push-ups, lunges at the rung count, then row 200m before the next rung. 20 min.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1591,7 +1634,7 @@
       "week": 5,
       "phase": "ab_build",
       "label": "Build — Week 5",
-      "dates": "Sep 28–Oct 4",
+      "dates": "Oct 12–18",
       "run_protocol": "Stage 3 — 20 min, 2 min push / 2 min base × 5",
       "calf_gate": "Peak impact week before the deload. Anything above 2/10 → hold the ramp here through Week 6.",
       "days": [
@@ -1659,12 +1702,21 @@
               "rest_sec": 90
             },
             {
-              "name": "Engine — Tread Intervals",
-              "type": "run",
-              "intervals": 7,
-              "run_sec": 60,
-              "walk_sec": 60,
-              "notes": "15 min. Push = jog at +2% incline, base = walk. Last round all-out. Orange (orange = 155–168 bpm). Week 5 splat target: ~32 min at 155+. Log a calf rating."
+              "name": "Engine — Stepper or Erg 1/1",
+              "type": "circuit",
+              "rounds": 7,
+              "rest_between_rounds_sec": 0,
+              "notes": "Stepper or erg — 1 min push / 1 min base, continuous ×7 (~15 min). LAST push all-out. RPE 8–9 on pushes. Tread version resumes when the calf clears Stage 3. Orange (155–168 bpm). Week 5 splat target: ~32 min at 155+.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Push",
+                  "duration_sec": 60
+                },
+                {
+                  "name": "Base",
+                  "duration_sec": 60
+                }
+              ]
             }
           ],
           "alternates": []
@@ -1775,7 +1827,7 @@
               "intervals": 5,
               "run_sec": 120,
               "walk_sec": 120,
-              "notes": "20 min: 2 min push / 2 min base × 5. Push into orange (orange = 155–168 bpm). Log a calf rating."
+              "notes": "20 min: 2 min push / 2 min base × 5. Push pace per the ramp stage, not per HR — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -1919,18 +1971,18 @@
               ]
             },
             {
-              "name": "Tread Block",
+              "name": "Stepper or Incline-Walk Block",
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 60,
-              "notes": "14 min: 90-60-30 × 4, walk 60s between rounds. Log a calf rating.",
+              "notes": "Converted per intensity sourcing — stepper or steep incline power-walk (12–15% @ 3.5–4.0 mph), no tread running until Stage 3 clears. 90s base → 60s push → 30s all-out, then walk 60s — ×4 (14 min). RPE 8–9 on push/all-out. Log a calf rating.",
               "exercises_in_circuit": [
                 {
-                  "name": "Base (incline walk)",
+                  "name": "Base (stepper or incline walk)",
                   "duration_sec": 90
                 },
                 {
-                  "name": "Push (jog)",
+                  "name": "Push",
                   "duration_sec": 60
                 },
                 {
@@ -1944,7 +1996,7 @@
               "type": "circuit",
               "rounds": 4,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min.",
+              "notes": "300m push → 45s base row, straight through ×4 — no rest between rounds. 10 min.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (push)",
@@ -1961,7 +2013,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "14 min AMRAP — log rounds completed.",
+              "notes": "Cycle the four movements continuously — no rest between movements or rounds. 14 min AMRAP — log rounds completed.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -1993,7 +2045,7 @@
       "week": 6,
       "phase": "ab_deload",
       "label": "Deload — Week 6",
-      "dates": "Oct 5–11",
+      "dates": "Oct 19–25",
       "run_protocol": "Deload — 15 min continuous easy jog only",
       "calf_gate": "Deload week. Use it to let any accumulated calf irritation settle before the peak block.",
       "days": [
@@ -2066,7 +2118,7 @@
               "type": "circuit",
               "rounds": 12,
               "rest_between_rounds_sec": 20,
-              "notes": "12 min. Green–orange border — do not chase splats. Week 6 splat target: ~18 min at 155+.",
+              "notes": "40s moderate / 20s easy, continuous ×12 — bike. 12 min. Green–orange border — do not chase splats. Week 6 splat target: ~18 min at 155+.",
               "exercises_in_circuit": [
                 {
                   "name": "Bike (moderate)",
@@ -2159,7 +2211,7 @@
               "name": "Run — Continuous Easy",
               "type": "cardio",
               "duration_min": 15,
-              "notes": "Easy jog only — no intervals this week. Log a calf rating."
+              "notes": "Easy jog only — no intervals this week. Ramp-stage pace only — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -2327,7 +2379,7 @@
               "type": "circuit",
               "rounds": 2,
               "rest_between_rounds_sec": 0,
-              "notes": "6 min, light. 30 min continuous green-zone session overall — orange only by drift, do not chase it.",
+              "notes": "10 swings → 8 push-ups → 10 goblet squats, easy pace, straight through ×2. 6 min, light. 30 min continuous green-zone session overall — orange only by drift, do not chase it.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
@@ -2354,7 +2406,7 @@
       "week": 7,
       "phase": "ab_peak",
       "label": "Peak — Week 7",
-      "dates": "Oct 12–18",
+      "dates": "Oct 26–Nov 1",
       "run_protocol": "Stage 4 — 20 min, 2 min push / 90s base × 6",
       "calf_gate": "Biggest output week. Sprints and shuttles only if the calf came through the deload clean.",
       "days": [
@@ -2422,12 +2474,17 @@
               "rest_sec": 90
             },
             {
-              "name": "Engine — Tread Sprints",
-              "type": "run",
-              "intervals": 8,
-              "run_sec": 30,
-              "walk_sec": 60,
-              "notes": "30s hard / 60s walk × 8. Red touches (168+ bpm), recover back to green between. Week 7 splat target: ~36 min at 155+ — the biggest week. Log a calf rating."
+              "name": "Engine — Sprints 30/60",
+              "type": "circuit",
+              "rounds": 8,
+              "rest_between_rounds_sec": 60,
+              "notes": "CALF GATE: tread sprints ONLY if the calf has cleared Stage 4 — otherwise ROW ERG sprints at the same times. 30s hard / 60s recovery ×8 (12 min). RPE 9 — red touches (168+ bpm), recover fully back to green between. Week 7 splat target: ~36 min at 155+ — the biggest week. Log a calf rating.",
+              "exercises_in_circuit": [
+                {
+                  "name": "Sprint (tread if Stage 4 cleared, else erg)",
+                  "duration_sec": 30
+                }
+              ]
             }
           ],
           "alternates": []
@@ -2512,7 +2569,7 @@
               "sets": 4,
               "duration_sec": 10,
               "rest_sec": 90,
-              "notes": "Walk-down recovery between reps."
+              "notes": "Walk-down recovery between reps. Calf-gated — if the calf is not cleared for sprinting, sub steep incline power-walk bursts."
             },
             {
               "name": "Farmer Carry",
@@ -2529,7 +2586,7 @@
               "intervals": 6,
               "run_sec": 120,
               "walk_sec": 90,
-              "notes": "20 min: 2 min push / 90s base × 6. Log a calf rating."
+              "notes": "20 min: 2 min push / 90s base × 6. Push pace per the ramp stage — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -2677,7 +2734,7 @@
               "type": "circuit",
               "rounds": 2,
               "rest_between_rounds_sec": 60,
-              "notes": "16 min: two climbs. Log a calf rating.",
+              "notes": "Two 8-min climbs, 60s walk between — +1% incline each minute to max sustainable, then drop and rebuild (16 min). Power-walk allowed — the climb IS the intensity; run the climbs only if the calf has cleared Stage 4. RPE 8–9. Log a calf rating.",
               "exercises_in_circuit": [
                 {
                   "name": "Incline Climb",
@@ -2691,7 +2748,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "8 min. Sprint the 250s — red is fine here.",
+              "notes": "250m sprint → 60s base row, straight through ×3 — no rest between rounds. 8 min. Sprint the 250s — red is fine here.",
               "exercises_in_circuit": [
                 {
                   "name": "Row (sprint)",
@@ -2708,7 +2765,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "12 min, 3 rounds.",
+              "notes": "6/side snatches → 15 swings → 10 burpees → 40s ropes, straight through ×3. 12 min.",
               "exercises_in_circuit": [
                 {
                   "name": "DB Snatch",
@@ -2740,7 +2797,7 @@
       "week": 8,
       "phase": "ab_peak",
       "label": "Peak — Week 8 (Benchmarks)",
-      "dates": "Oct 19–25",
+      "dates": "Nov 2–8",
       "run_protocol": "Benchmark — 20 min continuous, log distance and average HR",
       "calf_gate": "Final calf reading of the block — it informs how much impact the fall strength block can carry.",
       "days": [
@@ -2814,7 +2871,7 @@
               "type": "circuit",
               "rounds": 14,
               "rest_between_rounds_sec": 20,
-              "notes": "Benchmark: identical to Week 1 Day 1. Compare average output and splat minutes. Week 8 splat target: ~34 min at 155+.",
+              "notes": "40s hard / 20s easy, continuous ×14 — row or bike. Benchmark: identical to Week 1 Day 1. Compare average output and splat minutes. Week 8 splat target: ~34 min at 155+. RPE 8–9 — honest this time.",
               "exercises_in_circuit": [
                 {
                   "name": "Row or Bike (hard)",
@@ -2904,7 +2961,7 @@
               "name": "Run Benchmark",
               "type": "cardio",
               "duration_min": 20,
-              "notes": "Benchmark: 20 min continuous. Log distance and average HR, and compare against the Week 1 test. Log a calf rating."
+              "notes": "Benchmark: 20 min continuous. Calf-gated — Stage 4 cleared = run it; Stage 2–3 = best sustainable jog/walk, note the protocol used. Log distance and average HR, compare against the Week 1 test. Ramp-stage pace only — never pushed for HR. Log a calf rating."
             }
           ],
           "alternates": []
@@ -3051,14 +3108,14 @@
               "name": "Tread — 12 Min for Distance",
               "type": "cardio",
               "duration_min": 12,
-              "notes": "Benchmark. Any speed/incline strategy. Log the distance and a calf rating."
+              "notes": "Benchmark. Any speed/incline strategy — power-walk climb is legal. Log the distance and a calf rating."
             },
             {
               "name": "Row — 2000m for Time",
               "type": "circuit",
               "rounds": 1,
               "rest_between_rounds_sec": 0,
-              "notes": "Benchmark. Log the time.",
+              "notes": "One continuous 2000m effort. Benchmark. Log the time.",
               "exercises_in_circuit": [
                 {
                   "name": "Row",
@@ -3071,7 +3128,7 @@
               "type": "circuit",
               "rounds": 3,
               "rest_between_rounds_sec": 0,
-              "notes": "10 min AMRAP — log rounds completed. End-of-block check-ins: body weight (target ≤251), benchmark deltas vs Week 1, calf status — these inform the fall strength block.",
+              "notes": "Cycle the three movements continuously — no rest between movements or rounds. 10 min AMRAP — log rounds completed. End-of-block check-ins: body weight (target ≤251), benchmark deltas vs Week 1, calf status — these inform the fall strength block.",
               "exercises_in_circuit": [
                 {
                   "name": "KB Swing",
