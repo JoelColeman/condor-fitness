@@ -425,6 +425,66 @@
       min-height: var(--touch-min);
     }
 
+    /* === CIRCUIT CLOCK OVERLAY === */
+    #circuit-clock {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 15, 0.96);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 24px;
+      text-align: center;
+    }
+
+    #circuit-clock.active {
+      display: flex;
+    }
+
+    .cclock-phase {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .cclock-phase.work { color: var(--accent); }
+    .cclock-phase.rest { color: var(--secondary); }
+
+    .cclock-station {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 12px;
+      min-height: 27px;
+    }
+
+    .cclock-round {
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    .cclock-pause-btn {
+      margin-top: 32px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .cclock-end-btn {
+      margin-top: 16px;
+      font-size: var(--font-meta);
+      color: var(--text-secondary);
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-base);
+      padding: 8px 16px;
+      min-height: var(--touch-min);
+    }
+
     /* === WORKOUT HEADER === */
     .workout-header {
       display: flex;
@@ -897,6 +957,18 @@
     <button class="rest-timer-skip" id="rest-timer-skip">Skip</button>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════
+       Circuit Clock Overlay (used by Screen 3 duration circuits)
+       ═══════════════════════════════════════════════════════ -->
+  <div id="circuit-clock">
+    <div class="cclock-phase work" id="cclock-phase">Work</div>
+    <div class="rest-timer-count" id="cclock-count">0:00</div>
+    <div class="cclock-station" id="cclock-station"></div>
+    <div class="cclock-round" id="cclock-round"></div>
+    <button class="btn btn-secondary cclock-pause-btn" id="cclock-pause">Pause</button>
+    <button class="cclock-end-btn" id="cclock-end">End circuit early</button>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="app-shared.js"></script>
   <script>
@@ -1237,6 +1309,146 @@
         dismissRest();
       });
 
+      // ── Circuit clock (auto-cycling WORK/REST) ─────────
+      // Drives duration-based circuits (every station has duration_sec)
+      // through their intervals automatically instead of tap-per-round.
+      // rest_between_rounds_sec 0 chains rounds back to back (EMOM-style).
+      // Timing is wall-clock anchored (endsAt), not tick-counted, so the
+      // countdown survives browser timer throttling when the phone screen
+      // locks mid-interval — the catch-up loop in clockTick replays any
+      // phases that elapsed while ticks were suspended.
+      var clock = null;
+
+      function isDurationCircuit(ex) {
+        var list = ex.exercises_in_circuit || [];
+        return list.length > 0 &&
+          list.every(function(e) { return e.duration_sec > 0; }) &&
+          !/amrap/i.test(ex.name || '');
+      }
+
+      function buzz() {
+        try { if (navigator.vibrate) navigator.vibrate(200); } catch (e) {}
+      }
+
+      function updateClockDisplay() {
+        if (!clock) return;
+        var m = Math.floor(clock.remaining / 60);
+        var s = clock.remaining % 60;
+        document.getElementById('cclock-count').textContent =
+          m + ':' + (s < 10 ? '0' : '') + s;
+        var phaseEl   = document.getElementById('cclock-phase');
+        var stationEl = document.getElementById('cclock-station');
+        if (clock.phase === 'rest') {
+          phaseEl.textContent = 'Rest';
+          phaseEl.className = 'cclock-phase rest';
+          stationEl.textContent = '';
+        } else {
+          phaseEl.textContent = 'Work';
+          phaseEl.className = 'cclock-phase work';
+          stationEl.textContent = clock.stations[clock.stationIdx].name || '';
+        }
+        document.getElementById('cclock-round').textContent =
+          'Round ' + clock.round + '/' + clock.rounds;
+      }
+
+      // Advances to the next phase. Returns the new phase's duration in
+      // seconds, or null when the circuit is finished (clock stopped).
+      function advanceClockPhase() {
+        buzz();
+        if (clock.phase === 'work' && clock.stationIdx < clock.stations.length - 1) {
+          clock.stationIdx++;
+          return clock.stations[clock.stationIdx].duration_sec;
+        }
+        if (clock.phase === 'work') {
+          // Last station of the round done
+          var finished = clock.round;
+          clock.onRound(finished);
+          if (finished >= clock.rounds) {
+            var onFinish = clock.onFinish;
+            stopCircuitClock();
+            onFinish();
+            return null;
+          }
+          if (clock.restSec > 0) {
+            clock.phase = 'rest';
+            return clock.restSec;
+          }
+          return clockNextRound();
+        }
+        // Rest finished
+        return clockNextRound();
+      }
+
+      function clockNextRound() {
+        clock.round++;
+        clock.phase = 'work';
+        clock.stationIdx = 0;
+        return clock.stations[0].duration_sec;
+      }
+
+      function clockTick() {
+        if (!clock || clock.paused) return;
+        var rem = Math.ceil((clock.endsAt - Date.now()) / 1000);
+        while (rem <= 0) {
+          var nextDur = advanceClockPhase();
+          if (nextDur == null) return; // finished — clock is stopped
+          clock.endsAt += nextDur * 1000;
+          rem = Math.ceil((clock.endsAt - Date.now()) / 1000);
+        }
+        clock.remaining = rem;
+        updateClockDisplay();
+      }
+
+      function startCircuitClock(ex, opts) {
+        stopCircuitClock();
+        var stations = ex.exercises_in_circuit;
+        var firstDur = stations[0].duration_sec;
+        clock = {
+          stations:  stations,
+          rounds:    ex.rounds || 1,
+          restSec:   opts.restSec || 0,
+          round:     1,
+          stationIdx: 0,
+          phase:     'work',
+          remaining: firstDur,
+          endsAt:    Date.now() + firstDur * 1000,
+          paused:    false,
+          onRound:   opts.onRound,
+          onFinish:  opts.onFinish
+        };
+        document.getElementById('cclock-pause').textContent = 'Pause';
+        updateClockDisplay();
+        document.getElementById('circuit-clock').classList.add('active');
+        clock.timer = setInterval(clockTick, 250);
+      }
+
+      function stopCircuitClock() {
+        if (clock && clock.timer) clearInterval(clock.timer);
+        clock = null;
+        document.getElementById('circuit-clock').classList.remove('active');
+      }
+
+      document.getElementById('cclock-pause').addEventListener('click', function() {
+        if (!clock) return;
+        if (clock.paused) {
+          clock.endsAt = Date.now() + clock.pausedRemainingMs;
+          clock.paused = false;
+          this.textContent = 'Pause';
+        } else {
+          clock.pausedRemainingMs = Math.max(0, clock.endsAt - Date.now());
+          clock.paused = true;
+          this.textContent = 'Resume';
+        }
+      });
+
+      document.getElementById('cclock-end').addEventListener('click', function() {
+        if (!clock) return;
+        if (!confirm('End this circuit early? Completed rounds will be logged.')) return;
+        var onFinish = clock.onFinish;
+        stopCircuitClock();
+        onFinish();
+      });
+
       // ── Card expand / collapse ─────────────────────────
       function expandCard(idx) {
         cardStates.forEach(function(cs, i) {
@@ -1561,11 +1773,20 @@
         });
         refHtml += '</div>';
 
+        // Protocol text (work/rest times, rounds, modality) lives in the
+        // circuit's notes \u2014 always render it so nothing must be guessed
+        // from the card title mid-session.
+        var circuitNotes = ex.notes || ex.note;
+        var noteHtml = circuitNotes
+          ? '<div class="card-note">' + esc(decodeHtml(circuitNotes)) + '</div>'
+          : '';
+
         card.innerHTML =
           '<div class="card-header">' +
             '<div style="min-width:0;">' +
               '<div class="card-title">' + esc(ex.name) + '</div>' +
               '<div class="card-subtitle">' + esc(sub) + '</div>' +
+              noteHtml +
             '</div>' +
             '<span class="card-check hidden" style="color:var(--success);font-size:20px;flex-shrink:0;">&#10003;</span>' +
           '</div>' +
@@ -1574,25 +1795,62 @@
         var body = card.querySelector('.card-body');
         var roundsDone = 0;
 
-        for (var r = 0; r < rounds; r++) {
-          var btn = document.createElement('button');
-          btn.className = 'btn btn-secondary';
-          btn.style.marginTop = '8px';
-          btn.textContent = 'Complete round ' + (r + 1);
-          body.appendChild(btn);
+        if (isDurationCircuit(ex)) {
+          // Duration-based circuit: auto-cycling WORK/REST clock replaces
+          // tap-per-round. Rounds completed are tracked on the card element
+          // so session collection reads the clock's count.
+          card.dataset.roundsCompleted = '0';
 
-          (function(btnEl, rIdx, aidx) {
-            btnEl.addEventListener('click', function() {
-              btnEl.disabled = true;
-              btnEl.className = 'btn btn-round-done';
-              btnEl.textContent = 'Round ' + (rIdx + 1) + ' \u2713';
-              roundsDone++;
-              onSetChecked(aidx, restSec);
-              if (roundsDone >= rounds) {
-                markCardComplete(aidx); advanceCard();
+          var status = document.createElement('div');
+          status.style.cssText = 'font-size:var(--font-meta);color:var(--text-secondary);margin-bottom:8px;';
+          status.textContent = '0/' + rounds + ' rounds';
+          body.appendChild(status);
+
+          var startBtn = document.createElement('button');
+          startBtn.className = 'btn btn-primary';
+          startBtn.textContent = 'Start clock';
+          body.appendChild(startBtn);
+
+          startBtn.addEventListener('click', function() {
+            startCircuitClock(ex, {
+              restSec: restSec,
+              onRound: function(n) {
+                roundsDone = n;
+                card.dataset.roundsCompleted = String(n);
+                status.textContent = n + '/' + rounds + ' rounds';
+                onSetChecked(cardIdx, 0); // progress save; no rest overlay
+              },
+              onFinish: function() {
+                status.textContent = roundsDone + '/' + rounds + ' rounds \u2713';
+                startBtn.classList.add('hidden');
+                markCardComplete(cardIdx);
+                saveProgressToStorage();
+                advanceCard();
               }
             });
-          })(btn, r, cardIdx);
+          });
+
+        } else {
+          for (var r = 0; r < rounds; r++) {
+            var btn = document.createElement('button');
+            btn.className = 'btn btn-secondary';
+            btn.style.marginTop = '8px';
+            btn.textContent = 'Complete round ' + (r + 1);
+            body.appendChild(btn);
+
+            (function(btnEl, rIdx, aidx) {
+              btnEl.addEventListener('click', function() {
+                btnEl.disabled = true;
+                btnEl.className = 'btn btn-round-done';
+                btnEl.textContent = 'Round ' + (rIdx + 1) + ' \u2713';
+                roundsDone++;
+                onSetChecked(aidx, restSec);
+                if (roundsDone >= rounds) {
+                  markCardComplete(aidx); advanceCard();
+                }
+              });
+            })(btn, r, cardIdx);
+          }
         }
 
         addHeaderToggle(card, body, cardIdx);
@@ -1962,7 +2220,13 @@
           } else if (ex.finisher || ex.type === 'finisher') {
             card = buildFinisherCard(ex, cardIdx);
           } else if (ex.type === 'circuit') {
-            card = buildCircuitCard(ex, cardIdx, cktRest);
+            // Honor the circuit's own rest_between_rounds_sec. 0 is a real
+            // value ("no rest timer at all", EMOM-style flow) — only a
+            // missing field falls back to the program default.
+            var circuitRest = (typeof ex.rest_between_rounds_sec === 'number')
+              ? ex.rest_between_rounds_sec
+              : cktRest;
+            card = buildCircuitCard(ex, cardIdx, circuitRest);
           } else if (ex.type === 'run') {
             card = buildRunCard(ex, cardIdx);
           } else if (ex.type === 'cardio') {
@@ -1988,6 +2252,7 @@
           localStorage.removeItem('workoutProgress');
           if (elapsedTimer) clearInterval(elapsedTimer);
           dismissRest();
+          stopCircuitClock();
           showScreen('preworkout');
           if (window.initPreworkout) window.initPreworkout();
         }
@@ -1997,6 +2262,7 @@
       document.getElementById('btn-finish-workout').addEventListener('click', function() {
         if (elapsedTimer) clearInterval(elapsedTimer);
         dismissRest();
+        stopCircuitClock();
         window.workoutElapsedSec = elapsedSec;
         showScreen('summary');
       });
@@ -2226,7 +2492,11 @@
             });
 
           } else if (ex.type === 'circuit') {
-            var doneRounds = card.querySelectorAll('.card-body .btn-round-done').length;
+            // Clock-driven circuits track rounds on the card element;
+            // tap-per-round circuits still count their done buttons.
+            var doneRounds = (card.dataset.roundsCompleted != null)
+              ? (parseInt(card.dataset.roundsCompleted, 10) || 0)
+              : card.querySelectorAll('.card-body .btn-round-done').length;
             exEntry.sets.push({ rounds_completed: doneRounds, total_rounds: ex.rounds || 3 });
 
           } else if (ex.type === 'run') {
